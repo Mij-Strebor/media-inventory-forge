@@ -1,0 +1,1082 @@
+/**
+ * Media Inventory Forge - Professional Admin Interface Stylesheet
+ * 
+ * Comprehensive styling system for the media inventory management interface.
+ * Implements JimRWeb brand colors with professional design patterns for
+ * displaying, organizing, and managing media assets with collapsible panels
+ * and interactive elements.
+ * 
+ * @package MediaInventoryForge
+ * @version 2.0.0
+ * @author Jim R (JimRWeb)
+ * @link https://jimrweb.com
+ * @since 1.0.0
+ * 
+ * Architecture Overview:
+ * 1. Design System Tokens (CSS Custom Properties)
+ * 2. Global Resets & WordPress Integration
+ * 3. Typography System
+ * 4. Layout & Container Components
+ * 5. Interactive Components (Buttons, Toggles)
+ * 6. Data Display Components
+ * 7. Media Display Components
+ * 8. Animation & State Management
+ * 9. Responsive Design System
+ * 
+ * Key Features:
+ * - Professional collapsible panel system with dynamic height calculation
+ * - Media asset visualization with thumbnails and metadata
+ * - Categorized inventory tables with hover interactions
+ * - Responsive image galleries with loading states
+ * - Mobile-optimized layouts for media management
+ * 
+ * Color Palette:
+ * - Primary: #3C2017 (Dark Brown)
+ * - Secondary: #5C3324 (Medium Brown) 
+ * - Accent: #FFD700 (Gold)
+ * - Background: #E8D8C3 (Light Cream)
+ * 
+ * Dependencies: None (pure CSS)
+ * Browser Support: Modern browsers with CSS Grid and Flexbox
+ */
+
+/* ==========================================================================
+   1. DESIGN SYSTEM TOKENS
+   ========================================================================== */
+
+/**
+ * CSS Custom Properties - Design System Foundation
+ *
+ * Centralized design tokens that define the visual language of the media
+ * inventory application. These variables ensure consistency across all
+ * components and enable easy theme modifications.
+ *
+ * Styleguide 1.0
+ */
+:root {
+    /* Core Brand Colors
+       ========================================================================== */
+
+    /**
+     * Primary Brand Color Palette
+     *
+     * Core brand identity colors used for headers, borders, and primary elements.
+     * These colors establish the visual hierarchy and brand recognition throughout
+     * the administrative interface.
+     *
+     * Styleguide 1.1
+     */
+    --clr-primary: #3C2017;
+    --clr-secondary: #5C3324;
+    --clr-accent: #FFD700;
+
+    /**
+     * Typography Color System
+     *
+     * Text color palette ensuring proper contrast ratios for accessibility
+     * while maintaining brand consistency across all textual content.
+     *
+     * Styleguide 1.2
+     */
+    --clr-txt: #86400E;
+    --clr-light-txt: #FAF9F6;
+
+    /**
+     * Background & Surface Colors
+     *
+     * Surface colors that create depth and visual separation between interface
+     * elements while maintaining brand warmth and professional appearance.
+     *
+     * Styleguide 1.3
+     */
+    --clr-page-bg: #E8D8C3;
+    --clr-card-bg: #F0E6DA;
+    --clr-light: #F5F1EC;
+
+    /**
+     * Interactive Element Colors
+     *
+     * Button and form control colors that provide clear visual feedback
+     * for user interactions and maintain accessibility standards.
+     *
+     * Styleguide 1.4
+     */
+    --clr-btn-hover: #E5B929;
+    --clr-btn-txt: #9C0202;
+    --clr-btn-bdr: #DE0B0B;
+
+    /**
+     * Utility & Shadow Colors
+     *
+     * Additional colors for shadows, overlays, and secondary interactions
+     * that enhance the visual depth and professional appearance.
+     *
+     * Styleguide 1.5
+     */
+    --clr-shadow: rgba(60, 32, 23, 0.15);
+    --clr-overlay: rgba(232, 216, 195, 0.95);
+    --clr-secondary-hover: #dcc7a8;
+
+    /**
+     * Semantic State Colors
+     *
+     * Status and feedback colors for user interface states including
+     * success, error, warning, and informational messages with hover variants.
+     *
+     * Styleguide 1.6
+     */
+    --clr-success: #10b981;
+    --clr-success-dark: #059669;
+    --clr-danger: #ef4444;
+    --clr-danger-dark: #dc2626;
+    --clr-info: #3b82f6;
+    --clr-info-dark: #1d4ed8;
+    --clr-warning: #f59e0b;
+    --clr-warning-dark: #d97706;
+
+    /**
+     * Grayscale Palette System
+     *
+     * Neutral gray tones for backgrounds, borders, and subtle UI elements
+     * following a consistent 50-900 scale from light to dark.
+     *
+     * Styleguide 1.7
+     */
+    --jimr-gray-50: #f8fafc;
+    --jimr-gray-100: #f1f5f9;
+    --jimr-gray-200: #e2e8f0;
+    --jimr-gray-300: #cbd5e1;
+    --jimr-gray-400: #94a3b8;
+    --jimr-gray-500: #64748b;
+    --jimr-gray-600: #475569;
+    --jimr-gray-700: #334155;
+    --jimr-gray-800: #1e293b;
+    --jimr-gray-900: #0f172a;
+
+    /**
+     * Design System Measurements
+     *
+     * Consistent measurement values for creating cohesive spacing, sizing,
+     * and proportional relationships throughout the interface.
+     *
+     * Styleguide 1.8
+     */
+    --jimr-border-radius: 3px;
+    --jimr-border-radius-lg: 5px;
+    --jimr-transition: all 0.2s ease;
+    --jimr-transition-slow: all 0.3s ease;
+
+    /**
+     * Shadow Elevation System
+     *
+     * Elevation shadows for depth and layering hierarchy using consistent
+     * opacity and blur values to create professional visual depth.
+     *
+     * Styleguide 1.9
+     */
+    --clr-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --clr-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --clr-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.2);
+    --clr-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+    /**
+     * Typography Scale System
+     *
+     * Font size scale providing consistent typography hierarchy from
+     * captions to page titles with optimal readability.
+     *
+     * Styleguide 1.10
+     */
+    --jimr-font-xs: 10px;
+    --jimr-font-sm: 12px;
+    --jimr-font-base: 14px;
+    --jimr-font-lg: 16px;
+    --jimr-font-xl: 18px;
+    --jimr-font-2xl: 20px;
+
+    /**
+     * Spacing Scale System
+     *
+     * Consistent spacing values for margins, padding, and gaps following
+     * a mathematical scale for visual harmony and consistent layouts.
+     *
+     * Styleguide 1.11
+     */
+    --jimr-space-1: 4px;
+    --jimr-space-2: 8px;
+    --jimr-space-3: 12px;
+    --jimr-space-4: 16px;
+    --jimr-space-5: 20px;
+    --jimr-space-6: 24px;
+}
+
+/* ==========================================================================
+   2. GLOBAL RESETS & WORDPRESS INTEGRATION
+   ========================================================================== */
+
+/**
+ * WordPress Admin Integration Overrides
+ *
+ * Override default WordPress admin styling to integrate seamlessly with
+ * the JimRWeb brand design system for media inventory pages.
+ *
+ * Styleguide 2.0
+ */
+
+/**
+ * Global Background System
+ *
+ * Apply brand background and text colors globally to ensure consistent
+ * visual integration with WordPress admin interface.
+ *
+ * Styleguide 2.1
+ */
+body {
+    background: var(--clr-page-bg) !important;
+    color: var(--clr-txt) !important;
+}
+
+.wp-admin {
+    background: var(--clr-page-bg) !important;
+}
+
+#wpbody-content {
+    background: var(--clr-page-bg) !important;
+}
+
+.wrap {
+    background: var(--clr-page-bg) !important;
+}
+
+/* ==========================================================================
+   3. TYPOGRAPHY SYSTEM
+   ========================================================================== */
+
+/**
+ * Professional Typography Hierarchy
+ *
+ * Consistent typography system using serif fonts for headings and
+ * maintaining proper visual hierarchy throughout the media inventory interface.
+ *
+ * Styleguide 3.0
+ */
+
+/**
+ * Primary Heading Typography (H1)
+ *
+ * Main page titles with serif typography and subtle text shadow for
+ * enhanced readability and professional brand presence.
+ *
+ * Styleguide 3.1
+ */
+h1 {
+    color: var(--clr-primary) !important;
+    font-family: 'Georgia', serif;
+    text-shadow: 1px 1px 2px var(--clr-shadow);
+}
+
+/**
+ * Secondary Heading Typography (H2)
+ *
+ * Section headings with serif typography, bottom border separation,
+ * and consistent spacing for clear content organization and hierarchy.
+ *
+ * Styleguide 3.2
+ */
+h2 {
+    color: var(--clr-primary) !important;
+    font-family: 'Georgia', serif;
+    border-bottom-color: var(--clr-secondary) !important;
+    text-shadow: 1px 1px 2px var(--clr-shadow);
+    font-size: var(--jimr-font-2xl);
+    margin: 0 0 var(--jimr-space-5) 0;
+    border-bottom: 2px solid var(--clr-secondary);
+    padding-bottom: var(--jimr-space-2);
+}
+
+/* ==========================================================================
+   4. LAYOUT & CONTAINER COMPONENTS
+   ========================================================================== */
+
+/**
+ * Panel & Container System
+ *
+ * Content container components that provide consistent card-style
+ * layout for media inventory sections with professional elevation.
+ *
+ * Styleguide 4.0
+ */
+
+/**
+ * Base Panel Component
+ *
+ * Standard content panel with elevated card styling, brand colors,
+ * and smooth transitions for interactive feedback and visual hierarchy.
+ *
+ * Styleguide 4.1
+ */
+.fcc-panel {
+    background: var(--clr-light);
+    padding: var(--jimr-space-5);
+    border-radius: var(--jimr-border-radius-lg);
+    border: 2px solid var(--clr-secondary);
+    box-shadow: var(--clr-shadow-lg);
+    transition: var(--jimr-transition);
+}
+
+/* ==========================================================================
+   5. INTERACTIVE COMPONENTS (BUTTONS, TOGGLES)
+   ========================================================================== */
+
+/**
+ * Button Component System
+ *
+ * Comprehensive button components with consistent styling, interactive
+ * states, and specialized variants for different use cases in media management.
+ *
+ * Styleguide 5.0
+ */
+
+/**
+ * Base Button Component
+ *
+ * Standard button with brand styling, accent colors, and
+ * professional typography treatment with interactive feedback.
+ *
+ * Styleguide 5.1
+ */
+.fcc-btn {
+    background: var(--clr-accent);
+    color: var(--clr-btn-txt);
+    border: 2px solid var(--clr-btn-bdr);
+    padding: var(--jimr-space-2) var(--jimr-space-4);
+    border-radius: var(--jimr-border-radius);
+    font-size: var(--jimr-font-sm);
+    font-weight: 600;
+    font-style: italic;
+    text-transform: lowercase;
+    letter-spacing: 0.5px;
+    transition: var(--jimr-transition-slow);
+    cursor: pointer;
+    box-shadow: var(--clr-shadow);
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--jimr-space-2);
+    text-decoration: none;
+}
+
+/**
+ * Button Interactive States
+ *
+ * Hover and focus states providing elevation and color feedback
+ * for enhanced user experience and accessibility.
+ *
+ * Styleguide 5.1.1
+ */
+.fcc-btn:hover {
+    background: var(--clr-btn-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--clr-shadow-lg);
+}
+
+/**
+ * Button Variant System
+ *
+ * Specialized button variants for different semantic meanings
+ * and interaction contexts throughout the interface.
+ *
+ * Styleguide 5.2
+ */
+.fcc-btn-primary {
+    background: var(--clr-info);
+    color: white;
+    border-color: var(--clr-info);
+    font-style: normal;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+.fcc-btn-danger {
+    background: var(--clr-danger);
+    color: white;
+    border-color: var(--clr-danger-dark);
+    font-style: normal;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+.fcc-btn-ghost {
+    background: var(--jimr-gray-500);
+    color: white;
+    border-color: var(--jimr-gray-600);
+    font-style: normal;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+/**
+ * Professional Toggle System
+ *
+ * Advanced collapsible section components with smooth animations,
+ * dynamic height calculation, and consistent visual feedback for
+ * organizing media inventory content into manageable sections.
+ *
+ * Styleguide 5.3
+ */
+
+/**
+ * Toggle Section Container
+ *
+ * Universal container for all collapsible sections with consistent
+ * styling, gradient backgrounds, and professional elevation effects.
+ *
+ * Styleguide 5.3.1
+ */
+.fcc-info-toggle-section {
+    margin-bottom: var(--jimr-space-6);
+    border: 2px solid var(--clr-secondary);
+    border-radius: var(--jimr-border-radius-lg);
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--clr-light), var(--clr-card-bg));
+    box-shadow: var(--clr-shadow);
+}
+
+/**
+ * Toggle Button Header
+ *
+ * Clickable header with consistent styling across all toggle sections,
+ * featuring proper spacing, typography, and interactive feedback.
+ *
+ * Styleguide 5.3.2
+ */
+.fcc-info-toggle {
+    width: 100%;
+    background: var(--clr-secondary);
+    color: var(--clr-light-txt) !important;
+    border: none;
+    padding: var(--jimr-space-4) var(--jimr-space-5);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--jimr-font-lg);
+    font-weight: 600;
+    transition: var(--jimr-transition-slow);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    text-align: left;
+}
+
+/**
+ * Toggle Button Interactive States
+ *
+ * Hover and active states providing visual feedback and
+ * professional elevation effects for user interactions.
+ *
+ * Styleguide 5.3.3
+ */
+.fcc-info-toggle:hover {
+    background: var(--clr-primary);
+    color: var(--clr-light-txt) !important;
+    transform: translateY(-1px);
+}
+
+/**
+ * Toggle Icon Animation System
+ *
+ * Chevron icon with smooth rotation animation for visual state feedback
+ * and clear indication of expanded/collapsed content state.
+ *
+ * Styleguide 5.3.4
+ */
+.fcc-toggle-icon {
+    transition: transform 0.3s ease;
+    font-size: var(--jimr-font-base);
+    color: var(--clr-light-txt) !important;
+    flex-shrink: 0;
+    margin-left: var(--jimr-space-2);
+}
+
+.fcc-info-toggle.expanded .fcc-toggle-icon {
+    transform: rotate(180deg);
+}
+
+/**
+ * Dynamic Content Panel System
+ *
+ * Collapsible content area with dynamic height calculation,
+ * smooth animations, and professional content presentation.
+ *
+ * Styleguide 5.3.5
+ */
+.fcc-info-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+    background: var(--clr-light);
+    color: var(--clr-txt);
+}
+
+.fcc-info-content.expanded {
+    max-height: none;
+    padding: var(--jimr-space-5);
+}
+
+/* ==========================================================================
+   6. DATA DISPLAY COMPONENTS
+   ========================================================================== */
+
+/**
+ * Professional Data Display System
+ *
+ * Components for displaying structured media data including inventory tables,
+ * category sections, and summary statistics with consistent professional styling.
+ *
+ * Styleguide 6.0
+ */
+
+/**
+ * Inventory Table System
+ *
+ * Data tables specifically designed for media inventory with responsive
+ * design, interactive hover states, and optimized typography for data display.
+ *
+ * Styleguide 6.1
+ */
+
+/**
+ * Base Inventory Table Structure
+ *
+ * Main inventory table with rounded corners, shadow elevation,
+ * and professional styling optimized for media data presentation.
+ *
+ * Styleguide 6.1.1
+ */
+.inventory-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+    background: white;
+    border-radius: var(--jimr-border-radius);
+    overflow: hidden;
+    box-shadow: var(--clr-shadow);
+}
+
+/**
+ * Table Cell Typography & Spacing
+ *
+ * Universal cell styling with consistent padding and typography
+ * optimized for media metadata display and readability.
+ *
+ * Styleguide 6.1.2
+ */
+.inventory-table th,
+.inventory-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--jimr-gray-200);
+    font-size: var(--jimr-font-sm);
+}
+
+/**
+ * Table Header Styling
+ *
+ * Header cells with uppercase labels, neutral background, and professional
+ * typography for clear data column identification and hierarchy.
+ *
+ * Styleguide 6.1.3
+ */
+.inventory-table th {
+    background-color: var(--jimr-gray-100) !important;
+    color: var(--jimr-gray-700);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: var(--jimr-font-xs);
+}
+
+/**
+ * Table Interactive States
+ *
+ * Row hover feedback with subtle highlighting for improved
+ * user experience during data review and analysis.
+ *
+ * Styleguide 6.1.4
+ */
+.inventory-table tbody tr:hover {
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+/**
+ * Category Organization System
+ *
+ * Visual grouping components for organizing media by categories
+ * with clear headers, professional separation, and consistent theming.
+ *
+ * Styleguide 6.2
+ */
+
+/**
+ * Category Section Container
+ *
+ * Section wrapper with rounded corners and shadow elevation
+ * for professional grouping of related media content items.
+ *
+ * Styleguide 6.2.1
+ */
+.category-section {
+    margin-bottom: 32px;
+    border-radius: var(--jimr-border-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--clr-shadow);
+}
+
+/**
+ * Category Header Typography
+ *
+ * Section header with brand background and professional typography
+ * for clear category identification and visual hierarchy.
+ *
+ * Styleguide 6.2.2
+ */
+.category-header {
+    background: var(--clr-secondary);
+    color: var(--clr-light-txt);
+    padding: 16px 20px;
+    margin: 0;
+    font-size: var(--jimr-font-lg);
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/**
+ * Summary Statistics Display
+ *
+ * Components for displaying aggregate data and file information
+ * with clear visual hierarchy and consistent formatting for analysis.
+ *
+ * Styleguide 6.3
+ */
+
+/**
+ * Summary Item Component
+ *
+ * Individual summary row with key-value layout, visual separation,
+ * and consistent typography for statistical data presentation.
+ *
+ * Styleguide 6.3.1
+ */
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--jimr-gray-200);
+    font-size: var(--jimr-font-sm);
+}
+
+/**
+ * Summary Total Item
+ *
+ * Final summary item with emphasized styling and visual separation
+ * for highlighting total values and key statistics.
+ *
+ * Styleguide 6.3.2
+ */
+.summary-item:last-child {
+    border-bottom: none;
+    font-weight: bold;
+    border-top: 2px solid var(--clr-secondary);
+    margin-top: 12px;
+    padding-top: 12px;
+    color: var(--clr-primary);
+}
+
+/**
+ * File Details Typography
+ *
+ * Detailed file information display with constrained width
+ * and optimized typography for technical metadata readability.
+ *
+ * Styleguide 6.3.3
+ */
+.file-details {
+    font-size: var(--jimr-font-xs);
+    color: var(--jimr-gray-600);
+    max-width: 300px;
+    line-height: 1.4;
+}
+
+/* ==========================================================================
+   7. MEDIA DISPLAY COMPONENTS
+   ========================================================================== */
+
+/**
+ * Specialized Media Display System
+ *
+ * Components specifically designed for displaying media assets including
+ * thumbnails, image galleries, and detailed media information with loading states.
+ *
+ * Styleguide 7.0
+ */
+
+/**
+ * Thumbnail Display System
+ *
+ * Small image previews for tables and compact displays with
+ * consistent sizing, styling, and professional presentation.
+ *
+ * Styleguide 7.1
+ */
+
+/**
+ * Sample Images Container
+ *
+ * Horizontal layout container for displaying multiple sample thumbnails
+ * in table cells and compact areas with proper spacing.
+ *
+ * Styleguide 7.1.1
+ */
+.sample-images {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+/**
+ * Sample Thumbnail Component
+ *
+ * Small thumbnail image with consistent sizing, rounded corners,
+ * and brand border styling for professional appearance.
+ *
+ * Styleguide 7.1.2
+ */
+.sample-thumbnail {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border-radius: var(--jimr-border-radius);
+    border: 1px solid var(--clr-secondary);
+}
+
+/**
+ * Professional Image Gallery System
+ *
+ * Detailed image display components for comprehensive media viewing
+ * with metadata, thumbnails, file information, and interactive elements.
+ *
+ * Styleguide 7.2
+ */
+
+/**
+ * Images List Container
+ *
+ * Main container for image gallery with consistent spacing
+ * and professional layout structure for content organization.
+ *
+ * Styleguide 7.2.1
+ */
+.images-list {
+    margin-top: 16px;
+}
+
+/**
+ * Image Item Card Component
+ *
+ * Individual image display card with elevation, borders,
+ * structured layout, and professional styling for media presentation.
+ *
+ * Styleguide 7.2.2
+ */
+.image-item {
+    margin-bottom: 20px;
+    border: 2px solid var(--clr-secondary);
+    border-radius: var(--jimr-border-radius-lg);
+    overflow: hidden;
+    background: white;
+    box-shadow: var(--clr-shadow);
+}
+
+/**
+ * Image Header Layout
+ *
+ * Header section containing thumbnail and primary image information
+ * with flexible layout, consistent spacing, and responsive design.
+ *
+ * Styleguide 7.2.3
+ */
+.image-header {
+    background: var(--clr-light);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--clr-secondary);
+    font-size: var(--jimr-font-base);
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+/**
+ * Interactive Thumbnail System
+ *
+ * Large thumbnail display with hover effects, loading states,
+ * error handling, and professional visual feedback for media preview.
+ *
+ * Styleguide 7.2.4
+ */
+.image-thumbnail {
+    flex-shrink: 0;
+    width: 80px;
+    height: 80px;
+    border-radius: var(--jimr-border-radius);
+    overflow: hidden;
+    border: 2px solid var(--clr-secondary);
+    background: var(--clr-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+    background: var(--clr-light);
+}
+
+.image-thumbnail:hover img {
+    transform: scale(1.05);
+}
+
+/**
+ * Thumbnail State Management
+ *
+ * Visual feedback states for thumbnail loading, error conditions,
+ * and content unavailability with consistent styling.
+ *
+ * Styleguide 7.2.5
+ */
+.image-thumbnail.loading {
+    background: var(--clr-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--clr-txt);
+    font-size: var(--jimr-font-xs);
+}
+
+.image-thumbnail.error {
+    background: var(--jimr-gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--jimr-gray-500);
+    font-size: var(--jimr-font-xs);
+}
+
+/**
+ * Image Information Display
+ *
+ * Text content and metadata display for image details
+ * with responsive layout and clear typography hierarchy.
+ *
+ * Styleguide 7.2.6
+ */
+.image-info {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.main-dimensions {
+    color: var(--jimr-gray-600);
+    font-size: var(--jimr-font-xs);
+    font-style: italic;
+}
+
+.image-stats {
+    color: var(--clr-txt);
+    font-weight: normal;
+    font-size: var(--jimr-font-sm);
+}
+
+/**
+ * Technical File Information System
+ *
+ * Detailed file information display with monospace typography
+ * and consistent formatting for technical specifications.
+ *
+ * Styleguide 7.3
+ */
+
+/**
+ * Image Files Container
+ *
+ * Container for file listing with consistent padding,
+ * spacing, and professional layout structure.
+ *
+ * Styleguide 7.3.1
+ */
+.image-files {
+    padding: 12px 16px;
+}
+
+/**
+ * File Item Component
+ *
+ * Individual file entry with monospace typography and structured
+ * layout for technical file information and metadata display.
+ *
+ * Styleguide 7.3.2
+ */
+.file-item {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--jimr-gray-100);
+    font-family: monospace;
+    font-size: var(--jimr-font-sm);
+    line-height: 1.4;
+}
+
+.file-item:last-child {
+    border-bottom: none;
+}
+
+/**
+ * Semantic File Information Typography
+ *
+ * Specialized typography classes for different types of file information
+ * with semantic color coding and emphasis for technical data.
+ *
+ * Styleguide 7.3.3
+ */
+.filename {
+    font-weight: bold;
+    color: var(--clr-secondary);
+}
+
+.file-type {
+    color: var(--jimr-gray-600);
+    font-style: italic;
+}
+
+.file-dimensions {
+    color: var(--clr-txt);
+}
+
+.file-size {
+    color: var(--clr-danger);
+    font-weight: bold;
+}
+
+/* ==========================================================================
+   8. ANIMATION & STATE MANAGEMENT
+   ========================================================================== */
+
+/**
+ * Animation Library System
+ *
+ * Keyframe animations for loading indicators, visual feedback elements,
+ * and enhanced user experience throughout the interface.
+ *
+ * Styleguide 8.0
+ */
+
+/**
+ * Shimmer Loading Animation
+ *
+ * Loading animation that creates a shimmer effect for content placeholders
+ * and progress indicators with smooth, professional movement.
+ *
+ * Styleguide 8.1
+ */
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* ==========================================================================
+   9. RESPONSIVE DESIGN SYSTEM
+   ========================================================================== */
+
+/**
+ * Professional Responsive Design System
+ *
+ * Breakpoint-specific styling adjustments for optimal media inventory
+ * viewing experience across different device sizes with focus on usability.
+ *
+ * Styleguide 9.0
+ */
+
+/**
+ * Mobile Optimization (768px and below)
+ *
+ * Comprehensive mobile optimizations for improved usability on small screens
+ * with enhanced touch targets and readable content presentation.
+ *
+ * Styleguide 9.1
+ */
+@media (max-width: 768px) {
+
+    /**
+     * Mobile Container Adjustments
+     *
+     * Layout optimizations for main containers and wrappers
+     * ensuring proper spacing and usability on mobile devices.
+     *
+     * Styleguide 9.1.1
+     */
+    .fcc-header-section {
+        width: 100% !important;
+        padding: 0 16px;
+    }
+
+    .media-inventory-container {
+        margin: 0 !important;
+    }
+
+    /**
+     * Mobile Table Optimizations
+     *
+     * Table styling adjustments for improved readability and
+     * usability on small screens with condensed layouts.
+     *
+     * Styleguide 9.1.2
+     */
+    .inventory-table th,
+    .inventory-table td {
+        padding: 8px 6px;
+        font-size: var(--jimr-font-xs);
+    }
+
+    /**
+     * Mobile Image Display Adjustments
+     *
+     * Responsive layout adjustments for image headers and thumbnail
+     * displays optimized for touch interaction and readability.
+     *
+     * Styleguide 9.1.3
+     */
+    .image-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: center;
+        text-align: center;
+    }
+
+    .image-thumbnail {
+        width: 100px;
+        height: 100px;
+    }
+
+    .image-info {
+        text-align: center;
+    }
+}
+
+/* ==========================================================================
+   END OF MEDIA INVENTORY FORGE ADMIN STYLESHEET
+   ========================================================================== */

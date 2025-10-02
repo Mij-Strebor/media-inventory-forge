@@ -1,0 +1,8 @@
+﻿# WordPress
+wp-config-local.php
+.htaccess
+
+# Development
+*.log
+.DS_Store
+Thumbs.db
