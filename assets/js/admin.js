@@ -457,6 +457,7 @@ jQuery(document).ready(function ($) {
 
     $("#results-container").html(html);
     updateSummaryDisplay(categories, totals);
+    updatePieChart(categories, totals);
   }
 
   /**
@@ -539,6 +540,86 @@ jQuery(document).ready(function ($) {
 
     $("#summary-content").html(summaryHtml);
     $("#summary-stats").show();
+  }
+
+  /**
+   * File Distribution Pie Chart Renderer
+   *
+   * Draws a pie chart visualization of file type distribution by storage size.
+   * Uses HTML5 Canvas for smooth, responsive graphics.
+   *
+   * @function updatePieChart
+   * @param {Object} categories - Category data with totalSize for each type
+   * @param {Object} totals - Overall totals object
+   * @returns {void} Updates #file-distribution-chart DOM element
+   */
+  function updatePieChart(categories, totals) {
+    const orderedCategories = getOrderedCategories(categories);
+    const container = $("#file-distribution-chart");
+    
+    // Clear existing content
+    container.empty();
+    
+    // Create canvas element
+    const canvas = $('<canvas id="pie-chart-canvas" width="280" height="280"></canvas>');
+    container.append(canvas);
+    
+    const ctx = canvas[0].getContext('2d');
+    const centerX = 140;
+    const centerY = 140;
+    const radius = 110;
+    
+    // Color palette for pie slices (JimRWeb browns, golds, oranges)
+    const colors = [
+      '#f4c542', // Gold
+      '#c97b3c', // Burnt orange
+      '#6d4c2f', // Medium brown
+      '#3d2f1f', // Dark brown
+      '#e5b12d', // Light gold
+      '#a8632e', // Dark orange
+      '#dcc7a8', // Tan
+      '#9C7A4D', // Light brown
+      '#D4A574', // Beige
+      '#8B6F47', // Darker tan
+    ];
+    
+    // Calculate percentages
+    let startAngle = -Math.PI / 2; // Start at top
+    
+    orderedCategories.forEach(function(catName, index) {
+      const category = categories[catName];
+      const percentage = category.totalSize / totals.size;
+      const sliceAngle = percentage * 2 * Math.PI;
+      
+      // Draw slice
+      ctx.fillStyle = colors[index % colors.length];
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
+      ctx.closePath();
+      ctx.fill();
+      
+      // Draw border
+      ctx.strokeStyle = '#FAF6F0'; // Page background color
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      
+      startAngle += sliceAngle;
+    });
+    
+    // Add legend below chart
+    let legendHtml = '<div style="margin-top: 16px; font-size: 13px;">';
+    orderedCategories.forEach(function(catName, index) {
+      const category = categories[catName];
+      const percentage = ((category.totalSize / totals.size) * 100).toFixed(1);
+      legendHtml += `<div style="display: flex; align-items: center; margin-bottom: 6px;">`;
+      legendHtml += `<div style="width: 14px; height: 14px; background: ${colors[index % colors.length]}; margin-right: 8px; border-radius: 2px;"></div>`;
+      legendHtml += `<span style="color: var(--clr-txt); font-weight: 500;">${catName}: ${percentage}%</span>`;
+      legendHtml += `</div>`;
+    });
+    legendHtml += '</div>';
+    
+    container.append(legendHtml);
   }
 
   /* ==========================================================================

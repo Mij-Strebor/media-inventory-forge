@@ -14,7 +14,7 @@ defined('ABSPATH') || exit;
 ?>
 
 <!-- Controls Section -->
-<div class="fcc-panel" style="margin-bottom: 20px;">
+<div class="fcc-panel">
     <h2 style="margin-bottom: 16px;">Scan Controls</h2>
 
     <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px;">

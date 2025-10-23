@@ -48,6 +48,14 @@ class MIF_Admin
             MIF_VERSION
         );
 
+        // Enqueue integrated forge header CSS
+        wp_enqueue_style(
+            'mif-forge-header-css',
+            MIF_PLUGIN_URL . 'assets/css/forge-header.css',
+            ['mif-admin-css'],
+            MIF_VERSION
+        );
+
         // Enqueue admin JavaScript
         wp_enqueue_script(
             'mif-admin-js',

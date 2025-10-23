@@ -4,15 +4,16 @@
  * Plugin Name: Media Inventory Forge
  * Plugin URI: https://jimrweb.com/plugins/media-inventory-forge
  * Description: Professional media library scanner and analyzer for WordPress developers
- * Version: 2.1.0
+ * Version: 3.0.0
  * Author: Jim R. (JimRWeb)
- * Author URI: https://jimrweb.com
+ * * Author URI: https://jimrweb.com
+ * Update URI: https://github.com/jimrweb/media-inventory-forge
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: media-inventory-forge
  * Domain Path: /languages
  * Requires at least: 5.0
- * Tested up to: 6.4
+ * Tested up to: 6.7
  * Requires PHP: 7.4
  * Network: true
  */
@@ -55,7 +56,7 @@
  * @package    MediaInventoryForge
  * @subpackage Core
  * @since      1.0.0
- * @version    2.1.0
+ * @version    2.1.1
  * @author     Jim R. (JimRWeb)
  * @link       https://jimrweb.com/plugins/media-inventory-forge
  * @license    GPL-2.0-or-later
@@ -104,7 +105,7 @@ if (!defined('ABSPATH')) {
  * @var   string MIF_VERSION Current plugin version
  */
 if (!defined('MIF_VERSION')) {
-    define('MIF_VERSION', '2.1.0');
+    define('MIF_VERSION', '3.0.0');
 }
 
 /**

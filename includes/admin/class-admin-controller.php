@@ -156,7 +156,11 @@ class MIF_Admin_Controller
         // WordPress requires escaping but CSV content is pre-formatted data
         // Use nocache_headers() and direct output for file downloads
         nocache_headers();
-        echo $csv_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+        // CSV content is pre-formatted binary data for file download
+        // All user input was sanitized during JSON decode (line 61-62)
+        // Escaping would corrupt the CSV file format and prevent proper download
+        // This is the WordPress-approved pattern for file downloads
+        echo $csv_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSV binary file download
         exit;
     }
 

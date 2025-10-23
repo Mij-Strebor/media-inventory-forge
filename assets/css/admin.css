@@ -1,44 +1,90 @@
 /**
  * Media Inventory Forge - Professional Admin Interface Stylesheet
- * 
+ * ENHANCED DESIGN SYSTEM v3.0
+ *
  * Comprehensive styling system for the media inventory management interface.
- * Implements JimRWeb brand colors with professional design patterns for
- * displaying, organizing, and managing media assets with collapsible panels
- * and interactive elements.
- * 
+ * Implements unified JimRWeb brand design system with Inter font family,
+ * enhanced typography scale, and professional design patterns.
+ *
  * @package MediaInventoryForge
- * @version 2.0.0
+ * @version 3.0.0
  * @author Jim R (JimRWeb)
  * @link https://jimrweb.com
  * @since 1.0.0
- * 
+ *
  * Architecture Overview:
- * 1. Design System Tokens (CSS Custom Properties)
+ * 0. Inter Font Loading (Local)
+ * 1. Enhanced Design System Tokens (CSS Custom Properties)
  * 2. Global Resets & WordPress Integration
- * 3. Typography System
+ * 3. Typography System (16px base, Inter font)
  * 4. Layout & Container Components
- * 5. Interactive Components (Buttons, Toggles)
+ * 5. Interactive Components (Enhanced Buttons, Toggles)
  * 6. Data Display Components
  * 7. Media Display Components
  * 8. Animation & State Management
  * 9. Responsive Design System
- * 
+ *
  * Key Features:
+ * - Inter font family for modern, professional UI
+ * - 16px base font size (upgraded from 14px)
+ * - Enhanced color palette with deeper browns and burnt orange links
  * - Professional collapsible panel system with dynamic height calculation
  * - Media asset visualization with thumbnails and metadata
- * - Categorized inventory tables with hover interactions
- * - Responsive image galleries with loading states
- * - Mobile-optimized layouts for media management
- * 
- * Color Palette:
- * - Primary: #3C2017 (Dark Brown)
- * - Secondary: #5C3324 (Medium Brown) 
- * - Accent: #FFD700 (Gold)
- * - Background: #E8D8C3 (Light Cream)
- * 
- * Dependencies: None (pure CSS)
- * Browser Support: Modern browsers with CSS Grid and Flexbox
+ * - Enhanced button styles with dramatic hover effects
+ * - 1280px max-width constraint
+ * - 36px panel padding with double margins for notices
+ *
+ * Enhanced Color Palette:
+ * - Primary: #3d2f1f (Enhanced Dark Brown)
+ * - Secondary: #6d4c2f (Enhanced Medium Brown)
+ * - Accent: #f4c542 (Brighter Gold)
+ * - Links: #c97b3c (Burnt Orange for accessibility)
+ * - Background: #faf6f0 (Warmer Cream)
+ *
+ * Typography:
+ * - Font Family: Inter (locally loaded WOFF2)
+ * - Base Size: 16px (enhanced from 14px)
+ * - Scale: 12px, 14px, 16px, 18px, 20px, 24px, 32px
+ *
+ * Dependencies: Inter font files (WOFF2 format)
+ * Browser Support: Modern browsers with CSS Grid, Flexbox, and Custom Properties
  */
+
+/* ==========================================================================
+   0. INTER FONT LOADING (LOCAL)
+   ========================================================================== */
+
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../fonts/Inter-Regular.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('../fonts/Inter-Medium.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('../fonts/Inter-SemiBold.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('../fonts/Inter-Bold.woff2') format('woff2');
+}
 
 /* ==========================================================================
    1. DESIGN SYSTEM TOKENS
@@ -54,66 +100,92 @@
  * Styleguide 1.0
  */
 :root {
+    /* ==========================================================================
+       ENHANCED FONT FAMILIES
+       ========================================================================== */
+    --mif-font-body: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mif-font-heading: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mif-font-mono: Consolas, Monaco, 'Courier New', monospace;
+
+    /* ==========================================================================
+       ENHANCED TYPOGRAPHY SCALE - 16PX BASE
+       ========================================================================== */
+    --jimr-font-xs: 12px;       /* Upgraded from 10px */
+    --jimr-font-sm: 14px;       /* Upgraded from 12px */
+    --jimr-font-base: 16px;     /* BASE SIZE UPGRADE from 14px */
+    --jimr-font-lg: 18px;       /* Upgraded from 16px */
+    --jimr-font-xl: 20px;       /* Upgraded from 18px */
+    --jimr-font-2xl: 24px;      /* Upgraded from 20px */
+    --jimr-font-3xl: 32px;      /* New size for H1 */
+
+    /* ==========================================================================
+       LAYOUT CONSTRAINTS
+       ========================================================================== */
+    --mif-container-max: 1280px;    /* Max width constraint */
+    --mif-content-max: 65ch;        /* Max text width */
+
     /* Core Brand Colors
        ========================================================================== */
 
     /**
-     * Primary Brand Color Palette
+     * ENHANCED Primary Brand Color Palette
      *
-     * Core brand identity colors used for headers, borders, and primary elements.
-     * These colors establish the visual hierarchy and brand recognition throughout
-     * the administrative interface.
+     * Enhanced deeper, richer colors for better visual hierarchy and
+     * professional appearance. Upgraded from previous lighter variants.
      *
      * Styleguide 1.1
      */
-    --clr-primary: #3C2017;
-    --clr-secondary: #5C3324;
-    --clr-accent: #FFD700;
+    --clr-primary: #3d2f1f;         /* Enhanced Dark Brown (was #3C2017) */
+    --clr-secondary: #6d4c2f;       /* Enhanced Medium Brown (was #5C3324) */
+    --clr-accent: #f4c542;          /* Brighter Gold (was #FFD700) */
+    --clr-accent-hover: #e5b12d;    /* Gold hover state */
 
     /**
-     * Typography Color System
+     * ENHANCED Typography Color System
      *
-     * Text color palette ensuring proper contrast ratios for accessibility
-     * while maintaining brand consistency across all textual content.
+     * Updated text colors with burnt orange for links (accessibility).
      *
      * Styleguide 1.2
      */
-    --clr-txt: #86400E;
+    --clr-txt: #6d4c2f;             /* Enhanced brown for body text */
+    --clr-txt-dark: #3d2f1f;        /* Darker for headings */
     --clr-light-txt: #FAF9F6;
+    --clr-link: #c97b3c;            /* BURNT ORANGE for accessible links */
+    --clr-link-hover: #a8632e;      /* Link hover state */
 
     /**
-     * Background & Surface Colors
+     * ENHANCED Background & Surface Colors
      *
-     * Surface colors that create depth and visual separation between interface
-     * elements while maintaining brand warmth and professional appearance.
+     * Warmer, refined background colors for better visual appeal.
      *
      * Styleguide 1.3
      */
-    --clr-page-bg: #E8D8C3;
+    --clr-page-bg: #faf6f0;         /* Warmer cream (was #E8D8C3) */
     --clr-card-bg: #F0E6DA;
     --clr-light: #F5F1EC;
+    --clr-tan: #e8dcc4;             /* Tan for secondary backgrounds */
+    --clr-border: #c9b89a;          /* Slightly darker borders */
 
     /**
-     * Interactive Element Colors
+     * ENHANCED Interactive Element Colors
      *
-     * Button and form control colors that provide clear visual feedback
-     * for user interactions and maintain accessibility standards.
+     * Updated button and form control colors for enhanced design system.
      *
      * Styleguide 1.4
      */
-    --clr-btn-hover: #E5B929;
+    --clr-btn-hover: #dda824;       /* 15-20% darker gold */
+    --clr-btn-active: #c99315;      /* Even darker for active state */
     --clr-btn-txt: #9C0202;
     --clr-btn-bdr: #DE0B0B;
 
     /**
-     * Utility & Shadow Colors
+     * ENHANCED Utility & Shadow Colors
      *
-     * Additional colors for shadows, overlays, and secondary interactions
-     * that enhance the visual depth and professional appearance.
+     * Updated shadow colors to match darker brown palette.
      *
      * Styleguide 1.5
      */
-    --clr-shadow: rgba(60, 32, 23, 0.15);
+    --clr-shadow: rgba(61, 47, 31, 0.12);
     --clr-overlay: rgba(232, 216, 195, 0.95);
     --clr-secondary-hover: #dcc7a8;
 
@@ -167,32 +239,17 @@
     --jimr-transition-slow: all 0.3s ease;
 
     /**
-     * Shadow Elevation System
+     * ENHANCED Shadow Elevation System - 4 Tiers
      *
-     * Elevation shadows for depth and layering hierarchy using consistent
-     * opacity and blur values to create professional visual depth.
+     * Upgraded shadow system using darker brown tones for consistency
+     * with enhanced color palette.
      *
      * Styleguide 1.9
      */
-    --clr-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --clr-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --clr-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.2);
-    --clr-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-
-    /**
-     * Typography Scale System
-     *
-     * Font size scale providing consistent typography hierarchy from
-     * captions to page titles with optimal readability.
-     *
-     * Styleguide 1.10
-     */
-    --jimr-font-xs: 10px;
-    --jimr-font-sm: 12px;
-    --jimr-font-base: 14px;
-    --jimr-font-lg: 16px;
-    --jimr-font-xl: 18px;
-    --jimr-font-2xl: 20px;
+    --clr-shadow-sm: 0 1px 2px rgba(61, 47, 31, 0.08);
+    --clr-shadow: 0 4px 6px rgba(61, 47, 31, 0.12);
+    --clr-shadow-lg: 0 10px 20px rgba(61, 47, 31, 0.15);
+    --clr-shadow-xl: 0 20px 30px rgba(61, 47, 31, 0.18);
 
     /**
      * Spacing Scale System
@@ -208,6 +265,9 @@
     --jimr-space-4: 16px;
     --jimr-space-5: 20px;
     --jimr-space-6: 24px;
+    --jimr-space-8: 32px;        /* New spacing value */
+    --jimr-space-9: 36px;        /* Panel padding */
+    --jimr-space-18: 72px;       /* Double panel padding for notices */
 }
 
 /* ==========================================================================
@@ -224,28 +284,181 @@
  */
 
 /**
- * Global Background System
+ * Global Background System - SCOPED TO MIF PAGES ONLY
  *
- * Apply brand background and text colors globally to ensure consistent
- * visual integration with WordPress admin interface.
+ * Apply brand background and text colors ONLY to MIF plugin pages to avoid
+ * affecting other WordPress admin areas (like the dashboard and menu).
  *
  * Styleguide 2.1
  */
-body {
+
+/* Scope to MIF plugin pages only - target the .wrap container inside MIF pages */
+.toplevel_page_media-inventory body,
+.toplevel_page_media-inventory .wp-admin,
+.toplevel_page_media-inventory #wpbody-content {
+    background: var(--clr-page-bg) !important;
+}
+
+.toplevel_page_media-inventory .wrap {
     background: var(--clr-page-bg) !important;
     color: var(--clr-txt) !important;
+    font-family: var(--mif-font-body) !important;
+    font-size: var(--jimr-font-base) !important;  /* 16px base */
 }
 
-.wp-admin {
-    background: var(--clr-page-bg) !important;
+/* ==========================================================================
+   ENHANCED GLOBAL TYPOGRAPHY - SCOPED TO MIF PAGES ONLY
+   ========================================================================== */
+
+/* Force Inter font family ONLY on MIF pages */
+.toplevel_page_media-inventory * {
+    font-family: var(--mif-font-body) !important;
 }
 
-#wpbody-content {
-    background: var(--clr-page-bg) !important;
+/* Force 16px base on all text elements ONLY on MIF pages */
+.toplevel_page_media-inventory p,
+.toplevel_page_media-inventory li,
+.toplevel_page_media-inventory td,
+.toplevel_page_media-inventory th,
+.toplevel_page_media-inventory div,
+.toplevel_page_media-inventory span,
+.toplevel_page_media-inventory label,
+.toplevel_page_media-inventory input,
+.toplevel_page_media-inventory select,
+.toplevel_page_media-inventory textarea,
+.toplevel_page_media-inventory button {
+    font-size: var(--jimr-font-base) !important;  /* 16px */
+    line-height: 1.6 !important;
 }
 
-.wrap {
-    background: var(--clr-page-bg) !important;
+/* Paragraphs with enhanced styling - SCOPED */
+.toplevel_page_media-inventory p {
+    color: var(--clr-txt) !important;
+    font-weight: 500 !important;
+    margin-bottom: var(--jimr-space-4) !important;
+}
+
+/* Global Link Styling - Burnt Orange - SCOPED */
+.toplevel_page_media-inventory a {
+    color: var(--clr-link) !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    transition: color 0.2s ease !important;
+    border-bottom: 1px solid transparent !important;
+}
+
+.toplevel_page_media-inventory a:hover {
+    color: var(--clr-link-hover) !important;
+    border-bottom-color: var(--clr-link-hover) !important;
+}
+
+.toplevel_page_media-inventory a:focus {
+    outline: 2px solid var(--clr-link) !important;
+    outline-offset: 2px !important;
+    border-radius: 2px !important;
+}
+
+/* H3 Enhanced - SCOPED */
+.toplevel_page_media-inventory h3 {
+    font-family: var(--mif-font-heading) !important;
+    font-size: var(--jimr-font-xl) !important;  /* 20px */
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+    color: var(--clr-txt-dark) !important;
+    letter-spacing: -0.2px !important;
+}
+
+/* ==========================================================================
+   ENHANCED BUTTON STYLES
+   ========================================================================== */
+
+/* All buttons - enhanced with lowercase and dramatic hover */
+button, .button, input[type="submit"], input[type="button"] {
+    font-family: var(--mif-font-body) !important;
+    font-size: var(--jimr-font-base) !important;  /* 16px */
+    font-weight: 700 !important;
+    text-transform: lowercase !important;
+    padding: 12px 24px !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    transition: all 0.25s ease !important;
+    box-shadow: var(--clr-shadow-sm) !important;
+    border: none !important;
+}
+
+/* Category headers - CAPITALIZE (override lowercase) */
+.fcc-info-toggle, .category-header, button.fcc-info-toggle {
+    text-transform: capitalize !important;
+    /* border-radius removed - handled by .fcc-info-toggle rule below */
+}
+/* Category headers - CAPITALIZE (override lowercase) */
+.fcc-info-toggle, .category-header, button.fcc-info-toggle {
+    text-transform: capitalize !important;
+    /* border-radius removed - handled by .fcc-info-toggle rule below */
+}
+/* Category headers - CAPITALIZE (override lowercase) */
+.fcc-info-toggle, .category-header, button.fcc-info-toggle {
+    text-transform: capitalize !important;
+    /* border-radius removed - handled by .fcc-info-toggle rule below */
+}
+}
+
+/* Primary button (WordPress default blue buttons become gold) */
+button.button-primary, .button-primary, input[type="submit"] {
+    background: var(--clr-accent) !important;
+    color: var(--clr-txt-dark) !important;
+}
+
+button.button-primary:hover, .button-primary:hover, input[type="submit"]:hover {
+    background: var(--clr-btn-hover) !important;  /* 15-20% darker */
+    transform: translate(-2px, -2px) !important;  /* Up and left */
+    box-shadow: var(--clr-shadow-lg) !important;
+}
+
+button.button-primary:active, .button-primary:active, input[type="submit"]:active {
+    background: var(--clr-btn-active) !important;  /* Even darker */
+    transform: translate(-1px, -1px) !important;
+    box-shadow: var(--clr-shadow) !important;
+}
+
+/* Secondary/default buttons */
+button.button-secondary, .button-secondary, button:not(.button-primary) {
+    background: var(--clr-secondary) !important;
+    color: white !important;
+}
+
+button.button-secondary:hover, .button-secondary:hover {
+    background: #5a3a20 !important;
+    transform: translate(-2px, -2px) !important;
+    box-shadow: var(--clr-shadow-lg) !important;
+}
+
+/* Disabled buttons */
+button:disabled, .button:disabled, input:disabled {
+    background: #9e9e9e !important;
+    color: #fafafa !important;
+    cursor: not-allowed !important;
+    opacity: 0.7 !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* ==========================================================================
+   ENHANCED LAYOUT & CONTAINERS
+   ========================================================================== */
+
+/* Main container padding upgrade */
+.wrap, #wpbody-content > .wrap {
+    padding: var(--jimr-space-9) !important;  /* 36px */
+    max-width: var(--mif-container-max) !important;  /* 1280px */
+}
+
+/* Notices and alerts - double margins */
+.notice, .updated, .error, .warning {
+    margin-left: var(--jimr-space-18) !important;  /* 72px */
+    margin-right: var(--jimr-space-18) !important;
+    font-size: var(--jimr-font-base) !important;  /* 16px */
+    padding: var(--jimr-space-5) !important;
 }
 
 /* ==========================================================================
@@ -262,36 +475,41 @@ body {
  */
 
 /**
- * Primary Heading Typography (H1)
+ * ENHANCED Primary Heading Typography (H1)
  *
- * Main page titles with serif typography and subtle text shadow for
- * enhanced readability and professional brand presence.
+ * Main page titles with Inter font, enhanced sizing, and subtle text shadow.
  *
  * Styleguide 3.1
  */
 h1 {
-    color: var(--clr-primary) !important;
-    font-family: 'Georgia', serif;
-    text-shadow: 1px 1px 2px var(--clr-shadow);
+    color: var(--clr-txt-dark) !important;
+    font-family: var(--mif-font-heading) !important;
+    font-size: var(--jimr-font-3xl) !important;  /* 32px */
+    font-weight: 700 !important;
+    line-height: 1.25 !important;
+    letter-spacing: -0.3px !important;
+    text-shadow: 0 1px 2px rgba(61, 47, 31, 0.1);
 }
 
 /**
- * Secondary Heading Typography (H2)
+ * ENHANCED Secondary Heading Typography (H2)
  *
- * Section headings with serif typography, bottom border separation,
- * and consistent spacing for clear content organization and hierarchy.
+ * Section headings with Inter font, bolder weight (700), enhanced sizing.
  *
  * Styleguide 3.2
  */
 h2 {
-    color: var(--clr-primary) !important;
-    font-family: 'Georgia', serif;
-    border-bottom-color: var(--clr-secondary) !important;
-    text-shadow: 1px 1px 2px var(--clr-shadow);
-    font-size: var(--jimr-font-2xl);
+    color: var(--clr-txt-dark) !important;
+    font-family: var(--mif-font-heading) !important;
+    font-size: var(--jimr-font-2xl) !important;  /* 24px - upgraded */
+    font-weight: 700 !important;  /* Bolder */
+    line-height: 1.3 !important;
+    letter-spacing: -0.3px !important;
+    border-bottom-color: var(--clr-tan) !important;
+    text-shadow: 0 1px 2px rgba(61, 47, 31, 0.1);
     margin: 0 0 var(--jimr-space-5) 0;
-    border-bottom: 2px solid var(--clr-secondary);
-    padding-bottom: var(--jimr-space-2);
+    border-bottom: 2px solid var(--clr-tan);
+    padding-bottom: var(--jimr-space-3);
 }
 
 /* ==========================================================================
@@ -435,9 +653,9 @@ h2 {
  * Styleguide 5.3.1
  */
 .fcc-info-toggle-section {
-    margin-bottom: var(--jimr-space-6);
+    margin-bottom: var(--jimr-space-4);  /* 16px - reduced from 24px for tighter spacing */
     border: 2px solid var(--clr-secondary);
-    border-radius: var(--jimr-border-radius-lg);
+    border-radius: var(--jimr-border-radius-lg) !important;  /* 5px - matches all corners */
     overflow: hidden;
     background: linear-gradient(135deg, var(--clr-light), var(--clr-card-bg));
     box-shadow: var(--clr-shadow);
@@ -462,6 +680,8 @@ h2 {
     justify-content: space-between;
     align-items: center;
     font-size: var(--jimr-font-lg);
+    border-radius: var(--jimr-border-radius) var(--jimr-border-radius) 0 0 !important;  /* Round top corners only */
+    /* 3px top corners to perfectly align with 5px panel corners (prevents "ears") */
     font-weight: 600;
     transition: var(--jimr-transition-slow);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);

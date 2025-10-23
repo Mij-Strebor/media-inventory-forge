@@ -1,11 +1,11 @@
 === Media Inventory Forge ===
-Contributors: jimrweb
-Donate link: https://jimrweb.com
+Contributors: MijStrebor
+Donate link: https://buymeacoffee.com/jimrweb
 Tags: media, inventory, scanner, analysis, optimization
 Requires at least: 5.0
-Tested up to: 6.8
+Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 2.1.0
+Stable tag: 2.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,16 +17,16 @@ Media Inventory Forge is a comprehensive media library scanning and analysis too
 
 **Key Features:**
 
-* **Comprehensive Media Scanning** - Analyzes all media types including images, videos, audio, fonts, documents, and SVGs
-* **Detailed File Information** - Extracts metadata, dimensions, file sizes, and WordPress-generated variations
-* **Category Organization** - Groups media by type with detailed breakdowns and statistics
-* **Storage Analysis** - Provides precise storage usage by category with optimization recommendations
-* **Progressive Scanning** - Handles large media libraries efficiently with batch processing
-* **CSV Export** - Generate detailed reports for analysis, auditing, or cleanup planning
-* **Professional Interface** - Clean, intuitive admin interface with collapsible sections
-* **Font Analysis** - Specialized handling for font files with family grouping
-* **Image Variations** - Tracks WordPress-generated image sizes and thumbnails
-* **Network Compatible** - Works with WordPress multisite installations
+* **Comprehensive Media Scanning** – Analyzes all media types including images, videos, audio, fonts, documents, and SVGs
+* **Detailed File Information** – Extracts metadata, dimensions, file sizes, and WordPress-generated variations
+* **Category Organization** – Groups media by type with detailed breakdowns and statistics
+* **Storage Analysis** – Provides precise storage usage by category with optimization recommendations
+* **Progressive Scanning** – Handles large media libraries efficiently with batch processing
+* **CSV Export** – Generate detailed reports for analysis, auditing, or cleanup planning
+* **Professional Interface** – Clean, intuitive admin interface with collapsible sections
+* **Font Analysis** – Specialized handling for font files with family grouping
+* **Image Variations** – Tracks WordPress-generated image sizes and thumbnails
+* **Network Compatible** – Works with WordPress multisite installations
 
 **Perfect For:**
 
@@ -117,8 +117,21 @@ The plugin uses direct filesystem access to get precise file sizes, including al
 * Basic media scanning functionality
 * Simple file categorization
 * WordPress admin integration
+== Changelog ==
+
+= 2.1.0 =
+* Enhanced scanning performance with improved batch processing
+…
+* Fixed various minor bugs and performance improvements
+“`
+
+**After the entire Changelog section, add**:
+“`
 
 == Upgrade Notice ==
+
+= 2.1.1 =
+Documentation and code quality improvements. Includes WordPress.org compliance enhancements. Safe to update from any previous version.
 
 = 2.1.0 =
 Major update with enhanced performance, improved security, and WordPress.org compliance. Recommended for all users.

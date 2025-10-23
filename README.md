@@ -1,9 +1,12 @@
 # Media Inventory Forge - WordPress Plugin
+![Logo](./docs/screenshots/JimRWeb-logo-black.svg)
 
-![Media Inventory Forge Banner](docs/screenshots/banner.jpg)
+**Professional responsive design tools for WordPress developers**
+
+![Media Inventory Forge Banner](./docs/screenshots/banner.jpg)
 
 [![WordPress Plugin](https://img.shields.io/badge/WordPress-Plugin-blue.svg)](https://wordpress.org/)
-[![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)](https://github.com/jimrweb/media-inventory-forge/releases)
+[![Version](https://img.shields.io/badge/version-2.1.1-blue.svg)](https://github.com/jimrweb/media-inventory-forge/releases)
 [![WordPress](https://img.shields.io/badge/WordPress-5.0%2B-blue.svg)](https://wordpress.org/)
 [![License](https://img.shields.io/badge/license-GPL%20v2%2B-green.svg)](LICENSE)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-purple.svg)](https://php.net/)
@@ -12,7 +15,7 @@
 > 
 > Read-only media library scanner and analyzer for WordPress developers, agencies, and site administrators. Provides detailed inventory reports, storage breakdowns, and comprehensive data for planning optimization strategies.
 
-![Media Inventory Forge Banner](docs/screenshots/media.png)
+![Media Inventory Forge Banner](assets/images/screenshot-1.png)
 
 ---
 
