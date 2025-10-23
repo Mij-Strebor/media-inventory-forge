@@ -6,7 +6,7 @@
 ![Media Inventory Forge Banner](./docs/screenshots/banner.jpg)
 
 [![WordPress Plugin](https://img.shields.io/badge/WordPress-Plugin-blue.svg)](https://wordpress.org/)
-[![Version](https://img.shields.io/badge/version-2.1.1-blue.svg)](https://github.com/jimrweb/media-inventory-forge/releases)
+[![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)](https://github.com/Mij-Strebor/media-inventory-forge/releases)
 [![WordPress](https://img.shields.io/badge/WordPress-5.0%2B-blue.svg)](https://wordpress.org/)
 [![License](https://img.shields.io/badge/license-GPL%20v2%2B-green.svg)](LICENSE)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-purple.svg)](https://php.net/)
@@ -37,7 +37,7 @@ Every WordPress site accumulates media files over time, but understanding what y
 ## Quick Start
 
 ### 1. Install & Activate
-- Download from [Releases](https://github.com/jimrweb/media-inventory-forge/releases)
+- Download from [Releases](https://github.com/Mij-Strebor/media-inventory-forge/releases)
 - Upload via WordPress Admin or extract to `/wp-content/plugins/`
 - Activate through WordPress admin
 
@@ -159,7 +159,7 @@ media-inventory-forge/
 ### Setup for Contributions
 ```bash
 # Clone repository
-git clone https://github.com/jimrweb/media-inventory-forge.git
+git clone https://github.com/Mij-Strebor/media-inventory-forge.git
 cd media-inventory-forge
 
 # Create feature branch
@@ -237,9 +237,22 @@ Potential Optimization Opportunities:
 
 ## Version History
 
-## Version History
+### Version 3.0.0 (Latest)
+**Forge Header & File Distribution Release**
+- **Forge Header System**: Dramatic multi-directional gradient with seamless integration
+- **File Distribution Pie Chart**: Interactive canvas-based visualization with color-coded legend
+- **Design System**: Inter font family, enhanced color palette, 1280px alignment
+- **UI/UX Polish**: Fixed border-radius, scoped CSS, optimized spacing
+- **Performance**: Modular CSS organization, clean asset structure
 
-### Version 2.1.0 (Latest)
+### Version 2.1.1
+**WordPress.org Compliance Release**
+- Added Update URI for GitHub update support
+- Created uninstall.php handler
+- Enhanced CSV export security documentation
+- Fixed version consistency across files
+
+### Version 2.1.0
 **Documentation & Code Quality Release**
 - **Complete Documentation**: Comprehensive JSDoc/PHPDoc for all classes and methods
 - **Code Organization**: Structured sections with clear headers across all files
@@ -259,7 +272,6 @@ Potential Optimization Opportunities:
 - Initial code snippet release
 - Basic scanning functionality
 - CSV export capabilities
-
 ---
 
 ## Contributing
@@ -267,8 +279,8 @@ Potential Optimization Opportunities:
 We welcome contributions! Here's how:
 
 ### Bug Reports & Feature Requests
-- **Issues**: [Report bugs or request features](https://github.com/jimrweb/media-inventory-forge/issues)
-- **Discussions**: [General questions and ideas](https://github.com/jimrweb/media-inventory-forge/discussions)
+- **Issues**: [Report bugs or request features](https://github.com/Mij-Strebor/media-inventory-forge/issues)
+- **Discussions**: [General questions and ideas](https://github.com/Mij-Strebor/media-inventory-forge/discussions)
 
 ### Development Contributions
 1. **Fork** the repository
@@ -328,7 +340,7 @@ For custom WordPress development, consulting, or plugin customization services, 
 
 **🚀 Made with ❤️ for the WordPress Community**
 
-[⭐ Star this repository](https://github.com/jimrweb/media-inventory-forge) • [🐛 Report Issues](https://github.com/jimrweb/media-inventory-forge/issues) • [💬 Join Discussion](https://github.com/jimrweb/media-inventory-forge/discussions)
+[⭐ Star this repository](https://github.com/Mij-Strebor/media-inventory-forge) • [🐛 Report Issues](https://github.com/Mij-Strebor/media-inventory-forge/issues) • [💬 Join Discussion](https://github.com/Mij-Strebor/media-inventory-forge/discussions)
 
 **Professional WordPress Plugin Development** | **[JimRWeb.com](https://jimrweb.com)**
 
