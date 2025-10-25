@@ -36,10 +36,16 @@ Every WordPress site accumulates media files over time, but understanding what y
 
 ## Quick Start
 
-### 1. Install & Activate
-- Download from [Releases](https://github.com/Mij-Strebor/media-inventory-forge/releases)
-- Upload via WordPress Admin or extract to `/wp-content/plugins/`
-- Activate through WordPress admin
+⚠️ **Important for v2.x Users Upgrading to v3.0+:**
+If you're upgrading from Media Inventory Forge v2.1.0 or earlier, please follow these steps:
+1. **Deactivate** the old Media Inventory plugin (v2.x)
+2. **Delete** the old plugin from your WordPress installation
+3. **Install** the new Media Inventory Forge v3.0.0+
+4. **Activate** the new version
+   
+  **Note:** Due to plugin slug changes between v2.x and v3.0+, WordPress will not automatically replace the old version. Following these steps prevents having duplicate menu entries.
+  
+  **Fresh Installation:**- Download from [Releases](https://github.com/Mij-Strebor/media-inventory-forge/releases)- Upload via WordPress Admin or extract to `/wp-content/plugins/`- Activate through WordPress admin
 
 ### 2. Access Plugin
 Navigate to: **Tools → Media Inventory** in your WordPress admin menu sidebar

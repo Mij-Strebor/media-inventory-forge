@@ -3,6 +3,16 @@
 # Media Inventory Forge
 
 ## [3.0.0] - 2025-10-23
+ ⚠️ IMPORTANT: Upgrade Instructions for v2.x Users
+
+**If upgrading from v2.1.0 or earlier:**
+1. Deactivate the old Media Inventory plugin (v2.x)
+2. Delete the old plugin completely
+3. Install Media Inventory Forge v3.0.0
+4. Activate the new version
+
+**Why this is necessary:** Due to plugin slug changes between v2.x and v3.0+, WordPress treats them as separate plugins. Installing v3.0 without removing v2.x will create duplicate menu entries and confusion. This is a one-time migration step.
+
 
 ### Major Visual Enhancement - Integrated Forge Header System
 - ✨ Custom Photoshop composite forge banner (1920x600px) with seamless multi-layer fade system
