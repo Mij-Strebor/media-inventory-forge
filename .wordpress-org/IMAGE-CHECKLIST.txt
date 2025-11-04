@@ -1,0 +1,42 @@
+WordPress.org Asset Checklist for Media Inventory Forge
+========================================================
+
+Place all files in this folder (.wordpress-org/)
+
+REQUIRED FILES:
+--------------
+
+[X] banner-1544x500.png     (High-res banner, 2x retina)
+[X] banner-772x250.png      (Low-res banner)
+[ ] icon-256x256.png        (High-res icon, 2x retina)
+[ ] icon-128x128.png        (Low-res icon)
+
+RECOMMENDED FILES:
+-----------------
+
+[X] screenshot-1.png        (Main inventory dashboard)
+[ ] screenshot-2.png        (Scan results)
+[ ] screenshot-3.png        (Bulk operations)
+[ ] screenshot-4.png        (Statistics)
+
+OPTIONAL:
+---------
+
+[ ] icon.svg                (Vector icon - best quality)
+
+
+AFTER ADDING FILES:
+------------------
+
+1. Copy banner for GitHub:
+   cp banner-1544x500.png ../docs/screenshots/banner.png
+
+2. Update readme.txt with screenshot captions
+   (see README.md in this folder for format)
+
+3. Verify file sizes:
+   - Banners: < 1MB each
+   - Icons: < 500KB each
+   - Screenshots: < 1MB each
+
+4. Test in WordPress.org SVN before final release
