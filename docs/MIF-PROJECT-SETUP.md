@@ -124,10 +124,11 @@
 ## Local WordPress Testing
 
 **Site Details:**
-- Local site name: [TO BE DETERMINED]
-- URL: [TO BE DETERMINED]
-- Admin path: [TO BE DETERMINED]
-- Plugin installation: [TO BE DETERMINED]
+- Local site name: site
+- URL: http://site.local
+- Admin path: http://site.local/wp-admin
+- Plugin installation: Symbolic link to E:\onedrive\projects\plugins\mif
+- WordPress plugins path: C:\Users\Owner\Local Sites\site\app\public\wp-content\plugins\media-inventory-forge
 
 **Testing Requirements:**
 - Test with small media library (< 100 files)
@@ -147,9 +148,9 @@
 4. ✅ Update .gitignore
 5. ✅ Create WORDPRESS-BEST-PRACTICES.md
 6. ✅ Create TEST-PLAN.md template
-7. ⏳ Create LOCAL-TESTING-GUIDE.md (waiting for Local WP details)
+7. ✅ Create LOCAL-TESTING-GUIDE.md
 8. ✅ Create development branch
-9. ⏳ Document Local WordPress connection (waiting for user setup)
+9. ✅ Document Local WordPress connection and symlink setup
 10. ✅ Commit all infrastructure changes
 
 ---
