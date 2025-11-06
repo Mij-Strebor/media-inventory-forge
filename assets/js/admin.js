@@ -253,6 +253,46 @@ jQuery(document).ready(function ($) {
   });
 
   /**
+   * Create Table Button Handler
+   *
+   * Creates the wp_mif_usage database table if it doesn't exist.
+   *
+   * @since 4.0.0
+   * @listens click - #create-table button click
+   */
+  $("#create-table").on("click", function () {
+    const $button = $(this);
+
+    if (!confirm("Create the wp_mif_usage database table?")) {
+      return;
+    }
+
+    $button.prop("disabled", true).text("⏳ creating...");
+
+    $.ajax({
+      url: mifData.ajaxUrl,
+      type: "POST",
+      data: {
+        action: "media_inventory_create_table",
+        nonce: mifData.nonce,
+      },
+      success: function (response) {
+        if (response.success) {
+          alert("✓ Table created successfully! You can now run 'Scan for Usage'.");
+          $button.text("✓ table exists").prop("disabled", true);
+        } else {
+          alert("✗ Error: " + response.data);
+          $button.prop("disabled", false).text("🔧 create table");
+        }
+      },
+      error: function (xhr, status, error) {
+        alert("✗ Failed: " + error);
+        $button.prop("disabled", false).text("🔧 create table");
+      },
+    });
+  });
+
+  /**
    * View Usage Data Button Handler
    *
    * Displays all usage data from the database in a readable format

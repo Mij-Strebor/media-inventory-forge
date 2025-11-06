@@ -21,6 +21,7 @@ defined('ABSPATH') || exit;
         <button id="start-scan" class="fcc-btn">🔍 start scan</button>
         <button id="stop-scan" class="fcc-btn fcc-btn-danger" style="display: none;">⏹️ stop scan</button>
         <button id="scan-usage" class="fcc-btn" style="background: var(--clr-accent);">🔎 scan for usage</button>
+        <button id="create-table" class="fcc-btn" style="background: var(--clr-danger);">🔧 create table</button>
         <button id="view-usage" class="fcc-btn" style="background: var(--clr-secondary);">📋 view usage data</button>
         <button id="export-csv" class="fcc-btn" style="display: none;">📊 export csv</button>
         <button id="clear-results" class="fcc-btn fcc-btn-ghost" style="display: none;">🗑️ clear results</button>

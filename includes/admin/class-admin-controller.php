@@ -32,6 +32,7 @@ class MIF_Admin_Controller
         add_action('wp_ajax_media_inventory_export', [$this, 'ajax_export']);
         add_action('wp_ajax_media_inventory_scan_usage', [$this, 'ajax_scan_usage']);
         add_action('wp_ajax_media_inventory_get_usage', [$this, 'ajax_get_usage']);
+        add_action('wp_ajax_media_inventory_create_table', [$this, 'ajax_create_table']);
     }
 
     /**
@@ -239,6 +240,39 @@ class MIF_Admin_Controller
             ]);
         } catch (Exception $e) {
             wp_send_json_error('Failed to get usage data: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * AJAX handler for creating usage table
+     *
+     * Creates the wp_mif_usage table if it doesn't exist.
+     *
+     * @since 4.0.0
+     */
+    public function ajax_create_table()
+    {
+        check_ajax_referer('media_inventory_nonce', 'nonce');
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Permission denied');
+            return;
+        }
+
+        try {
+            $usage_db = new MIF_Usage_Database();
+            $result = $usage_db->create_table();
+
+            if ($result) {
+                wp_send_json_success([
+                    'message' => 'Table created successfully!',
+                    'table_exists' => true
+                ]);
+            } else {
+                wp_send_json_error('Failed to create table');
+            }
+        } catch (Exception $e) {
+            wp_send_json_error('Error: ' . $e->getMessage());
         }
     }
 
