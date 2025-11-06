@@ -30,6 +30,7 @@ class MIF_Admin_Controller
         add_action('admin_menu', [$this, 'add_admin_menu'], 15);
         add_action('wp_ajax_media_inventory_scan', [$this, 'ajax_scan']);
         add_action('wp_ajax_media_inventory_export', [$this, 'ajax_export']);
+        add_action('wp_ajax_media_inventory_scan_usage', [$this, 'ajax_scan_usage']);
     }
 
     /**
@@ -165,8 +166,43 @@ class MIF_Admin_Controller
     }
 
     /**
+     * AJAX handler for scanning media usage
+     *
+     * Scans WordPress content to find where media files are being used.
+     * Detects usage in posts, pages, widgets, customizer, CSS, and page builders.
+     *
+     * @since 4.0.0
+     */
+    public function ajax_scan_usage()
+    {
+        check_ajax_referer('media_inventory_nonce', 'nonce');
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Permission denied');
+            return;
+        }
+
+        try {
+            $scanner = new MIF_Usage_Scanner();
+            $result = $scanner->scan_all_usage();
+
+            // Get usage statistics
+            $usage_db = new MIF_Usage_Database();
+            $stats = $usage_db->get_usage_stats();
+
+            wp_send_json_success([
+                'progress' => $result,
+                'stats' => $stats,
+                'message' => 'Usage scan completed successfully!'
+            ]);
+        } catch (Exception $e) {
+            wp_send_json_error('Usage scan failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Render admin page
-     * 
+     *
      * Loads and displays the main Media Inventory Forge admin interface
      * with scan controls, progress tracking, and results display.
      */

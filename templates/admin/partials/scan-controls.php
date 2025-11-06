@@ -20,8 +20,19 @@ defined('ABSPATH') || exit;
     <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px;">
         <button id="start-scan" class="fcc-btn">🔍 start scan</button>
         <button id="stop-scan" class="fcc-btn fcc-btn-danger" style="display: none;">⏹️ stop scan</button>
+        <button id="scan-usage" class="fcc-btn" style="background: var(--clr-accent);">🔎 scan for usage</button>
         <button id="export-csv" class="fcc-btn" style="display: none;">📊 export csv</button>
         <button id="clear-results" class="fcc-btn fcc-btn-ghost" style="display: none;">🗑️ clear results</button>
+    </div>
+
+    <div id="usage-scan-progress" style="display: none; margin-top: 16px; padding: 16px; background: var(--clr-light); border-radius: var(--jimr-border-radius); border: 2px solid var(--clr-accent);">
+        <div style="margin-bottom: 8px;">
+            <strong style="color: var(--clr-accent);">Usage Scanning:</strong>
+            <span id="usage-scan-status" style="margin-left: 8px;">Initializing...</span>
+        </div>
+        <div style="background: var(--clr-card-bg); height: 20px; border-radius: 10px; overflow: hidden; border: 1px solid var(--clr-secondary);">
+            <div id="usage-progress-bar" style="background: var(--clr-accent); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+        </div>
     </div>
 
     <div id="scan-progress" style="display: none;">

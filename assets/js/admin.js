@@ -192,6 +192,66 @@ jQuery(document).ready(function ($) {
   });
 
   /**
+   * Scan for Usage Button Handler
+   *
+   * Initiates usage scanning to find where media files are used throughout
+   * the WordPress site. Scans posts, pages, widgets, customizer, CSS, and
+   * page builders (Elementor, WPBakery, etc.).
+   *
+   * @since 4.0.0
+   * @listens click - #scan-usage button click
+   */
+  $("#scan-usage").on("click", function () {
+    const $button = $(this);
+    const $progress = $("#usage-scan-progress");
+    const $status = $("#usage-scan-status");
+    const $progressBar = $("#usage-progress-bar");
+
+    // Disable button and show progress
+    $button.prop("disabled", true).text("⏳ scanning...");
+    $progress.show();
+    $status.text("Scanning content...");
+    $progressBar.css("width", "20%");
+
+    // Make AJAX request
+    $.ajax({
+      url: mifData.ajaxUrl,
+      type: "POST",
+      data: {
+        action: "media_inventory_scan_usage",
+        nonce: mifData.nonce,
+      },
+      success: function (response) {
+        if (response.success) {
+          $progressBar.css("width", "100%");
+          $status.html(
+            '<strong style="color: var(--clr-success);">✓ Scan Complete!</strong> ' +
+            'Found ' + response.data.progress.usage_found + ' usage references. ' +
+            'Scanned ' + response.data.progress.posts_scanned + ' posts, ' +
+            response.data.progress.widgets_scanned + ' widgets, ' +
+            response.data.progress.css_files_scanned + ' CSS files.'
+          );
+
+          setTimeout(function () {
+            $button.prop("disabled", false).text("🔎 scan for usage");
+            $progress.fadeOut();
+          }, 3000);
+
+          console.log("Usage scan results:", response.data);
+        } else {
+          $status.html('<strong style="color: var(--clr-danger);">✗ Error:</strong> ' + response.data);
+          $button.prop("disabled", false).text("🔎 scan for usage");
+        }
+      },
+      error: function (xhr, status, error) {
+        $status.html('<strong style="color: var(--clr-danger);">✗ Failed:</strong> ' + error);
+        $button.prop("disabled", false).text("🔎 scan for usage");
+        console.error("Usage scan error:", error);
+      },
+    });
+  });
+
+  /**
    * Export CSV Button Handler
    *
    * Generates and downloads CSV file containing complete inventory data.
