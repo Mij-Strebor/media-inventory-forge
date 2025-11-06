@@ -43,6 +43,22 @@ class MIF_File_Utils
         if (strpos($mime_type, 'application/pdf') === 0) return 'PDFs';
         if (strpos($mime_type, 'font/') === 0 || strpos($mime_type, 'application/font') === 0) return 'Fonts';
 
+        // Archives - MUST come before generic application/ check
+        if (in_array($mime_type, [
+            'application/zip',
+            'application/x-zip-compressed',
+            'application/x-rar-compressed',
+            'application/x-rar',
+            'application/x-tar',
+            'application/x-gzip',
+            'application/gzip',
+            'application/x-7z-compressed',
+            'application/x-bzip',
+            'application/x-bzip2'
+        ])) {
+            return 'Archives';
+        }
+
         // Office documents
         if (in_array($mime_type, [
             'application/msword',
