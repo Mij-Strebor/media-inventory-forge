@@ -17,10 +17,11 @@ defined('ABSPATH') || exit;
 <div class="fcc-panel">
     <h2 style="margin-bottom: 16px;">Scan Controls</h2>
 
-    <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px;">
+    <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap;">
         <button id="start-scan" class="fcc-btn">🔍 start scan</button>
         <button id="stop-scan" class="fcc-btn fcc-btn-danger" style="display: none;">⏹️ stop scan</button>
         <button id="scan-usage" class="fcc-btn" style="background: var(--clr-accent);">🔎 scan for usage</button>
+        <button id="view-usage" class="fcc-btn" style="background: var(--clr-secondary);">📋 view usage data</button>
         <button id="export-csv" class="fcc-btn" style="display: none;">📊 export csv</button>
         <button id="clear-results" class="fcc-btn fcc-btn-ghost" style="display: none;">🗑️ clear results</button>
     </div>
@@ -50,5 +51,10 @@ defined('ABSPATH') || exit;
     <div id="summary-stats" style="margin-top: 20px; display: none;">
         <h3 style="color: var(--clr-primary); margin: 0 0 12px 0;">Summary</h3>
         <div id="summary-content" style="background: var(--clr-light); padding: 16px; border-radius: var(--jimr-border-radius); border: 1px solid var(--clr-secondary);"></div>
+    </div>
+
+    <div id="usage-data-display" style="margin-top: 20px; display: none;">
+        <h3 style="color: var(--clr-primary); margin: 0 0 12px 0;">Usage Data (Debug)</h3>
+        <div id="usage-data-content" style="background: var(--clr-light); padding: 16px; border-radius: var(--jimr-border-radius); border: 1px solid var(--clr-secondary); max-height: 600px; overflow-y: auto;"></div>
     </div>
 </div>

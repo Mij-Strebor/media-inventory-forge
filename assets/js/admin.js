@@ -253,6 +253,79 @@ jQuery(document).ready(function ($) {
   });
 
   /**
+   * View Usage Data Button Handler
+   *
+   * Displays all usage data from the database in a readable format
+   * for debugging and verification.
+   *
+   * @since 4.0.0
+   * @listens click - #view-usage button click
+   */
+  $("#view-usage").on("click", function () {
+    const $button = $(this);
+    const $display = $("#usage-data-display");
+    const $content = $("#usage-data-content");
+
+    $button.prop("disabled", true).text("⏳ loading...");
+
+    $.ajax({
+      url: mifData.ajaxUrl,
+      type: "POST",
+      data: {
+        action: "media_inventory_get_usage",
+        nonce: mifData.nonce,
+      },
+      success: function (response) {
+        if (response.success) {
+          const data = response.data.data;
+
+          if (data.length === 0) {
+            $content.html('<p style="color: var(--clr-txt); font-style: italic;">No usage data found. Run "Scan for Usage" first.</p>');
+          } else {
+            let html = '<table style="width: 100%; border-collapse: collapse; font-size: 12px;">';
+            html += '<thead><tr style="background: var(--clr-primary); color: white;">';
+            html += '<th style="padding: 8px; text-align: left;">ID</th>';
+            html += '<th style="padding: 8px; text-align: left;">Attachment ID</th>';
+            html += '<th style="padding: 8px; text-align: left;">Type</th>';
+            html += '<th style="padding: 8px; text-align: left;">Context</th>';
+            html += '<th style="padding: 8px; text-align: left;">Title</th>';
+            html += '<th style="padding: 8px; text-align: left;">View URL</th>';
+            html += '<th style="padding: 8px; text-align: left;">Scope</th>';
+            html += '</tr></thead><tbody>';
+
+            data.forEach(function (row) {
+              const metadata = row.usage_data || {};
+              html += '<tr style="border-bottom: 1px solid var(--clr-secondary);">';
+              html += '<td style="padding: 8px;">' + row.id + '</td>';
+              html += '<td style="padding: 8px;"><strong>' + row.attachment_id + '</strong></td>';
+              html += '<td style="padding: 8px;">' + row.usage_type + '</td>';
+              html += '<td style="padding: 8px;">' + row.usage_context + '</td>';
+              html += '<td style="padding: 8px;">' + (metadata.title || '-') + '</td>';
+              html += '<td style="padding: 8px;"><a href="' + (metadata.view_url || '#') + '" target="_blank" style="color: var(--clr-accent);">View</a></td>';
+              html += '<td style="padding: 8px;">' + (metadata.scope || '-') + '</td>';
+              html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            html += '<p style="margin-top: 12px; color: var(--clr-txt); font-size: 11px;">Total records: ' + data.length + '</p>';
+            $content.html(html);
+          }
+
+          $display.show();
+          $button.prop("disabled", false).text("📋 view usage data");
+        } else {
+          alert("Error: " + response.data);
+          $button.prop("disabled", false).text("📋 view usage data");
+        }
+      },
+      error: function (xhr, status, error) {
+        alert("Failed to load usage data: " + error);
+        $button.prop("disabled", false).text("📋 view usage data");
+      },
+    });
+  });
+
+  /**
    * Export CSV Button Handler
    *
    * Generates and downloads CSV file containing complete inventory data.

@@ -31,6 +31,7 @@ class MIF_Admin_Controller
         add_action('wp_ajax_media_inventory_scan', [$this, 'ajax_scan']);
         add_action('wp_ajax_media_inventory_export', [$this, 'ajax_export']);
         add_action('wp_ajax_media_inventory_scan_usage', [$this, 'ajax_scan_usage']);
+        add_action('wp_ajax_media_inventory_get_usage', [$this, 'ajax_get_usage']);
     }
 
     /**
@@ -197,6 +198,47 @@ class MIF_Admin_Controller
             ]);
         } catch (Exception $e) {
             wp_send_json_error('Usage scan failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * AJAX handler for getting usage data
+     *
+     * Returns all usage records from the database for display/debugging.
+     *
+     * @since 4.0.0
+     */
+    public function ajax_get_usage()
+    {
+        check_ajax_referer('media_inventory_nonce', 'nonce');
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Permission denied');
+            return;
+        }
+
+        try {
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'mif_usage';
+
+            $results = $wpdb->get_results(
+                "SELECT * FROM {$table_name} ORDER BY found_at DESC LIMIT 50",
+                ARRAY_A
+            );
+
+            // Unserialize usage_data for easier reading
+            foreach ($results as &$row) {
+                if (isset($row['usage_data'])) {
+                    $row['usage_data'] = maybe_unserialize($row['usage_data']);
+                }
+            }
+
+            wp_send_json_success([
+                'count' => count($results),
+                'data' => $results
+            ]);
+        } catch (Exception $e) {
+            wp_send_json_error('Failed to get usage data: ' . $e->getMessage());
         }
     }
 
