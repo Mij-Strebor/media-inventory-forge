@@ -234,7 +234,8 @@ jQuery(document).ready(function ($) {
 
           setTimeout(function () {
             $button.prop("disabled", false).text("🔎 scan for usage");
-            $progress.fadeOut();
+            // Don't auto-hide - let user read the results
+            // $progress.fadeOut();
           }, 3000);
 
           console.log("Usage scan results:", response.data);
