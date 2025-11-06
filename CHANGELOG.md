@@ -2,6 +2,73 @@
 ![Media Inventory Forge Banner](assets/images/changelog-1544x500.png)
 # Media Inventory Forge
 
+## [4.0.0] - 2025-11-05
+
+### 🚀 Major New Features
+
+**Unused Media Detection & Usage Tracking**
+- 🔍 Identify media items not used anywhere on your website
+- 📍 See exact locations where each media item is used (posts, pages, widgets, etc.)
+- 🔗 Direct links to edit screens for content containing media
+- ⚠️ Filter to show only unused media for cleanup planning
+- 📊 Usage count badges for quick identification
+- 🎯 ~95% accuracy with comprehensive content scanning
+
+**Table View Mode**
+- 📊 Professional tabular display alternative to card view
+- 🔄 Sortable columns (name, size, type, date, usage)
+- 👆 Click column headers to toggle ascending/descending sort
+- 📄 Pagination support (50/100/500 items per page)
+- 💾 Remembers user's preferred view mode and sort settings
+- 🎨 Clean, WordPress-native UI design
+
+**Advanced Filtering System**
+- 🎛️ Filter by file type (Images, PDFs, Videos, Audio, Documents, SVG)
+- 📏 Filter by file size (Small, Medium, Large, Very Large)
+- ✓ Filter by usage status (Used, Unused, Used 2+ times, Used 5+ times)
+- 📅 Filter by upload date (Last 30/90 days, Last year, Older than 1 year, Custom range)
+- 🔀 Combine multiple filters for precise searches
+- ⚡ AJAX-powered filter updates for smooth performance
+
+### 🎨 UI/UX Improvements
+- Completely redesigned admin interface with modern workflow
+- Better responsive design for mobile and tablet devices
+- Enhanced accessibility with ARIA labels and keyboard navigation
+- Improved visual feedback for user actions
+- Streamlined information architecture
+
+### ⚡ Performance Enhancements
+- Optimized database queries for usage tracking
+- Improved memory management for large libraries
+- Faster initial page load with lazy-loaded components
+- Enhanced caching strategies
+
+### 🔧 Technical Improvements
+- New database schema for tracking media usage
+- Extensible architecture for future feature additions
+- Improved error handling and logging
+- Enhanced security with additional sanitization
+
+### 📚 Documentation
+- Comprehensive feature planning document (FEATURE-PLANNING-V4.md)
+- Complete GitHub workflow guide for direct repository development
+- Updated testing guide with new features
+- Detailed local WordPress setup documentation
+
+### 🛠️ Development Infrastructure
+- Simplified GitHub workflow (no separate release folder)
+- Direct git repository integration
+- Enhanced .gitignore for cleaner repository
+- Development and master branch workflow established
+
+### Breaking Changes
+None - all changes are backward compatible with v3.x
+
+### Upgrade Notes
+Safe to upgrade from any v3.x version. Usage tracking data will be built on first scan after upgrade.
+
+---
+
 ## [3.0.0] - 2025-10-23
  ⚠️ IMPORTANT: Upgrade Instructions for v2.x Users
 

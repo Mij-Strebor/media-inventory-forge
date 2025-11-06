@@ -6,7 +6,7 @@
 ![Media Inventory Forge Banner](./docs/screenshots/banner.jpg)
 
 [![WordPress Plugin](https://img.shields.io/badge/WordPress-Plugin-blue.svg)](https://wordpress.org/)
-[![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)](https://github.com/Mij-Strebor/media-inventory-forge/releases)
+[![Version](https://img.shields.io/badge/version-4.0.0-blue.svg)](https://github.com/Mij-Strebor/media-inventory-forge/releases)
 [![WordPress](https://img.shields.io/badge/WordPress-5.0%2B-blue.svg)](https://wordpress.org/)
 [![License](https://img.shields.io/badge/license-GPL%20v2%2B-green.svg)](LICENSE)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-purple.svg)](https://php.net/)

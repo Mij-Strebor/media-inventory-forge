@@ -5,7 +5,7 @@ Tags: media, inventory, scanner, analysis, optimization
 Requires at least: 5.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 2.1.1
+Stable tag: 4.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,16 @@ The plugin uses direct filesystem access to get precise file sizes, including al
 5. Professional admin interface with WordPress integration
 
 == Changelog ==
+
+= 4.0.0 =
+* Major Feature: Unused media detection - identify media not used anywhere on your site
+* Major Feature: Usage location tracking - see exactly where each media item is used
+* Major Feature: Table view mode - alternative to card view with sortable columns
+* Major Feature: Advanced filtering - filter by type, size, usage status, and upload date
+* Enhancement: Completely redesigned admin interface for better workflow
+* Enhancement: Improved performance for large media libraries
+* Enhancement: Better responsive design for mobile devices
+* Update: Comprehensive testing and bug fixes
 
 = 2.1.0 =
 * Enhanced scanning performance with improved batch processing

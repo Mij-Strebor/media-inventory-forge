@@ -92,3 +92,7 @@ scratch.md
 #
 # Build scripts handle these exclusions, not .gitignore
 #
+
+# Temporary generated files
+*.pdf
+*_tmp.html
