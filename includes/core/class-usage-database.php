@@ -123,11 +123,19 @@ class MIF_Usage_Database {
     public function store_usage($attachment_id, $usage_type, $usage_id = 0, $usage_context = '', $usage_data = array()) {
         // Validate required parameters
         if (empty($attachment_id) || empty($usage_type)) {
+            error_log('MIF: store_usage failed - empty attachment_id or usage_type');
+            return false;
+        }
+
+        // Check if table exists
+        if (!$this->table_exists()) {
+            error_log('MIF: store_usage failed - table does not exist!');
             return false;
         }
 
         // Check if this exact usage already exists
         if ($this->usage_exists($attachment_id, $usage_type, $usage_id, $usage_context)) {
+            error_log('MIF: Usage already exists - skipping duplicate');
             return true; // Already tracked, no need to duplicate
         }
 
@@ -144,7 +152,14 @@ class MIF_Usage_Database {
 
         $result = $this->wpdb->insert($this->full_table_name, $data, $format);
 
-        return $result ? $this->wpdb->insert_id : false;
+        if ($result === false) {
+            error_log('MIF: Database insert failed! Error: ' . $this->wpdb->last_error);
+            error_log('MIF: Attempted to insert: ' . print_r($data, true));
+            return false;
+        }
+
+        error_log('MIF: Successfully stored usage for attachment ' . $attachment_id . ' (ID: ' . $this->wpdb->insert_id . ')');
+        return $this->wpdb->insert_id;
     }
 
     /**
