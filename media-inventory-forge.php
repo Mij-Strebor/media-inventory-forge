@@ -160,6 +160,17 @@ if (!defined('MIF_PLUGIN_URL')) {
 require_once MIF_PLUGIN_DIR . 'includes/utilities/class-file-utils.php';
 
 /**
+ * Load Media Type Information Class
+ *
+ * Provides media type-specific information including detection capabilities
+ * and limitations for different file types. Used for user education about
+ * what the usage scanner can and cannot detect.
+ *
+ * @since 4.0.0
+ */
+require_once MIF_PLUGIN_DIR . 'includes/utilities/class-media-type-info.php';
+
+/**
  * Load File Processor Interface
  *
  * Defines the contract for all file processors, ensuring consistent
@@ -211,6 +222,28 @@ require_once MIF_PLUGIN_DIR . 'includes/core/class-processor-factory.php';
  * Implements efficient algorithms for large-scale media library analysis.
  */
 require_once MIF_PLUGIN_DIR . 'includes/core/class-scanner.php';
+
+/**
+ * Load Usage Database Class
+ *
+ * Database operations for media usage tracking. Manages custom table for
+ * storing and retrieving information about where media files are used
+ * throughout the WordPress installation.
+ *
+ * @since 4.0.0
+ */
+require_once MIF_PLUGIN_DIR . 'includes/core/class-usage-database.php';
+
+/**
+ * Load Usage Scanner Class
+ *
+ * Scans WordPress content to detect media usage locations. Analyzes posts,
+ * pages, widgets, theme customizer, CSS files, and page builders to build
+ * comprehensive usage map for each media file.
+ *
+ * @since 4.0.0
+ */
+require_once MIF_PLUGIN_DIR . 'includes/core/class-usage-scanner.php';
 
 /**
  * Load Admin Base Class
@@ -285,17 +318,32 @@ if (is_admin()) {
  */
 
 /**
+ * Plugin Activation Callback
+ *
+ * Called when the plugin is activated. Creates database tables and sets
+ * default options.
+ *
+ * @since 4.0.0
+ */
+function mif_activate_plugin() {
+    // Create usage tracking table
+    $usage_db = new MIF_Usage_Database();
+    $usage_db->create_table();
+
+    // Set activation timestamp
+    add_option('mif_activated_at', current_time('mysql'));
+    add_option('mif_version', MIF_VERSION);
+}
+
+/**
  * Register Plugin Activation Hook
  *
- * Called when the plugin is activated. Should handle:
- * - Database table creation
- * - Default option setting
- * - Capability setup
- * - Initial configuration
+ * Called when the plugin is activated. Handles database table creation,
+ * default option setting, and initial configuration.
  *
- * @todo  Implement activation callback function
+ * @since 4.0.0
  */
-// register_activation_hook(MIF_PLUGIN_FILE, 'mif_activate_plugin');
+register_activation_hook(MIF_PLUGIN_FILE, 'mif_activate_plugin');
 
 /**
  * Register Plugin Deactivation Hook
