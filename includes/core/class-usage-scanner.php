@@ -220,12 +220,13 @@ class MIF_Usage_Scanner {
             }
 
             if ($attachment_id) {
+                $metadata = $this->build_usage_metadata($content_type, $content_id, 'content_image');
                 $this->usage_db->store_usage(
                     $attachment_id,
                     $content_type,
                     $content_id,
                     'content_image',
-                    array('tag' => 'img')
+                    $metadata
                 );
                 $found_count++;
                 $this->progress['usage_found']++;
@@ -286,11 +287,13 @@ class MIF_Usage_Scanner {
             // wp:gallery block (has multiple IDs)
             elseif ($block_name === 'gallery' && isset($attrs['ids']) && is_array($attrs['ids'])) {
                 foreach ($attrs['ids'] as $id) {
+                    $metadata = $this->build_usage_metadata($content_type, $content_id, 'gutenberg_gallery');
                     $this->usage_db->store_usage(
                         intval($id),
                         $content_type,
                         $content_id,
-                        'gutenberg_gallery'
+                        'gutenberg_gallery',
+                        $metadata
                     );
                     $found_count++;
                     $this->progress['usage_found']++;
@@ -299,11 +302,13 @@ class MIF_Usage_Scanner {
             }
 
             if ($attachment_id) {
+                $metadata = $this->build_usage_metadata($content_type, $content_id, $context);
                 $this->usage_db->store_usage(
                     $attachment_id,
                     $content_type,
                     $content_id,
-                    $context
+                    $context,
+                    $metadata
                 );
                 $found_count++;
                 $this->progress['usage_found']++;
@@ -335,11 +340,13 @@ class MIF_Usage_Scanner {
 
             foreach ($ids as $attachment_id) {
                 if ($attachment_id > 0) {
+                    $metadata = $this->build_usage_metadata($content_type, $content_id, 'shortcode_gallery');
                     $this->usage_db->store_usage(
                         $attachment_id,
                         $content_type,
                         $content_id,
-                        'shortcode_gallery'
+                        'shortcode_gallery',
+                        $metadata
                     );
                     $found_count++;
                     $this->progress['usage_found']++;
@@ -371,11 +378,13 @@ class MIF_Usage_Scanner {
             $attachment_id = $this->url_to_attachment_id($url);
 
             if ($attachment_id) {
+                $metadata = $this->build_usage_metadata($content_type, $content_id, 'linked_media');
                 $this->usage_db->store_usage(
                     $attachment_id,
                     $content_type,
                     $content_id,
-                    'linked_media'
+                    'linked_media',
+                    $metadata
                 );
                 $found_count++;
                 $this->progress['usage_found']++;
@@ -405,11 +414,14 @@ class MIF_Usage_Scanner {
             $attachment_id = $this->url_to_attachment_id($url);
 
             if ($attachment_id) {
+                $context = 'shortcode_' . $shortcode[1];
+                $metadata = $this->build_usage_metadata($content_type, $content_id, $context);
                 $this->usage_db->store_usage(
                     $attachment_id,
                     $content_type,
                     $content_id,
-                    'shortcode_' . $shortcode[1]
+                    $context,
+                    $metadata
                 );
                 $found_count++;
                 $this->progress['usage_found']++;
@@ -440,11 +452,13 @@ class MIF_Usage_Scanner {
         $found_count = 0;
 
         foreach ($results as $row) {
+            $metadata = $this->build_usage_metadata('post', intval($row->post_id), 'featured_image');
             $this->usage_db->store_usage(
                 intval($row->attachment_id),
                 'post',
                 intval($row->post_id),
-                'featured_image'
+                'featured_image',
+                $metadata
             );
             $found_count++;
             $this->progress['usage_found']++;
@@ -512,12 +526,13 @@ class MIF_Usage_Scanner {
 
         // Check for attachment_id field (common in media widgets)
         if (isset($widget_data['attachment_id']) && $widget_data['attachment_id'] > 0) {
+            $metadata = $this->build_usage_metadata('widget', 0, 'widget_' . $widget_type, array('widget_id' => $widget_identifier));
             $this->usage_db->store_usage(
                 intval($widget_data['attachment_id']),
                 'widget',
                 0,
                 'widget_' . $widget_type,
-                array('widget_id' => $widget_identifier)
+                $metadata
             );
             $found_count++;
             $this->progress['usage_found']++;
@@ -525,12 +540,13 @@ class MIF_Usage_Scanner {
 
         // Check for image_id field
         if (isset($widget_data['image_id']) && $widget_data['image_id'] > 0) {
+            $metadata = $this->build_usage_metadata('widget', 0, 'widget_' . $widget_type, array('widget_id' => $widget_identifier));
             $this->usage_db->store_usage(
                 intval($widget_data['image_id']),
                 'widget',
                 0,
                 'widget_' . $widget_type,
-                array('widget_id' => $widget_identifier)
+                $metadata
             );
             $found_count++;
             $this->progress['usage_found']++;
@@ -564,11 +580,13 @@ class MIF_Usage_Scanner {
 
         // Custom logo
         if (isset($theme_mods['custom_logo']) && $theme_mods['custom_logo'] > 0) {
+            $metadata = $this->build_usage_metadata('customizer', 0, 'custom_logo');
             $this->usage_db->store_usage(
                 intval($theme_mods['custom_logo']),
                 'customizer',
                 0,
-                'custom_logo'
+                'custom_logo',
+                $metadata
             );
             $found_count++;
             $this->progress['usage_found']++;
@@ -580,7 +598,8 @@ class MIF_Usage_Scanner {
             if (filter_var($url, FILTER_VALIDATE_URL)) {
                 $attachment_id = $this->url_to_attachment_id($url);
                 if ($attachment_id) {
-                    $this->usage_db->store_usage($attachment_id, 'customizer', 0, 'header_image');
+                    $metadata = $this->build_usage_metadata('customizer', 0, 'header_image');
+                    $this->usage_db->store_usage($attachment_id, 'customizer', 0, 'header_image', $metadata);
                     $found_count++;
                     $this->progress['usage_found']++;
                 }
@@ -593,7 +612,8 @@ class MIF_Usage_Scanner {
             if (filter_var($url, FILTER_VALIDATE_URL)) {
                 $attachment_id = $this->url_to_attachment_id($url);
                 if ($attachment_id) {
-                    $this->usage_db->store_usage($attachment_id, 'customizer', 0, 'background_image');
+                    $metadata = $this->build_usage_metadata('customizer', 0, 'background_image');
+                    $this->usage_db->store_usage($attachment_id, 'customizer', 0, 'background_image', $metadata);
                     $found_count++;
                     $this->progress['usage_found']++;
                 }
@@ -743,12 +763,13 @@ class MIF_Usage_Scanner {
             }
 
             if ($attachment_id) {
+                $metadata = $this->build_usage_metadata('css', 0, 'css_background', array('file' => $source_file, 'url' => $url));
                 $this->usage_db->store_usage(
                     $attachment_id,
                     'css',
                     0,
                     'css_background',
-                    array('file' => $source_file, 'url' => $url)
+                    $metadata
                 );
                 $found_count++;
                 $this->progress['usage_found']++;
@@ -756,6 +777,143 @@ class MIF_Usage_Scanner {
         }
 
         return $found_count;
+    }
+
+    /**
+     * Build enhanced metadata with view/edit URLs and contextual information
+     *
+     * Creates a comprehensive metadata array for usage tracking that includes
+     * view URLs, edit URLs, titles, scope information, and contextual notes.
+     *
+     * @since 4.0.0
+     * @param string $usage_type    Type of usage (post, page, widget, customizer, css)
+     * @param int    $usage_id      ID of the content (post ID, widget ID, etc.)
+     * @param string $usage_context Context (featured_image, content, etc.)
+     * @param array  $extra_data    Additional data specific to the usage type
+     * @return array Enhanced metadata array
+     */
+    private function build_usage_metadata($usage_type, $usage_id, $usage_context, $extra_data = array()) {
+        $metadata = array(
+            'title' => '',
+            'view_url' => '',
+            'edit_url' => '',
+            'primary_action' => 'view',
+            'scope' => 'single',
+            'notes' => ''
+        );
+
+        switch ($usage_type) {
+            case 'post':
+            case 'page':
+                if ($usage_id > 0) {
+                    $post = get_post($usage_id);
+                    if ($post) {
+                        $metadata['title'] = get_the_title($usage_id);
+                        $metadata['view_url'] = get_permalink($usage_id);
+                        $metadata['edit_url'] = admin_url('post.php?post=' . $usage_id . '&action=edit');
+                        $metadata['scope'] = 'single';
+
+                        // Context-specific notes
+                        if ($usage_context === 'featured_image') {
+                            $metadata['notes'] = 'Featured Image';
+                        } elseif ($usage_context === 'content_image') {
+                            $metadata['notes'] = 'In Content';
+                        } elseif (strpos($usage_context, 'gutenberg_') === 0) {
+                            $metadata['notes'] = 'Gutenberg Block';
+                        } elseif (strpos($usage_context, 'shortcode_') === 0) {
+                            $metadata['notes'] = 'Shortcode';
+                        }
+                    }
+                }
+                break;
+
+            case 'widget':
+                $metadata['primary_action'] = 'edit';
+                $metadata['scope'] = 'multiple';
+                $metadata['view_url'] = home_url('/');
+                $metadata['edit_url'] = admin_url('widgets.php');
+
+                if (isset($extra_data['widget_id'])) {
+                    $metadata['title'] = $extra_data['widget_id'];
+                    $metadata['notes'] = 'Appears in widget areas across the site';
+                } else {
+                    $metadata['title'] = 'Widget';
+                    $metadata['notes'] = 'Widget usage';
+                }
+                break;
+
+            case 'customizer':
+                $metadata['primary_action'] = 'view';
+                $metadata['scope'] = 'global';
+                $metadata['view_url'] = home_url('/');
+                $metadata['edit_url'] = admin_url('customize.php');
+
+                if ($usage_context === 'custom_logo') {
+                    $metadata['title'] = 'Site Logo';
+                    $metadata['notes'] = 'Site-wide logo in customizer';
+                } elseif ($usage_context === 'header_image') {
+                    $metadata['title'] = 'Header Image';
+                    $metadata['notes'] = 'Site-wide header image';
+                } elseif ($usage_context === 'background_image') {
+                    $metadata['title'] = 'Background Image';
+                    $metadata['notes'] = 'Site-wide background image';
+                }
+                break;
+
+            case 'css':
+                $metadata['primary_action'] = 'view';
+                $metadata['scope'] = 'global';
+                $metadata['view_url'] = home_url('/');
+                $metadata['edit_url'] = '';
+
+                if (isset($extra_data['file'])) {
+                    $file_name = basename($extra_data['file']);
+                    $metadata['title'] = 'CSS: ' . $file_name;
+                    $metadata['notes'] = 'Background image in stylesheet';
+                } else {
+                    $metadata['title'] = 'CSS Background';
+                    $metadata['notes'] = 'Used in CSS file';
+                }
+                break;
+
+            case 'page_builder':
+                if ($usage_id > 0) {
+                    $post = get_post($usage_id);
+                    if ($post) {
+                        $metadata['title'] = get_the_title($usage_id);
+                        $metadata['view_url'] = get_permalink($usage_id);
+                        $metadata['scope'] = 'single';
+
+                        // Set builder-specific edit URLs
+                        if (isset($extra_data['builder'])) {
+                            $builder = $extra_data['builder'];
+
+                            if ($builder === 'elementor') {
+                                $metadata['edit_url'] = admin_url('post.php?post=' . $usage_id . '&action=elementor');
+                                $metadata['notes'] = 'Elementor Page Builder';
+                            } elseif ($builder === 'wpbakery') {
+                                $metadata['edit_url'] = admin_url('post.php?post=' . $usage_id . '&action=edit');
+                                $metadata['notes'] = 'WPBakery Page Builder';
+                            } else {
+                                $metadata['edit_url'] = admin_url('post.php?post=' . $usage_id . '&action=edit');
+                                $metadata['notes'] = 'Page Builder';
+                            }
+                        } else {
+                            $metadata['edit_url'] = admin_url('post.php?post=' . $usage_id . '&action=edit');
+                            $metadata['notes'] = 'Page Builder';
+                        }
+                    }
+                }
+                break;
+
+            default:
+                // Generic fallback
+                $metadata['title'] = ucfirst($usage_type);
+                $metadata['notes'] = 'Used in ' . $usage_type;
+                break;
+        }
+
+        return $metadata;
     }
 
     /**
