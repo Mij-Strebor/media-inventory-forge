@@ -96,6 +96,9 @@ class MIF_Usage_Scanner {
         $this->scan_theme_customizer();
         $this->scan_css_files();
 
+        // Scan page builders if active
+        $this->scan_page_builders();
+
         // Update last scan time
         update_option('mif_last_usage_scan', current_time('mysql'));
 
@@ -769,6 +772,309 @@ class MIF_Usage_Scanner {
                     'css',
                     0,
                     'css_background',
+                    $metadata
+                );
+                $found_count++;
+                $this->progress['usage_found']++;
+            }
+        }
+
+        return $found_count;
+    }
+
+    /**
+     * Scan page builders for media usage
+     *
+     * Detects active page builders (Elementor, WPBakery, Bricks, etc.) and
+     * scans their data structures for media references.
+     *
+     * @since 4.0.0
+     * @return int Number of builder pages scanned
+     */
+    private function scan_page_builders() {
+        $builders_scanned = 0;
+
+        // Detect which builders are active
+        $active_builders = $this->detect_active_builders();
+
+        // Scan each active builder
+        if (in_array('elementor', $active_builders)) {
+            $builders_scanned += $this->scan_elementor_data();
+        }
+
+        // Future: Add WPBakery, Divi, Bricks support here
+
+        return $builders_scanned;
+    }
+
+    /**
+     * Detect which page builders are active
+     *
+     * @since 4.0.0
+     * @return array List of active builder slugs
+     */
+    private function detect_active_builders() {
+        $active_builders = array();
+
+        // Check Elementor
+        if (did_action('elementor/loaded') || defined('ELEMENTOR_VERSION')) {
+            $active_builders[] = 'elementor';
+        }
+
+        // Check WPBakery (Visual Composer)
+        if (defined('WPB_VC_VERSION')) {
+            $active_builders[] = 'wpbakery';
+        }
+
+        // Check Divi
+        if (defined('ET_BUILDER_VERSION')) {
+            $active_builders[] = 'divi';
+        }
+
+        // Check Bricks
+        if (defined('BRICKS_VERSION')) {
+            $active_builders[] = 'bricks';
+        }
+
+        return $active_builders;
+    }
+
+    /**
+     * Scan Elementor pages for media usage
+     *
+     * Elementor stores page data in postmeta as JSON. This method parses
+     * the Elementor data structure to find images in various widget types.
+     *
+     * WHERE ELEMENTOR AFFECTS DATA COLLECTION:
+     * - Storage: wp_postmeta with key '_elementor_data'
+     * - Format: JSON array of elements/widgets
+     * - Bypasses normal post_content completely!
+     *
+     * @since 4.0.0
+     * @return int Number of Elementor pages scanned
+     */
+    private function scan_elementor_data() {
+        global $wpdb;
+
+        // Query all posts that have Elementor data
+        $results = $wpdb->get_results(
+            "SELECT post_id, meta_value
+             FROM {$wpdb->postmeta}
+             WHERE meta_key = '_elementor_data'
+             AND meta_value != ''"
+        );
+
+        if (empty($results)) {
+            return 0;
+        }
+
+        $pages_scanned = 0;
+
+        foreach ($results as $row) {
+            $post_id = intval($row->post_id);
+
+            // Parse Elementor JSON data
+            $elementor_data = json_decode($row->meta_value, true);
+
+            if (!is_array($elementor_data)) {
+                continue;
+            }
+
+            // Recursively scan Elementor elements for images
+            $this->scan_elementor_elements($elementor_data, $post_id);
+
+            $pages_scanned++;
+        }
+
+        return $pages_scanned;
+    }
+
+    /**
+     * Recursively scan Elementor elements for media
+     *
+     * Elementor uses a nested structure where elements can contain other elements.
+     * This method recursively traverses the structure looking for media references.
+     *
+     * ELEMENTOR STRUCTURE EXAMPLE:
+     * [
+     *   {
+     *     "elType": "section",
+     *     "elements": [
+     *       {
+     *         "elType": "column",
+     *         "elements": [
+     *           {
+     *             "elType": "widget",
+     *             "widgetType": "image",
+     *             "settings": {
+     *               "image": {"id": 123, "url": "..."}
+     *             }
+     *           }
+     *         ]
+     *       }
+     *     ]
+     *   }
+     * ]
+     *
+     * @since 4.0.0
+     * @param array $elements Elementor elements array
+     * @param int   $post_id  Post ID
+     * @return int Number of media items found
+     */
+    private function scan_elementor_elements($elements, $post_id) {
+        $found_count = 0;
+
+        if (!is_array($elements)) {
+            return 0;
+        }
+
+        foreach ($elements as $element) {
+            if (!is_array($element)) {
+                continue;
+            }
+
+            // Check if this is a widget with settings
+            if (isset($element['widgetType']) && isset($element['settings'])) {
+                $found_count += $this->scan_elementor_widget($element, $post_id);
+            }
+
+            // Recursively scan child elements
+            if (isset($element['elements']) && is_array($element['elements'])) {
+                $found_count += $this->scan_elementor_elements($element['elements'], $post_id);
+            }
+        }
+
+        return $found_count;
+    }
+
+    /**
+     * Scan an individual Elementor widget for media
+     *
+     * Different widget types store images differently:
+     * - image: settings.image.id
+     * - gallery: settings.gallery[].id
+     * - video: settings.poster.id (video thumbnail)
+     * - Background images: settings.background_image.id
+     * - And many more...
+     *
+     * @since 4.0.0
+     * @param array $widget  Widget data
+     * @param int   $post_id Post ID
+     * @return int Number of media items found
+     */
+    private function scan_elementor_widget($widget, $post_id) {
+        $found_count = 0;
+        $widget_type = isset($widget['widgetType']) ? $widget['widgetType'] : '';
+        $settings = isset($widget['settings']) ? $widget['settings'] : array();
+
+        if (empty($settings)) {
+            return 0;
+        }
+
+        // IMAGE WIDGET: Most common Elementor widget
+        if ($widget_type === 'image' && isset($settings['image']['id'])) {
+            $attachment_id = intval($settings['image']['id']);
+            if ($attachment_id > 0) {
+                $metadata = $this->build_usage_metadata('page_builder', $post_id, 'elementor_image', array('builder' => 'elementor'));
+                $this->usage_db->store_usage(
+                    $attachment_id,
+                    'page_builder',
+                    $post_id,
+                    'elementor_image',
+                    $metadata
+                );
+                $found_count++;
+                $this->progress['usage_found']++;
+            }
+        }
+
+        // GALLERY WIDGET: Array of images
+        if ($widget_type === 'gallery' && isset($settings['gallery']) && is_array($settings['gallery'])) {
+            foreach ($settings['gallery'] as $gallery_item) {
+                if (isset($gallery_item['id'])) {
+                    $attachment_id = intval($gallery_item['id']);
+                    if ($attachment_id > 0) {
+                        $metadata = $this->build_usage_metadata('page_builder', $post_id, 'elementor_gallery', array('builder' => 'elementor'));
+                        $this->usage_db->store_usage(
+                            $attachment_id,
+                            'page_builder',
+                            $post_id,
+                            'elementor_gallery',
+                            $metadata
+                        );
+                        $found_count++;
+                        $this->progress['usage_found']++;
+                    }
+                }
+            }
+        }
+
+        // IMAGE CAROUSEL: Another gallery type
+        if ($widget_type === 'image-carousel' && isset($settings['carousel']) && is_array($settings['carousel'])) {
+            foreach ($settings['carousel'] as $carousel_item) {
+                if (isset($carousel_item['id'])) {
+                    $attachment_id = intval($carousel_item['id']);
+                    if ($attachment_id > 0) {
+                        $metadata = $this->build_usage_metadata('page_builder', $post_id, 'elementor_carousel', array('builder' => 'elementor'));
+                        $this->usage_db->store_usage(
+                            $attachment_id,
+                            'page_builder',
+                            $post_id,
+                            'elementor_carousel',
+                            $metadata
+                        );
+                        $found_count++;
+                        $this->progress['usage_found']++;
+                    }
+                }
+            }
+        }
+
+        // VIDEO WIDGET: Poster/thumbnail image
+        if ($widget_type === 'video' && isset($settings['poster']['id'])) {
+            $attachment_id = intval($settings['poster']['id']);
+            if ($attachment_id > 0) {
+                $metadata = $this->build_usage_metadata('page_builder', $post_id, 'elementor_video_poster', array('builder' => 'elementor'));
+                $this->usage_db->store_usage(
+                    $attachment_id,
+                    'page_builder',
+                    $post_id,
+                    'elementor_video_poster',
+                    $metadata
+                );
+                $found_count++;
+                $this->progress['usage_found']++;
+            }
+        }
+
+        // BACKGROUND IMAGES: Can be on ANY widget/section/column
+        // Check for background_image in settings
+        if (isset($settings['background_image']['id'])) {
+            $attachment_id = intval($settings['background_image']['id']);
+            if ($attachment_id > 0) {
+                $metadata = $this->build_usage_metadata('page_builder', $post_id, 'elementor_background', array('builder' => 'elementor'));
+                $this->usage_db->store_usage(
+                    $attachment_id,
+                    'page_builder',
+                    $post_id,
+                    'elementor_background',
+                    $metadata
+                );
+                $found_count++;
+                $this->progress['usage_found']++;
+            }
+        }
+
+        // BACKGROUND OVERLAY: Another background type
+        if (isset($settings['background_overlay_image']['id'])) {
+            $attachment_id = intval($settings['background_overlay_image']['id']);
+            if ($attachment_id > 0) {
+                $metadata = $this->build_usage_metadata('page_builder', $post_id, 'elementor_background_overlay', array('builder' => 'elementor'));
+                $this->usage_db->store_usage(
+                    $attachment_id,
+                    'page_builder',
+                    $post_id,
+                    'elementor_background_overlay',
                     $metadata
                 );
                 $found_count++;
