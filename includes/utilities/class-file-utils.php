@@ -36,7 +36,13 @@ class MIF_File_Utils
      */
     public static function get_category($mime_type)
     {
-        if ($mime_type === 'image/svg+xml') return 'SVG';
+        // SVG detection - check for both standard MIME type and common variants
+        if ($mime_type === 'image/svg+xml' || $mime_type === 'text/xml' || $mime_type === 'text/plain') {
+            // For text/* types, only return SVG if we're sure - caller should check extension
+            // This will be handled in the scanner with extension-based fallback
+            if ($mime_type === 'image/svg+xml') return 'SVG';
+        }
+
         if (strpos($mime_type, 'image/') === 0) return 'Images';
         if (strpos($mime_type, 'video/') === 0) return 'Videos';
         if (strpos($mime_type, 'audio/') === 0) return 'Audio';
@@ -71,7 +77,9 @@ class MIF_File_Utils
             return 'Documents';
         }
 
-        if (strpos($mime_type, 'text/') === 0) return 'Text Files';
+        // DO NOT categorize text/* files - they are not WordPress-registered media
+        // Text files are skipped during scanning
+
         if (strpos($mime_type, 'application/') === 0) return 'Other Documents';
         return 'Other';
     }

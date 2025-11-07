@@ -702,7 +702,7 @@ jQuery(document).ready(function ($) {
     orderedCategories.forEach(function (catName) {
       const category = categories[catName];
       summaryHtml += `<div class="summary-item">`;
-      summaryHtml += `<span>${catName}:</span>`;
+      summaryHtml += `<span>${catName} (${category.items.length}):</span>`;
       summaryHtml += `<span>${formatBytes(category.totalSize)}</span>`;
       summaryHtml += `</div>`;
     });
@@ -917,18 +917,30 @@ jQuery(document).ready(function ($) {
       .sort()
       .forEach((familyName) => {
         const family = fontFamilies[familyName];
-        const variants = family.items
-          .map((item) => item.extension.toUpperCase())
-          .join(", ");
+
+        // Get unique variants only (no duplicates)
+        const uniqueVariants = [...new Set(family.items.map((item) => item.extension.toUpperCase()))];
+        const variants = uniqueVariants.join(", ");
+
+        // Get unique sources for this font family
+        const uniqueSources = [...new Set(family.items.map((item) => item.source).filter(Boolean))];
+
+        // Build font family name with source badge
+        let familyNameHtml = "<strong>" + escapeHtml(familyName) + "</strong>";
+        if (uniqueSources.length > 0) {
+          uniqueSources.forEach(source => {
+            const sourceClass = source === 'Media Library' ? 'source-media-library' : 'source-theme';
+            familyNameHtml += '<br><span class="source-badge ' + sourceClass + '">' + escapeHtml(source) + '</span>';
+          });
+        }
+
+        // Build details without source badges (since they're in the family name now)
         const details = family.items
-          .map(
-            (item) =>
-              escapeHtml(item.title) + " (" + formatBytes(item.total_size) + ")"
-          )
+          .map((item) => escapeHtml(item.title) + " (" + formatBytes(item.total_size) + ")")
           .join("<br>");
 
         html += "<tr>";
-        html += "<td><strong>" + escapeHtml(familyName) + "</strong></td>";
+        html += "<td>" + familyNameHtml + "</td>";
         html += "<td>" + variants + "</td>";
         html += "<td>" + family.totalFiles + "</td>";
         html += "<td>" + formatBytes(family.totalSize) + "</td>";
@@ -973,8 +985,15 @@ jQuery(document).ready(function ($) {
         })
         .join("<br>");
 
+      // Build title with source badge
+      let titleHtml = escapeHtml(item.title);
+      if (item.source) {
+        const sourceClass = item.source === 'Media Library' ? 'source-media-library' : 'source-theme';
+        titleHtml += '<br><span class="source-badge ' + sourceClass + '">' + escapeHtml(item.source) + '</span>';
+      }
+
       html += "<tr>";
-      html += "<td>" + escapeHtml(item.title) + "</td>";
+      html += "<td>" + titleHtml + "</td>";
       html += "<td>" + item.extension.toUpperCase() + "</td>";
       html += "<td>" + (item.dimensions || "Unknown") + "</td>";
       html += "<td>" + item.file_count + "</td>";
@@ -1016,8 +1035,15 @@ jQuery(document).ready(function ($) {
         })
         .join("<br>");
 
+      // Build title with source badge
+      let titleHtml = escapeHtml(item.title);
+      if (item.source) {
+        const sourceClass = item.source === 'Media Library' ? 'source-media-library' : 'source-theme';
+        titleHtml += '<br><span class="source-badge ' + sourceClass + '">' + escapeHtml(item.source) + '</span>';
+      }
+
       html += "<tr>";
-      html += "<td>" + escapeHtml(item.title) + "</td>";
+      html += "<td>" + titleHtml + "</td>";
       html += "<td>" + item.extension.toUpperCase() + "</td>";
       html += "<td>" + item.file_count + "</td>";
       html += "<td>" + formatBytes(item.total_size) + "</td>";
@@ -1292,15 +1318,26 @@ jQuery(document).ready(function ($) {
         cardsContent += 'title="' + escapeHtml(item.title) + '" ';
         cardsContent += 'loading="lazy" ';
         cardsContent +=
-          "onerror=\"this.parentElement.innerHTML='📷<br><small>Preview unavailable</small>'; this.parentElement.classList.add('error');\" />";
+          "onerror=\"this.parentElement.innerHTML='<div style=\\'display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-align: center;\\'><span style=\\'font-size: 24px;\\'>📷</span><small style=\\'font-size: 10px; color: #999;\\'>Preview unavailable</small></div>';\" />";
         cardsContent += "</div>";
       } else {
-        cardsContent +=
-          '<div class="image-thumbnail error">📷<br><small>No preview</small></div>';
+        cardsContent += '<div class="image-thumbnail">';
+        cardsContent += '<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-align: center;">';
+        cardsContent += '<span style="font-size: 24px;">📷</span>';
+        cardsContent += '<small style="font-size: 10px; color: #999;">No preview</small>';
+        cardsContent += '</div>';
+        cardsContent += '</div>';
       }
 
       cardsContent += '<div class="image-info">';
       cardsContent += "<strong>" + escapeHtml(item.title) + "</strong><br>";
+
+      // Add source badge if present
+      if (item.source) {
+        const sourceClass = item.source === 'Media Library' ? 'source-media-library' : 'source-theme';
+        cardsContent += '<span class="source-badge ' + sourceClass + '">' + escapeHtml(item.source) + '</span><br>';
+      }
+
       cardsContent +=
         '<span class="image-stats">(' +
         item.file_count +

@@ -16,6 +16,9 @@
  * - Enhanced title visibility with layered text shadows
  */
 
+/* Import Cinzel font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap');
+
 /* ==========================================================================
    INTEGRATED FORGE BACKGROUND HEADER
    ========================================================================== */
@@ -161,8 +164,17 @@
             drop-shadow(0 3px 6px rgba(0, 0, 0, 0.95))       /* Strong black shadow */
             drop-shadow(0 6px 15px rgba(0, 0, 0, 0.8)) !important; /* Deep shadow */
 
+    /* Title styling and positioning */
+    font-family: 'Cinzel', serif !important;
+    font-weight: 700 !important;
+    font-size: 32px !important;
+    margin-left: 180px !important;
     margin-bottom: var(--jimr-space-8) !important;
     letter-spacing: -0.5px !important;
+
+    /* Center vertically within header height */
+    display: flex !important;
+    align-items: center !important;
 }
 
 /**

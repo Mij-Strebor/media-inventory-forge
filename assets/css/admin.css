@@ -795,7 +795,7 @@ h2 {
 .inventory-table td {
     padding: 12px;
     text-align: left;
-    border-bottom: 1px solid var(--jimr-gray-200);
+    border-bottom: none; /* Remove divider lines between rows */
     font-size: var(--jimr-font-sm);
 }
 
@@ -819,13 +819,27 @@ h2 {
 /**
  * Table Interactive States
  *
- * Row hover feedback with subtle highlighting for improved
- * user experience during data review and analysis.
+ * Hover effect disabled - not needed for inventory tables
  *
  * Styleguide 6.1.4
  */
-.inventory-table tbody tr:hover {
+/* .inventory-table tbody tr:hover {
     background-color: rgba(59, 130, 246, 0.05);
+} */
+
+/**
+ * Alternating Row Colors for Font Table
+ *
+ * Zebra striping to delineate font families in the Fonts table
+ *
+ * Styleguide 6.1.5
+ */
+.inventory-table tbody tr:nth-child(odd) {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.inventory-table tbody tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.05);
 }
 
 /**
@@ -1045,8 +1059,13 @@ h2 {
  */
 .image-thumbnail {
     flex-shrink: 0;
+    flex-grow: 0;
     width: 80px;
+    min-width: 80px;
+    max-width: 80px;
     height: 80px;
+    min-height: 80px;
+    max-height: 80px;
     border-radius: var(--jimr-border-radius);
     overflow: hidden;
     border: 2px solid var(--clr-secondary);
@@ -1085,13 +1104,36 @@ h2 {
     font-size: var(--jimr-font-xs);
 }
 
-.image-thumbnail.error {
-    background: var(--jimr-gray-100);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--jimr-gray-500);
-    font-size: var(--jimr-font-xs);
+/* .image-thumbnail.error styles removed - no longer used
+   No preview now uses base .image-thumbnail class with inline flex styling */
+
+/**
+ * Source Badge Styling
+ *
+ * Displays the source of media files (Media Library vs Theme)
+ * with distinct visual styling for each type.
+ */
+.source-badge {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-top: 4px;
+}
+
+.source-badge.source-media-library {
+    background: rgba(76, 175, 80, 0.15);
+    color: #2E7D32;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.source-badge.source-theme {
+    background: rgba(33, 150, 243, 0.15);
+    color: #1565C0;
+    border: 1px solid rgba(33, 150, 243, 0.3);
 }
 
 /**

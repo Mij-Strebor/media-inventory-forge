@@ -22,7 +22,7 @@ defined('ABSPATH') || exit;
     <div class="fcc-info-content expanded" id="about-content">
         <div style="color: var(--clr-txt); font-size: 14px; line-height: 1.6;">
             <p style="margin: 0 0 16px 0; color: var(--clr-txt);">
-                Media Inventory Forge is a <strong>read-only analysis tool</strong> that scans your WordPress uploads directory and generates detailed reports about your media files. It catalogs file types, sizes, categories, dimensions, and WordPress-generated variations. <strong>MIF does not modify, optimize, or delete any files</strong> - it only reads and reports what exists. Use this information to understand your media library before making optimization decisions with other tools.
+                Media Inventory Forge is a <strong>read-only analysis tool</strong> that scans your WordPress uploads directory and generates detailed reports about your media files. It catalogs file types, sizes, categories, dimensions, and WordPress-generated variations. <strong>Media Inventory Forge does not modify, optimize, or delete any files</strong> - it only reads and reports what exists. Use this information to understand your media library before making optimization decisions with other tools.
             </p>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 20px;">
                 <div>
@@ -44,7 +44,7 @@ defined('ABSPATH') || exit;
             </div>
             <div style="background: rgba(60, 32, 23, 0.1); padding: 12px 16px; border-radius: 6px; border-left: 4px solid var(--clr-accent); margin-top: 20px;">
                 <p style="margin: 0; font-size: 13px; opacity: 0.95; line-height: 1.5; color: var(--clr-txt);">
-                    Media Inventory Forge by Jim R. (<a href="https://jimrweb.com" target="_blank" style="color: #CD5C5C; text-decoration: underline; font-weight: 600;">JimRWeb</a>), developed with tremendous help from Claude AI (<a href="https://anthropic.com" target="_blank" style="color: #CD5C5C; text-decoration: underline; font-weight: 600;">Anthropic</a>). Part of the professional WordPress development toolkit.
+                    Part of the Jim R Forge professional WordPress development toolkit
                 </p>
             </div>
         </div>
