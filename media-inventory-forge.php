@@ -263,6 +263,16 @@ require_once MIF_PLUGIN_DIR . 'includes/admin/class-admin.php';
  */
 require_once MIF_PLUGIN_DIR . 'includes/admin/class-admin-controller.php';
 
+/**
+ * Load Table Builder Class
+ *
+ * Builds category-based HTML tables with expandable rows for
+ * displaying media inventory in organized, interactive table format.
+ *
+ * @since 4.0.0
+ */
+require_once MIF_PLUGIN_DIR . 'includes/admin/class-table-builder.php';
+
 /* ==========================================================================
    PLUGIN INITIALIZATION
    ========================================================================== */

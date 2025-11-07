@@ -505,6 +505,9 @@ jQuery(document).ready(function ($) {
             $("#export-csv, #clear-results").show();
 
             displayResults();
+
+            // Trigger custom event for view toggle
+            $(document).trigger('mif_scan_complete');
           } else {
             // Continue scanning
             setTimeout(function () {

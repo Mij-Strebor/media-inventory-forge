@@ -1,0 +1,410 @@
+/**
+ * Table View Styles
+ *
+ * Styling for table view mode including view toggle buttons,
+ * sortable table, and responsive design.
+ *
+ * @package MediaInventoryForge
+ * @since 4.0.0
+ */
+
+/* ==========================================================================
+   VIEW TOGGLE BUTTONS
+   ========================================================================== */
+
+.mif-view-toggle {
+    display: inline-flex;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    background: white;
+}
+
+.mif-view-btn {
+    padding: 8px 16px;
+    background: white;
+    border: none;
+    border-right: 1px solid #ddd;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #2c3338;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.mif-view-btn:last-child {
+    border-right: none;
+}
+
+.mif-view-btn:hover {
+    background: #f6f7f7;
+}
+
+.mif-view-btn:focus {
+    box-shadow: 0 0 0 1px #2271b1 inset;
+}
+
+.mif-view-btn.active {
+    background: #2271b1;
+    color: white;
+}
+
+.mif-view-btn.active:hover {
+    background: #135e96;
+}
+
+.mif-view-btn .dashicons {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+}
+
+/* ==========================================================================
+   VIEW CONTAINERS
+   ========================================================================== */
+
+.mif-view-container {
+    transition: opacity 0.2s ease;
+}
+
+.mif-view-container.loading {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   TABLE STYLING
+   ========================================================================== */
+
+.mif-table-view-wrapper {
+    margin-top: 16px;
+}
+
+.mif-table-view-wrapper .wp-list-table {
+    border: 1px solid #c3c4c7;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+/* ==========================================================================
+   EXPANDABLE TABLE STYLING
+   ========================================================================== */
+
+.mif-category-table-section {
+    border: 1px solid #c3c4c7;
+    border-radius: var(--jimr-border-radius);
+    overflow: hidden;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.mif-expandable-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.mif-expandable-table thead th {
+    background: #f6f7f7;
+    border-bottom: 1px solid #c3c4c7;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.mif-expandable-table tbody tr {
+    border-bottom: 1px solid #c3c4c7;
+}
+
+.mif-expandable-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.mif-expandable-row:hover {
+    background: #f0f0f1;
+}
+
+.mif-expandable-row td {
+    padding: 12px;
+    vertical-align: middle;
+}
+
+.mif-expand-icon {
+    color: #2271b1;
+    font-size: 18px;
+    transition: transform 0.2s ease;
+}
+
+.mif-expandable-row:hover .mif-expand-icon {
+    color: #135e96;
+}
+
+.mif-expanded-details {
+    background: #f9f9f9;
+}
+
+.mif-expanded-details td {
+    padding: 0 !important;
+}
+
+.mif-details-table {
+    font-size: 13px;
+}
+
+.mif-details-table tr {
+    border-bottom: 1px solid #ddd;
+}
+
+.mif-details-table tr:last-child {
+    border-bottom: none;
+}
+
+.mif-details-table td {
+    padding: 8px 12px;
+}
+
+.mif-details-table tr:nth-child(even) {
+    background: white;
+}
+
+.mif-details-table tr:nth-child(odd) {
+    background: #f9f9f9;
+}
+
+.mif-table-view-wrapper .widefat thead tr th,
+.mif-table-view-wrapper .widefat tfoot tr th {
+    background: #f6f7f7;
+    border-bottom: 1px solid #c3c4c7;
+}
+
+.mif-table-view-wrapper .widefat tbody tr:nth-child(odd) {
+    background: #f6f7f7;
+}
+
+.mif-table-view-wrapper .widefat tbody tr:nth-child(even) {
+    background: #ffffff;
+}
+
+.mif-table-view-wrapper .widefat tbody tr:hover {
+    background: #f0f0f1;
+}
+
+/* ==========================================================================
+   SORTABLE COLUMNS
+   ========================================================================== */
+
+.mif-table-view-wrapper .sortable a {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.mif-table-view-wrapper .sortable a:hover {
+    color: #2271b1;
+}
+
+.mif-table-view-wrapper .sortable a:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+.mif-table-view-wrapper .sorting-indicator {
+    margin-left: 4px;
+    font-size: 12px;
+    color: #8c8f94;
+}
+
+.mif-table-view-wrapper th.asc .sorting-indicator::after {
+    content: " ↑";
+    color: #2271b1;
+}
+
+.mif-table-view-wrapper th.desc .sorting-indicator::after {
+    content: " ↓";
+    color: #2271b1;
+}
+
+.mif-table-view-wrapper th:not(.sorted):not(.asc):not(.desc) .sorting-indicator::after {
+    content: " ↕";
+}
+
+/* ==========================================================================
+   COLUMN-SPECIFIC STYLING
+   ========================================================================== */
+
+/* Thumbnail Column */
+.mif-table-view-wrapper .column-thumbnail {
+    width: 80px;
+    text-align: center;
+}
+
+.mif-table-view-wrapper .column-thumbnail img {
+    display: block;
+    margin: 0 auto;
+    max-width: 60px;
+    max-height: 60px;
+}
+
+/* Checkbox Column */
+.mif-table-view-wrapper .column-cb {
+    width: 2.2em;
+    text-align: center;
+}
+
+/* Type Column */
+.mif-table-view-wrapper .column-type {
+    width: 120px;
+}
+
+/* Source Column */
+.mif-table-view-wrapper .column-source {
+    width: 150px;
+}
+
+/* Files Column */
+.mif-table-view-wrapper .column-files {
+    width: 80px;
+    text-align: center;
+}
+
+/* Size Column */
+.mif-table-view-wrapper .column-size {
+    width: 100px;
+    text-align: right;
+}
+
+/* Dimensions Column */
+.mif-table-view-wrapper .column-dimensions {
+    width: 150px;
+}
+
+/* ==========================================================================
+   SOURCE BADGES IN TABLE
+   ========================================================================== */
+
+.mif-table-view-wrapper .source-badge {
+    display: inline-block;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.mif-table-view-wrapper .source-badge.source-media-library {
+    background: rgba(76, 175, 80, 0.15);
+    color: #2E7D32;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.mif-table-view-wrapper .source-badge.source-theme {
+    background: rgba(33, 150, 243, 0.15);
+    color: #1565C0;
+    border: 1px solid rgba(33, 150, 243, 0.3);
+}
+
+/* ==========================================================================
+   LOADING STATE
+   ========================================================================== */
+
+.mif-loading {
+    text-align: center;
+    padding: 40px;
+    color: #50575e;
+}
+
+.mif-loading .dashicons {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    color: #2271b1;
+}
+
+.mif-loading p {
+    margin-top: 12px;
+    font-size: 14px;
+}
+
+/* ==========================================================================
+   PAGINATION
+   ========================================================================== */
+
+.mif-table-view-wrapper .tablenav {
+    margin: 12px 0;
+}
+
+.mif-table-view-wrapper .tablenav-pages {
+    float: right;
+    margin: 0;
+}
+
+.mif-table-view-wrapper .tablenav-pages a,
+.mif-table-view-wrapper .tablenav-pages span.current {
+    text-decoration: none;
+    padding: 4px 8px;
+    border: 1px solid #c3c4c7;
+    background: white;
+    color: #2c3338;
+    border-radius: 2px;
+    transition: all 0.2s ease;
+}
+
+.mif-table-view-wrapper .tablenav-pages a:hover {
+    background: #f6f7f7;
+    border-color: #2271b1;
+    color: #2271b1;
+}
+
+.mif-table-view-wrapper .tablenav-pages span.current {
+    background: #2271b1;
+    color: white;
+    border-color: #2271b1;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+
+@media screen and (max-width: 782px) {
+    .mif-view-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+
+    .mif-view-btn .dashicons {
+        width: 16px;
+        height: 16px;
+        font-size: 16px;
+    }
+
+    .mif-table-view-wrapper .column-thumbnail {
+        display: none;
+    }
+
+    .mif-table-view-wrapper .column-dimensions {
+        display: none;
+    }
+
+    .mif-table-view-wrapper .column-files {
+        display: none;
+    }
+}
+
+/* ==========================================================================
+   EMPTY STATE
+   ========================================================================== */
+
+.mif-table-view-wrapper .no-items {
+    text-align: center;
+    padding: 40px;
+    color: #50575e;
+    font-style: italic;
+}

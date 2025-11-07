@@ -17,6 +17,23 @@ defined('ABSPATH') || exit;
 <div class="fcc-panel">
     <h2 style="margin-bottom: 16px;">Scan Controls</h2>
 
+    <!-- Display Mode Selection -->
+    <div style="margin-bottom: 16px; padding: 12px; background: var(--clr-light); border-radius: var(--jimr-border-radius); border: 1px solid var(--clr-secondary);">
+        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--clr-primary);">Display Mode:</label>
+        <div style="display: flex; gap: 16px; align-items: center;">
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--clr-txt);">
+                <input type="radio" name="mif-display-mode" id="mif-display-card" value="card" checked />
+                <span class="dashicons dashicons-grid-view" style="font-size: 16px;"></span>
+                Card View
+            </label>
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--clr-txt);">
+                <input type="radio" name="mif-display-mode" id="mif-display-table" value="table" />
+                <span class="dashicons dashicons-list-view" style="font-size: 16px;"></span>
+                Table View
+            </label>
+        </div>
+    </div>
+
     <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap;">
         <button id="start-scan" class="fcc-btn">🔍 start scan</button>
         <button id="stop-scan" class="fcc-btn fcc-btn-danger" style="display: none;">⏹️ stop scan</button>

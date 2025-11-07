@@ -56,6 +56,14 @@ class MIF_Admin
             MIF_VERSION
         );
 
+        // Enqueue table view CSS
+        wp_enqueue_style(
+            'mif-table-view-css',
+            MIF_PLUGIN_URL . 'assets/css/table-view.css',
+            ['mif-admin-css'],
+            MIF_VERSION
+        );
+
         // Enqueue admin JavaScript
         wp_enqueue_script(
             'mif-admin-js',
@@ -65,10 +73,20 @@ class MIF_Admin
             true // Load in footer
         );
 
+        // Enqueue table view JavaScript
+        wp_enqueue_script(
+            'mif-table-view-js',
+            MIF_PLUGIN_URL . 'assets/js/table-view.js',
+            ['jquery', 'mif-admin-js'], // Dependencies
+            MIF_VERSION,
+            true // Load in footer
+        );
+
         // Localize script data (pass PHP data to JavaScript)
         wp_localize_script('mif-admin-js', 'mifData', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('media_inventory_nonce'),
+            'viewPreference' => get_user_meta(get_current_user_id(), 'mif_view_preference', true) ?: 'card',
             'strings' => [
                 'scanComplete' => __('Scan completed successfully!', 'media-inventory-forge'),
                 'scanError' => __('An error occurred during scanning.', 'media-inventory-forge'),

@@ -33,6 +33,8 @@ class MIF_Admin_Controller
         add_action('wp_ajax_media_inventory_scan_usage', [$this, 'ajax_scan_usage']);
         add_action('wp_ajax_media_inventory_get_usage', [$this, 'ajax_get_usage']);
         add_action('wp_ajax_media_inventory_create_table', [$this, 'ajax_create_table']);
+        add_action('wp_ajax_mif_get_table_view', [$this, 'ajax_get_table_view']);
+        add_action('wp_ajax_mif_save_view_preference', [$this, 'ajax_save_view_preference']);
     }
 
     /**
@@ -274,6 +276,62 @@ class MIF_Admin_Controller
         } catch (Exception $e) {
             wp_send_json_error('Error: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * AJAX handler for getting table view
+     *
+     * Returns HTML for the table view with expandable rows
+     *
+     * @since 4.0.0
+     */
+    public function ajax_get_table_view()
+    {
+        check_ajax_referer('media_inventory_nonce', 'nonce');
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Permission denied');
+            return;
+        }
+
+        try {
+            // Create table builder
+            $table_builder = new MIF_Table_Builder();
+            $html = $table_builder->build_tables();
+
+            wp_send_json_success(['html' => $html]);
+        } catch (Exception $e) {
+            error_log('MIF Table View Error: ' . $e->getMessage());
+            wp_send_json_error('Error loading table view: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * AJAX handler for saving view preference
+     *
+     * Saves user's preferred view mode (card or table) to user meta
+     *
+     * @since 4.0.0
+     */
+    public function ajax_save_view_preference()
+    {
+        check_ajax_referer('media_inventory_nonce', 'nonce');
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Permission denied');
+            return;
+        }
+
+        $view = sanitize_text_field($_POST['view'] ?? 'card');
+
+        if (!in_array($view, ['card', 'table'])) {
+            wp_send_json_error('Invalid view type');
+            return;
+        }
+
+        update_user_meta(get_current_user_id(), 'mif_view_preference', $view);
+
+        wp_send_json_success(['message' => 'Preference saved']);
     }
 
     /**
