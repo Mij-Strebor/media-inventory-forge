@@ -439,6 +439,28 @@ jQuery(document).ready(function ($) {
     $("#export-csv, #clear-results").hide();
   });
 
+  /**
+   * Select All Sources Button Handler
+   *
+   * Checks all source filter checkboxes.
+   *
+   * @since 4.0.0
+   */
+  $("#mif-select-all-sources").on("click", function () {
+    $(".mif-source-filter").prop("checked", true);
+  });
+
+  /**
+   * Deselect All Sources Button Handler
+   *
+   * Unchecks all source filter checkboxes.
+   *
+   * @since 4.0.0
+   */
+  $("#mif-deselect-all-sources").on("click", function () {
+    $(".mif-source-filter").prop("checked", false);
+  });
+
   /* ==========================================================================
      4. AJAX COMMUNICATION & BATCH PROCESSING
      ========================================================================== */

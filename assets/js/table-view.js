@@ -176,6 +176,27 @@
                 }
             });
 
+            // Category header collapse handlers
+            $('#mif-table-view').on('click', '.mif-category-header', function (e) {
+                e.preventDefault();
+                var $header = $(this);
+                var targetId = $header.data('target');
+                var $content = $('#' + targetId);
+                var $icon = $header.find('.mif-category-toggle-icon');
+
+                console.log('Category header clicked:', targetId);
+
+                if ($content.is(':visible')) {
+                    // Collapse
+                    $content.slideUp(300);
+                    $icon.removeClass('dashicons-arrow-down-alt2').addClass('dashicons-arrow-up-alt2');
+                } else {
+                    // Expand
+                    $content.slideDown(300);
+                    $icon.removeClass('dashicons-arrow-up-alt2').addClass('dashicons-arrow-down-alt2');
+                }
+            });
+
             console.log('Table handlers attached');
         },
 

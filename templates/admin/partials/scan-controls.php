@@ -34,6 +34,42 @@ defined('ABSPATH') || exit;
         </div>
     </div>
 
+    <!-- Source Filters -->
+    <div style="margin-bottom: 16px; padding: 12px; background: var(--clr-light); border-radius: var(--jimr-border-radius); border: 1px solid var(--clr-secondary);">
+        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--clr-primary);">Scan Sources:</label>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;">
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--clr-txt);">
+                <input type="checkbox" name="mif-source-filter" class="mif-source-filter" value="media-library" checked />
+                <strong>Media Library</strong>
+                <span style="font-size: 11px; color: #666;">(Primary)</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--clr-txt);">
+                <input type="checkbox" name="mif-source-filter" class="mif-source-filter" value="theme" />
+                Active Theme
+            </label>
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--clr-txt);">
+                <input type="checkbox" name="mif-source-filter" class="mif-source-filter" value="parent-theme" />
+                Parent Theme
+            </label>
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--clr-txt);">
+                <input type="checkbox" name="mif-source-filter" class="mif-source-filter" value="plugins" />
+                Plugins
+            </label>
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--clr-txt);">
+                <input type="checkbox" name="mif-source-filter" class="mif-source-filter" value="wordpress-core" />
+                WordPress Core
+            </label>
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--clr-txt);">
+                <input type="checkbox" name="mif-source-filter" class="mif-source-filter" value="uploads" />
+                Uploads Directory
+            </label>
+        </div>
+        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--clr-secondary);">
+            <button type="button" id="mif-select-all-sources" class="button button-small" style="margin-right: 8px;">Select All</button>
+            <button type="button" id="mif-deselect-all-sources" class="button button-small">Deselect All</button>
+        </div>
+    </div>
+
     <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap;">
         <button id="start-scan" class="fcc-btn">🔍 start scan</button>
         <button id="stop-scan" class="fcc-btn fcc-btn-danger" style="display: none;">⏹️ stop scan</button>

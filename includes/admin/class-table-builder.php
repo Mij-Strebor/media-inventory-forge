@@ -113,10 +113,18 @@ class MIF_Table_Builder
         $total_size = array_sum(array_column($items, 'total_size'));
         $formatted_size = MIF_File_Utils::format_bytes($total_size);
 
+        $section_id = 'mif-category-' . sanitize_title($category_name);
+
         $html = '<div class="mif-category-table-section" style="margin-bottom: 20px;">';
-        $html .= '<h3 style="background: var(--clr-primary); color: var(--clr-light-txt); padding: 12px 16px; margin: 0; border-radius: var(--jimr-border-radius) var(--jimr-border-radius) 0 0;">';
-        $html .= esc_html($category_name) . ' (' . $item_count . ' items, ' . $formatted_size . ')';
+
+        // Collapsible header
+        $html .= '<h3 class="mif-category-header" data-target="' . $section_id . '" style="background: var(--clr-primary); color: var(--clr-light-txt); padding: 12px 16px; margin: 0; border-radius: var(--jimr-border-radius) var(--jimr-border-radius) 0 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">';
+        $html .= '<span>' . esc_html($category_name) . ' (' . $item_count . ' items, ' . $formatted_size . ')</span>';
+        $html .= '<span class="dashicons dashicons-arrow-down-alt2 mif-category-toggle-icon"></span>';
         $html .= '</h3>';
+
+        // Collapsible content
+        $html .= '<div id="' . $section_id . '" class="mif-category-content" style="display: block;">';
 
         // Build category-specific table
         if ($category_name === 'Fonts') {
@@ -127,7 +135,8 @@ class MIF_Table_Builder
             $html .= $this->build_default_table($items);
         }
 
-        $html .= '</div>';
+        $html .= '</div>'; // .mif-category-content
+        $html .= '</div>'; // .mif-category-table-section
 
         return $html;
     }
