@@ -73,7 +73,6 @@ defined('ABSPATH') || exit;
         <button id="start-scan" class="fcc-btn">🔍 start scan</button>
         <button id="stop-scan" class="fcc-btn fcc-btn-danger" style="display: none;">⏹️ stop scan</button>
         <button id="export-csv" class="fcc-btn" style="display: none;">📊 export csv</button>
-        <button id="clear-results" class="fcc-btn fcc-btn-ghost" style="display: none;">🗑️ clear results</button>
     </div>
 
     <div id="scan-progress" style="display: none;">

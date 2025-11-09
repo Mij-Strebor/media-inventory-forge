@@ -81,7 +81,7 @@ class MIF_Table_Builder
      */
     private function get_ordered_categories($category_names)
     {
-        $order = ['Fonts', 'SVG', 'Images', 'Videos', 'Audio', 'PDFs', 'Documents', 'Text Files', 'Archives', 'Other Documents', 'Other'];
+        $order = ['Images', 'Fonts', 'SVG', 'Videos', 'Audio', 'PDFs', 'Documents', 'Text Files', 'Archives', 'Other Documents', 'Other'];
         $ordered = [];
 
         foreach ($order as $cat) {

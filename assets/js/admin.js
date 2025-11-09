@@ -196,6 +196,100 @@ jQuery(document).ready(function ($) {
   });
 
   /* ==========================================================================
+     2b. EXPANDABLE TABLE HANDLERS (FOR CARD VIEW)
+     ========================================================================== */
+
+  /**
+   * Expandable Row Click Handler (Card View)
+   *
+   * Handles clicks on expandable table rows in card view
+   * (specifically for Images when toggle is set to "Table")
+   */
+  $(document).on('click', '#results-container .mif-expandable-row', function (e) {
+    e.preventDefault();
+    const $row = $(this);
+    const targetId = $row.data('target');
+    const $details = $('#' + targetId);
+    const $icon = $row.find('.mif-expand-icon');
+
+    if ($details.is(':visible')) {
+      // Collapse
+      $details.hide();
+      $icon.removeClass('dashicons-minus').addClass('dashicons-plus-alt2');
+    } else {
+      // Expand
+      $details.show();
+      $icon.removeClass('dashicons-plus-alt2').addClass('dashicons-minus');
+    }
+  });
+
+  /**
+   * Sortable Column Click Handler (Card View)
+   *
+   * Handles sorting on table columns in card view
+   */
+  $(document).on('click', '#results-container .mif-sortable', function (e) {
+    e.preventDefault();
+    const $header = $(this);
+    const column = $header.data('column');
+    const currentSort = $header.attr('data-sort');
+    const newSort = currentSort === 'asc' ? 'desc' : 'asc';
+    const $table = $header.closest('table');
+    const $tbody = $table.find('tbody');
+
+    // Clear all sort indicators in this table
+    $table.find('.mif-sortable').removeAttr('data-sort');
+
+    // Set new sort direction
+    $header.attr('data-sort', newSort);
+
+    // Get column index
+    const columnIndex = $header.index();
+
+    // Get all main rows (not expanded details)
+    const $rows = $tbody.find('tr.mif-expandable-row');
+
+    // Sort rows
+    $rows.sort(function (a, b) {
+      const $aCell = $(a).find('td').eq(columnIndex);
+      const $bCell = $(b).find('td').eq(columnIndex);
+
+      let aValue = $aCell.data('sort-value');
+      let bValue = $bCell.data('sort-value');
+
+      // Handle different data types
+      if (typeof aValue === 'string') {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
+      } else {
+        aValue = parseFloat(aValue) || 0;
+        bValue = parseFloat(bValue) || 0;
+      }
+
+      if (newSort === 'asc') {
+        return aValue > bValue ? 1 : (aValue < bValue ? -1 : 0);
+      } else {
+        return aValue < bValue ? 1 : (aValue > bValue ? -1 : 0);
+      }
+    });
+
+    // Re-append sorted rows (maintaining row pairs: expandable + details)
+    $rows.each(function () {
+      const $row = $(this);
+      const targetId = $row.data('target');
+      const $detailsRow = $('#' + targetId);
+
+      // Append main row
+      $tbody.append($row);
+
+      // Append details row immediately after
+      if ($detailsRow.length) {
+        $tbody.append($detailsRow);
+      }
+    });
+  });
+
+  /* ==========================================================================
      3. SCAN CONTROL EVENT HANDLERS
      ========================================================================== */
 
@@ -222,7 +316,12 @@ jQuery(document).ready(function ($) {
     $("#stop-scan").show();
     $("#scan-progress").show();
     $("#summary-stats").hide();
-    $("#export-csv, #clear-results").hide();
+    $("#export-csv").hide();
+
+    // Reset progress bar for new scan
+    $("#progress-bar").css("width", "0%");
+    $("#progress-text").text("0 / 0 processed");
+
     $("#results-container").html(
       '<div style="text-align: center; padding: 40px; color: var(--clr-txt); font-style: italic;">Scanning in progress...</div>'
     );
@@ -247,9 +346,9 @@ jQuery(document).ready(function ($) {
     $("#start-scan").prop("disabled", false).text("🔍 start scan").show();
     $("#stop-scan").hide();
     $("#scan-progress").hide();
-    $("#export-csv, #clear-results").show();
+    $("#export-csv").show();
     $("#results-container").html(
-      '<div style="text-align: center; padding: 40px; color: var(--clr-txt); font-style: italic;">Scan stopped. Click "start scan" to resume or "clear results" to start over.</div>'
+      '<div style="text-align: center; padding: 40px; color: var(--clr-txt); font-style: italic;">Scan stopped. Click "start scan" to continue.</div>'
     );
   });
 
@@ -306,26 +405,6 @@ jQuery(document).ready(function ($) {
     $("body").append(form);
     form.submit();
     form.remove();
-  });
-
-  /**
-   * Clear Results Button Handler
-   *
-   * Resets inventory data and UI to initial state, allowing fresh scan.
-   *
-   * @listens click - #clear-results button click
-   * @returns {void}
-   *
-   * @note Clears global inventoryData array
-   * @note Resets all UI elements to initial state
-   */
-  $("#clear-results").on("click", function () {
-    inventoryData = [];
-    $("#results-container").html(
-      '<div style="text-align: center; padding: 40px; color: var(--clr-txt); font-style: italic;">Click "start scan" to begin inventory scanning.</div>'
-    );
-    $("#summary-stats").hide();
-    $("#export-csv, #clear-results").hide();
   });
 
   /**
@@ -421,7 +500,7 @@ jQuery(document).ready(function ($) {
               .show();
             $("#stop-scan").hide();
             $("#scan-progress").hide();
-            $("#export-csv, #clear-results").show();
+            $("#export-csv").show();
 
             displayResults();
 
@@ -569,20 +648,21 @@ jQuery(document).ready(function ($) {
    * @param {Object} categories - Category data object with names as keys
    * @returns {Array<string>} Ordered array of category names
    *
-   * @note Predefined order: Fonts, SVG, Images, Videos, Audio, PDFs, Documents, Text Files, Other Documents, Other
+   * @note Predefined order: Images, Fonts, SVG, Videos, Audio, PDFs, Documents, Text Files, Other Documents, Other
    * @note Only includes categories that exist in input object
    * @note Unknown categories appended alphabetically after predefined ones
    */
   function getOrderedCategories(categories) {
     const categoryOrder = [
+      "Images",
       "Fonts",
       "SVG",
-      "Images",
       "Videos",
       "Audio",
       "PDFs",
       "Documents",
       "Text Files",
+      "Archives",
       "Other Documents",
       "Other",
     ];
@@ -775,6 +855,9 @@ jQuery(document).ready(function ($) {
    * Routes category to appropriate specialized display handler based
    * on category type. Falls back to default table display.
    *
+   * For Images: Checks view mode toggle to show cards or table.
+   * For all others: Always shows as table (current simple table format).
+   *
    * @function getCategoryContent
    * @param {string} categoryName - Name of category
    * @param {Object} category - Category data object
@@ -782,6 +865,7 @@ jQuery(document).ready(function ($) {
    *
    * @note Specialized handlers: Fonts, SVG, Images
    * @note All other categories use displayDefaultTable()
+   * @note Images respects "Image Display Mode" toggle
    * @note Logs category name to console for debugging
    */
   function getCategoryContent(categoryName, category) {
@@ -792,7 +876,13 @@ jQuery(document).ready(function ($) {
     } else if (categoryName === "SVG") {
       return displaySVG(category);
     } else if (categoryName === "Images") {
-      return displayImagesCategory(category);
+      // Check view mode - only Images respects the toggle
+      const viewMode = $('input[name="mif-display-mode"]:checked').val() || 'card';
+      if (viewMode === 'table') {
+        return displayImagesTable(category);
+      } else {
+        return displayImagesCategory(category);
+      }
     } else {
       return displayDefaultTable(category);
     }
@@ -1085,6 +1175,89 @@ jQuery(document).ready(function ($) {
     html += createSubPanel("Individual Image Cards", cardsContent, {
       margin: "0 16px 8px 16px",
     });
+
+    return html;
+  }
+
+  /**
+   * Image Table Display Function
+   *
+   * Displays Images category in expandable table format (when toggle is set to "Table").
+   * Creates a table with expandable rows showing all image size variants.
+   *
+   * @function displayImagesTable
+   * @param {Object} category - Images category object
+   * @param {Array} category.items - Array of image items
+   * @returns {string} HTML table with expandable image rows
+   *
+   * @note Shows thumbnail, title, source, file count, size, dimensions
+   * @note Expandable rows reveal all image size variants
+   * @note Maintains same structure as class-table-builder for consistency
+   */
+  function displayImagesTable(category) {
+    let html = '<table class="mif-expandable-table widefat mif-sortable-table">';
+    html += '<thead><tr>';
+    html += '<th style="width: 40px;"></th>';
+    html += '<th style="width: 80px;">Thumbnail</th>';
+    html += '<th class="mif-sortable" data-column="title"><span class="mif-sort-label">Title</span><span class="mif-sort-indicator"></span></th>';
+    html += '<th>Source</th>';
+    html += '<th class="mif-sortable" data-column="files" style="width: 100px;"><span class="mif-sort-label">Files</span><span class="mif-sort-indicator"></span></th>';
+    html += '<th class="mif-sortable" data-column="size" style="width: 120px;"><span class="mif-sort-label">Total Size</span><span class="mif-sort-indicator"></span></th>';
+    html += '<th style="width: 140px;">Dimensions</th>';
+    html += '</tr></thead>';
+    html += '<tbody>';
+
+    category.items.forEach((item) => {
+      const rowId = 'image-' + item.id.replace(/[^a-z0-9]/gi, '-');
+
+      // Main row
+      html += '<tr class="mif-expandable-row" data-target="' + rowId + '">';
+      html += '<td><span class="dashicons dashicons-plus-alt2 mif-expand-icon"></span></td>';
+
+      // Thumbnail
+      html += '<td>';
+      if (item.thumbnail_url) {
+        html += '<img src="' + escapeHtml(item.thumbnail_url) + '" alt="' + escapeHtml(item.title) + '" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;" />';
+      } else {
+        html += '<div style="width: 60px; height: 60px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border-radius: 4px;">📷</div>';
+      }
+      html += '</td>';
+
+      html += '<td data-sort-value="' + escapeHtml(item.title.toLowerCase()) + '"><strong>' + escapeHtml(item.title) + '</strong></td>';
+
+      // Source
+      html += '<td>';
+      if (item.source) {
+        const sourceClass = item.source === 'Media Library' ? 'source-media-library' : 'source-theme';
+        html += '<span class="source-badge ' + sourceClass + '">' + escapeHtml(item.source) + '</span>';
+      }
+      html += '</td>';
+
+      html += '<td data-sort-value="' + item.file_count + '">' + item.file_count + '</td>';
+      html += '<td data-sort-value="' + item.total_size + '">' + formatBytes(item.total_size) + '</td>';
+      html += '<td>' + escapeHtml(item.dimensions || 'N/A') + '</td>';
+      html += '</tr>';
+
+      // Expanded details row
+      html += '<tr class="mif-expanded-details" id="' + rowId + '" style="display: none;">';
+      html += '<td colspan="7">';
+      html += '<div style="padding: 12px; background: #f9f9f9;">';
+      html += '<table class="mif-details-table" style="width: 100%; border-collapse: collapse;">';
+      html += '<tr style="background: #e0e0e0; font-weight: 600;"><td>File</td><td>Type</td><td>Dimensions</td><td>Size</td></tr>';
+
+      item.files.forEach((file) => {
+        html += '<tr>';
+        html += '<td>' + escapeHtml(file.filename || 'Unknown') + '</td>';
+        html += '<td>' + escapeHtml(file.type) + '</td>';
+        html += '<td>' + escapeHtml(file.dimensions || 'N/A') + '</td>';
+        html += '<td>' + formatBytes(file.size) + '</td>';
+        html += '</tr>';
+      });
+
+      html += '</table></div></td></tr>';
+    });
+
+    html += '</tbody></table>';
 
     return html;
   }
