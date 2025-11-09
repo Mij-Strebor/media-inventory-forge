@@ -220,11 +220,22 @@
                     // Collapse
                     console.log('Collapsing row');
                     $details.css('display', 'none');
+                    $details.css('background-color', '');
                     $icon.removeClass('dashicons-minus').addClass('dashicons-plus-alt2');
                 } else {
                     // Expand
                     console.log('Expanding row');
+                    console.log('Element being modified:', $details[0]);
+                    console.log('Element ID:', $details.attr('id'));
+                    console.log('Element tag:', $details.prop('tagName'));
+
                     $details.css('display', 'table-row');
+                    $details.css('background-color', 'yellow');
+
+                    console.log('After CSS applied - display:', $details.css('display'));
+                    console.log('After CSS applied - background:', $details.css('background-color'));
+                    console.log('Element is visible?', $details.is(':visible'));
+
                     $icon.removeClass('dashicons-plus-alt2').addClass('dashicons-minus');
                 }
             });
