@@ -313,12 +313,19 @@ jQuery(document).ready(function ($) {
   function scanBatch(offset) {
     if (!isScanning) return; // Check if user stopped the scan
 
+    // Get selected source filters
+    var selectedSources = [];
+    $(".mif-source-filter:checked").each(function () {
+      selectedSources.push($(this).val());
+    });
+
     $.post({
       url: mifData.ajaxUrl,
       data: {
         action: "media_inventory_scan",
         nonce: mifData.nonce,
         offset: offset,
+        sources: selectedSources,
       },
       timeout: 30000, // 30 second timeout
     })

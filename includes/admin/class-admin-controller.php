@@ -62,7 +62,7 @@ class MIF_Admin_Controller
 
     /**
      * AJAX handler for scanning media
-     * 
+     *
      * Processes media library scanning requests in batches with
      * comprehensive error handling and security validation.
      */
@@ -78,6 +78,11 @@ class MIF_Admin_Controller
         $offset = isset($_POST['offset']) ? intval($_POST['offset']) : 0;
         $batch_size = isset($_POST['batch_size']) ? intval($_POST['batch_size']) : 10;
 
+        // Get source filters
+        $sources = isset($_POST['sources']) && is_array($_POST['sources'])
+            ? array_map('sanitize_text_field', $_POST['sources'])
+            : ['media-library']; // Default to media library only
+
         if ($offset < 0) {
             wp_send_json_error('Invalid offset parameter');
             return;
@@ -90,12 +95,14 @@ class MIF_Admin_Controller
 
         try {
             $scanner = new MIF_Scanner($batch_size);
+            $scanner->set_source_filters($sources);
             $result = $scanner->scan_batch($offset);
 
             if (defined('WP_DEBUG') && WP_DEBUG) {
                 $result['debug'] = [
                     'memory_usage' => memory_get_usage(true),
-                    'memory_peak' => memory_get_peak_usage(true)
+                    'memory_peak' => memory_get_peak_usage(true),
+                    'sources' => $sources
                 ];
             }
 

@@ -91,9 +91,41 @@ class MIF_Scanner
      */
     private $theme_files = [];
 
+    /**
+     * Array of enabled source filters
+     *
+     * @var array
+     * @since 4.0.0
+     */
+    private $source_filters = ['media-library']; // Default to media library only
+
     /* ==========================================================================
        1. PUBLIC API
        ========================================================================== */
+
+    /**
+     * Set source filters for scanning
+     *
+     * @param array $sources Array of source identifiers to scan
+     * @return void
+     * @since 4.0.0
+     */
+    public function set_source_filters($sources)
+    {
+        $this->source_filters = is_array($sources) && !empty($sources) ? $sources : ['media-library'];
+    }
+
+    /**
+     * Check if a source should be scanned
+     *
+     * @param string $source Source identifier
+     * @return bool True if source should be scanned
+     * @since 4.0.0
+     */
+    private function should_scan_source($source)
+    {
+        return in_array($source, $this->source_filters, true);
+    }
 
     /**
      * Constructor
@@ -140,15 +172,23 @@ class MIF_Scanner
         // Set time and memory limits for batch processing
         $this->prepare_environment();
 
-        $attachments = $this->get_attachments($offset);
         $inventory_data = [];
+        $attachments = [];
+        $total_attachments = 0;
 
-        // Scan theme files on first batch
-        if ($offset === 0 && !$this->theme_files_scanned) {
+        // Only get attachments if media-library source is enabled
+        if ($this->should_scan_source('media-library')) {
+            $attachments = $this->get_attachments($offset);
+            $total_attachments = $this->get_total_attachments();
+        }
+
+        // Scan theme files on first batch if theme source is enabled
+        if ($offset === 0 && !$this->theme_files_scanned && $this->should_scan_source('theme')) {
             $this->scan_theme_files();
             $this->theme_files_scanned = true;
         }
 
+        // Process media library attachments
         foreach ($attachments as $attachment_id) {
             try {
                 $item_data = $this->process_attachment($attachment_id);
@@ -168,7 +208,6 @@ class MIF_Scanner
             $inventory_data = array_merge($inventory_data, $this->theme_files);
         }
 
-        $total_attachments = $this->get_total_attachments();
         $total_with_theme = $total_attachments + count($this->theme_files);
         $processed_total = min($offset + $this->batch_size, $total_attachments);
 
