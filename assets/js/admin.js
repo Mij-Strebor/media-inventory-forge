@@ -90,8 +90,6 @@ jQuery(document).ready(function ($) {
 
     // Force another reflow to ensure visual update
     void element.offsetHeight;
-
-    console.log('Toggle state updated - checked:', element.checked, 'indeterminate:', element.indeterminate);
   }
 
   /**
@@ -102,7 +100,6 @@ jQuery(document).ready(function ($) {
     var totalSources = $(".mif-source-filter").length;
     var checkedSources = $(".mif-source-filter:checked").length;
 
-    console.log('Initializing toggle checkbox - Total:', totalSources, 'Checked:', checkedSources);
     updateToggleCheckboxState(checkedSources, totalSources);
   }
 
@@ -511,7 +508,6 @@ jQuery(document).ready(function ($) {
     var totalSources = $(".mif-source-filter").length;
     var checkedSources = $(".mif-source-filter:checked").length;
 
-    console.log('Source filter changed - Total:', totalSources, 'Checked:', checkedSources);
     updateToggleCheckboxState(checkedSources, totalSources);
   });
 
