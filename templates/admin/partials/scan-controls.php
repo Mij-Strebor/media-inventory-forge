@@ -37,7 +37,7 @@ defined('ABSPATH') || exit;
     <!-- Source Filters -->
     <div style="margin-bottom: 16px; padding: 12px; background: var(--clr-light); border-radius: var(--jimr-border-radius); border: 1px solid var(--clr-secondary);">
         <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; cursor: pointer;">
-            <input type="checkbox" id="mif-toggle-all-sources" checked />
+            <input type="checkbox" id="mif-toggle-all-sources" />
             <span style="font-weight: 600; color: var(--clr-primary);">Scan Sources:</span>
         </label>
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;">
