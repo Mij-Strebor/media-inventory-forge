@@ -20,6 +20,15 @@ class MIF_File_Utils
 
     /**
      * Format file sizes in human-readable format
+     *
+     * Converts byte values to human-readable format (B, KB, MB, GB, TB)
+     * with specified precision.
+     *
+     * @since 2.0.0
+     *
+     * @param int $bytes     The number of bytes to format.
+     * @param int $precision Decimal precision (default 2).
+     * @return string Formatted file size with unit (e.g., "2.50 MB").
      */
     public static function format_bytes($bytes, $precision = 2)
     {
@@ -33,6 +42,16 @@ class MIF_File_Utils
 
     /**
      * Get file category based on MIME type
+     *
+     * Categorizes media files into standard categories (Images, Fonts, Videos, etc.)
+     * based on their MIME type. Includes special handling for SVG, fonts, archives,
+     * and Office documents.
+     *
+     * @since 2.0.0
+     * @since 4.0.0 Added improved font detection for EOT and TTF files.
+     *
+     * @param string $mime_type The MIME type to categorize.
+     * @return string The category name (e.g., 'Images', 'Fonts', 'Videos').
      */
     public static function get_category($mime_type)
     {
@@ -93,6 +112,15 @@ class MIF_File_Utils
 
     /**
      * Extract font family name from filename or title
+     *
+     * Removes font weight/style indicators and file extensions to extract
+     * the core font family name. Normalizes formatting to Title Case.
+     *
+     * @since 2.0.0
+     *
+     * @param string $title    The font title from media library.
+     * @param string $filename The font filename.
+     * @return string The extracted font family name (e.g., "Open Sans").
      */
     public static function get_font_family($title, $filename)
     {
@@ -107,6 +135,14 @@ class MIF_File_Utils
 
     /**
      * Validate file path is within uploads directory
+     *
+     * Security check to ensure file paths are within the WordPress uploads
+     * directory to prevent directory traversal attacks.
+     *
+     * @since 2.0.0
+     *
+     * @param string $file_path The file path to validate.
+     * @return bool True if path is valid and within uploads directory, false otherwise.
      */
     public static function is_valid_upload_path($file_path)
     {
@@ -124,6 +160,14 @@ class MIF_File_Utils
 
     /**
      * Sanitize file path for display
+     *
+     * Removes the uploads base directory from file paths for cleaner display.
+     *
+     * @since 2.0.0
+     *
+     * @param string $file_path       The full file path.
+     * @param string $upload_basedir  The uploads base directory path.
+     * @return string The sanitized relative path.
      */
     public static function sanitize_file_path($file_path, $upload_basedir)
     {
@@ -132,6 +176,11 @@ class MIF_File_Utils
 
     /**
      * Check if file exists and is readable
+     *
+     * @since 2.0.0
+     *
+     * @param string $file_path The file path to check.
+     * @return bool True if file exists and is readable, false otherwise.
      */
     public static function is_file_accessible($file_path)
     {
@@ -140,6 +189,11 @@ class MIF_File_Utils
 
     /**
      * Get safe file size (handles errors gracefully)
+     *
+     * @since 2.0.0
+     *
+     * @param string $file_path The file path.
+     * @return int File size in bytes, or 0 if unable to read.
      */
     public static function get_safe_file_size($file_path)
     {
