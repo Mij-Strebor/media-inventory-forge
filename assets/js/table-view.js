@@ -136,12 +136,35 @@
         /**
          * Show card view and hide table view
          *
+         * Ensures card view container is visible and triggers refresh
+         * of any collapsed/hidden content within.
+         *
          * @since 4.0.0
          * @returns {void}
          */
         showCardView: function () {
-            $('#mif-card-view').show();
+            var $cardView = $('#mif-card-view');
+            var $resultsContainer = $('#results-container');
+
+            // Show card view, hide table view
+            $cardView.show();
             $('#mif-table-view').hide();
+
+            // Ensure results container and its content are visible
+            if ($resultsContainer.children().length > 0) {
+                $resultsContainer.show();
+
+                // Ensure all category sections within card view are visible
+                $resultsContainer.find('.fcc-info-toggle-section').each(function() {
+                    var $section = $(this);
+                    if ($section.css('display') === 'none') {
+                        $section.show();
+                    }
+                });
+            }
+
+            // Trigger custom event for any additional handling
+            $(document).trigger('mif_card_view_shown');
         },
 
         /**
