@@ -161,14 +161,14 @@ class MIF_Table_Builder
 
         ksort($families);
 
-        $html = '<table class="mif-expandable-table widefat">';
+        $html = '<table class="mif-expandable-table widefat mif-sortable-table">';
         $html .= '<thead><tr>';
         $html .= '<th style="width: 40px;"></th>';
-        $html .= '<th>Font Family</th>';
+        $html .= '<th class="mif-sortable" data-column="title"><span class="mif-sort-label">Font Family</span><span class="mif-sort-indicator"></span></th>';
         $html .= '<th>Source</th>';
         $html .= '<th style="width: 100px;">Variants</th>';
-        $html .= '<th style="width: 100px;">Files</th>';
-        $html .= '<th style="width: 120px;">Total Size</th>';
+        $html .= '<th class="mif-sortable" data-column="files" style="width: 100px;"><span class="mif-sort-label">Files</span><span class="mif-sort-indicator"></span></th>';
+        $html .= '<th class="mif-sortable" data-column="size" style="width: 120px;"><span class="mif-sort-label">Total Size</span><span class="mif-sort-indicator"></span></th>';
         $html .= '</tr></thead>';
         $html .= '<tbody>';
 
@@ -187,7 +187,7 @@ class MIF_Table_Builder
             // Main row
             $html .= '<tr class="mif-expandable-row" data-target="' . $row_id . '">';
             $html .= '<td><span class="dashicons dashicons-plus-alt2 mif-expand-icon"></span></td>';
-            $html .= '<td><strong>' . esc_html($family_name) . '</strong></td>';
+            $html .= '<td data-sort-value="' . esc_attr(strtolower($family_name)) . '"><strong>' . esc_html($family_name) . '</strong></td>';
             $html .= '<td>';
             foreach ($sources as $source) {
                 $badge_class = ($source === 'Media Library') ? 'source-media-library' : 'source-theme';
@@ -195,8 +195,8 @@ class MIF_Table_Builder
             }
             $html .= '</td>';
             $html .= '<td>' . implode(', ', $variants) . '</td>';
-            $html .= '<td>' . $total_files . '</td>';
-            $html .= '<td>' . MIF_File_Utils::format_bytes($total_size) . '</td>';
+            $html .= '<td data-sort-value="' . $total_files . '">' . $total_files . '</td>';
+            $html .= '<td data-sort-value="' . $total_size . '">' . MIF_File_Utils::format_bytes($total_size) . '</td>';
             $html .= '</tr>';
 
             // Expanded details row
@@ -232,14 +232,14 @@ class MIF_Table_Builder
      */
     private function build_images_table($items)
     {
-        $html = '<table class="mif-expandable-table widefat">';
+        $html = '<table class="mif-expandable-table widefat mif-sortable-table">';
         $html .= '<thead><tr>';
         $html .= '<th style="width: 40px;"></th>';
         $html .= '<th style="width: 80px;">Thumbnail</th>';
-        $html .= '<th>Title</th>';
+        $html .= '<th class="mif-sortable" data-column="title"><span class="mif-sort-label">Title</span><span class="mif-sort-indicator"></span></th>';
         $html .= '<th>Source</th>';
-        $html .= '<th style="width: 100px;">Files</th>';
-        $html .= '<th style="width: 120px;">Total Size</th>';
+        $html .= '<th class="mif-sortable" data-column="files" style="width: 100px;"><span class="mif-sort-label">Files</span><span class="mif-sort-indicator"></span></th>';
+        $html .= '<th class="mif-sortable" data-column="size" style="width: 120px;"><span class="mif-sort-label">Total Size</span><span class="mif-sort-indicator"></span></th>';
         $html .= '<th style="width: 140px;">Dimensions</th>';
         $html .= '</tr></thead>';
         $html .= '<tbody>';
@@ -260,7 +260,7 @@ class MIF_Table_Builder
             }
             $html .= '</td>';
 
-            $html .= '<td><strong>' . esc_html($item['title']) . '</strong></td>';
+            $html .= '<td data-sort-value="' . esc_attr(strtolower($item['title'])) . '"><strong>' . esc_html($item['title']) . '</strong></td>';
 
             // Source
             $html .= '<td>';
@@ -270,8 +270,8 @@ class MIF_Table_Builder
             }
             $html .= '</td>';
 
-            $html .= '<td>' . $item['file_count'] . '</td>';
-            $html .= '<td>' . MIF_File_Utils::format_bytes($item['total_size']) . '</td>';
+            $html .= '<td data-sort-value="' . $item['file_count'] . '">' . $item['file_count'] . '</td>';
+            $html .= '<td data-sort-value="' . $item['total_size'] . '">' . MIF_File_Utils::format_bytes($item['total_size']) . '</td>';
             $html .= '<td>' . esc_html($item['dimensions'] ?? 'N/A') . '</td>';
             $html .= '</tr>';
 
@@ -307,14 +307,14 @@ class MIF_Table_Builder
      */
     private function build_default_table($items)
     {
-        $html = '<table class="mif-expandable-table widefat">';
+        $html = '<table class="mif-expandable-table widefat mif-sortable-table">';
         $html .= '<thead><tr>';
         $html .= '<th style="width: 40px;"></th>';
-        $html .= '<th>Title</th>';
+        $html .= '<th class="mif-sortable" data-column="title"><span class="mif-sort-label">Title</span><span class="mif-sort-indicator"></span></th>';
         $html .= '<th>Source</th>';
         $html .= '<th style="width: 120px;">Type</th>';
-        $html .= '<th style="width: 100px;">Files</th>';
-        $html .= '<th style="width: 120px;">Size</th>';
+        $html .= '<th class="mif-sortable" data-column="files" style="width: 100px;"><span class="mif-sort-label">Files</span><span class="mif-sort-indicator"></span></th>';
+        $html .= '<th class="mif-sortable" data-column="size" style="width: 120px;"><span class="mif-sort-label">Size</span><span class="mif-sort-indicator"></span></th>';
         $html .= '</tr></thead>';
         $html .= '<tbody>';
 
@@ -324,7 +324,7 @@ class MIF_Table_Builder
             // Main row
             $html .= '<tr class="mif-expandable-row" data-target="' . $row_id . '">';
             $html .= '<td><span class="dashicons dashicons-plus-alt2 mif-expand-icon"></span></td>';
-            $html .= '<td><strong>' . esc_html($item['title']) . '</strong></td>';
+            $html .= '<td data-sort-value="' . esc_attr(strtolower($item['title'])) . '"><strong>' . esc_html($item['title']) . '</strong></td>';
 
             // Source
             $html .= '<td>';
@@ -335,8 +335,8 @@ class MIF_Table_Builder
             $html .= '</td>';
 
             $html .= '<td>' . strtoupper(esc_html($item['extension'])) . '</td>';
-            $html .= '<td>' . $item['file_count'] . '</td>';
-            $html .= '<td>' . MIF_File_Utils::format_bytes($item['total_size']) . '</td>';
+            $html .= '<td data-sort-value="' . $item['file_count'] . '">' . $item['file_count'] . '</td>';
+            $html .= '<td data-sort-value="' . $item['total_size'] . '">' . MIF_File_Utils::format_bytes($item['total_size']) . '</td>';
             $html .= '</tr>';
 
             // Expanded details row

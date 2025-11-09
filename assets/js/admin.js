@@ -59,12 +59,65 @@ jQuery(document).ready(function ($) {
      ========================================================================== */
 
   /**
+   * LocalStorage Helper Functions for Collapse State Persistence
+   */
+  function saveCollapseState(sectionId, isExpanded) {
+    try {
+      localStorage.setItem('mif_collapse_' + sectionId, isExpanded ? '1' : '0');
+    } catch (e) {
+      console.warn('Failed to save collapse state:', e);
+    }
+  }
+
+  function getCollapseState(sectionId) {
+    try {
+      const state = localStorage.getItem('mif_collapse_' + sectionId);
+      return state === '1'; // Returns true if expanded, false if collapsed, false if not set
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function restoreCollapseStates() {
+    $('.fcc-info-toggle').each(function() {
+      const $toggle = $(this);
+      let targetId;
+
+      // Get target ID
+      if ($toggle.data('toggle-target')) {
+        targetId = $toggle.data('toggle-target');
+      } else {
+        const $content = $toggle.next('.fcc-info-content');
+        targetId = $content.attr('id');
+      }
+
+      if (!targetId) return;
+
+      const savedState = localStorage.getItem('mif_collapse_' + targetId);
+      if (savedState === null) return; // No saved state, keep default
+
+      const shouldExpand = savedState === '1';
+      const $content = $('#' + targetId);
+
+      if (shouldExpand) {
+        $content.addClass('expanded').css('max-height', 'none');
+        $toggle.addClass('expanded');
+      } else {
+        $content.removeClass('expanded').css('max-height', '0px');
+        $toggle.removeClass('expanded');
+      }
+    });
+  }
+
+  /**
    * Universal Toggle System with Dynamic Height Calculation
    *
    * Provides collapsible panel functionality for any element with the
    * fcc-info-toggle class. Automatically calculates content height for
    * smooth animations regardless of content size. Supports both explicit
    * data-toggle-target attributes and implicit next-sibling relationships.
+   *
+   * Includes localStorage persistence to maintain collapse states across page refreshes.
    *
    * @listens click - Handles toggle button clicks
    * @param {Event} e - jQuery click event object
@@ -73,6 +126,7 @@ jQuery(document).ready(function ($) {
    * @note Uses CSS transition duration of 400ms for animations
    * @note Requires matching CSS classes: fcc-info-toggle, fcc-info-content, expanded
    * @note Searches for content in three ways: explicit target, next sibling, parent search
+   * @note Saves collapse state to localStorage for persistence
    */
   $(document).on("click", ".fcc-info-toggle", function (e) {
     e.preventDefault();
@@ -80,9 +134,10 @@ jQuery(document).ready(function ($) {
 
     const $toggle = $(this);
     let $content;
+    let targetId;
 
     // Check for explicit target first
-    const targetId = $toggle.data("toggle-target");
+    targetId = $toggle.data("toggle-target");
     if (targetId) {
       $content = $("#" + targetId);
     } else {
@@ -94,6 +149,7 @@ jQuery(document).ready(function ($) {
           .closest(".fcc-info-toggle-section")
           .find(".fcc-info-content");
       }
+      targetId = $content.attr('id');
     }
 
     if (!$content.length) {
@@ -112,6 +168,9 @@ jQuery(document).ready(function ($) {
       $content.css("max-height", "0px");
       $content.removeClass("expanded");
       $toggle.removeClass("expanded");
+
+      // Save collapsed state
+      if (targetId) saveCollapseState(targetId, false);
     } else {
       // Expand: temporarily show content to measure, then animate
       $content.css("max-height", "none");
@@ -130,6 +189,9 @@ jQuery(document).ready(function ($) {
           $content.css("max-height", "none");
         }
       }, 400); // Match CSS transition duration
+
+      // Save expanded state
+      if (targetId) saveCollapseState(targetId, true);
     }
   });
 
@@ -267,25 +329,26 @@ jQuery(document).ready(function ($) {
   });
 
   /**
-   * Select All Sources Button Handler
+   * Toggle All Sources Checkbox Handler
    *
-   * Checks all source filter checkboxes.
+   * Checks or unchecks all source filter checkboxes based on toggle state.
    *
    * @since 4.0.0
    */
-  $("#mif-select-all-sources").on("click", function () {
-    $(".mif-source-filter").prop("checked", true);
+  $("#mif-toggle-all-sources").on("change", function () {
+    var isChecked = $(this).prop("checked");
+    $(".mif-source-filter").prop("checked", isChecked);
   });
 
   /**
-   * Deselect All Sources Button Handler
-   *
-   * Unchecks all source filter checkboxes.
+   * Update Toggle All checkbox when individual sources change
    *
    * @since 4.0.0
    */
-  $("#mif-deselect-all-sources").on("click", function () {
-    $(".mif-source-filter").prop("checked", false);
+  $(document).on("change", ".mif-source-filter", function () {
+    var totalSources = $(".mif-source-filter").length;
+    var checkedSources = $(".mif-source-filter:checked").length;
+    $("#mif-toggle-all-sources").prop("checked", checkedSources === totalSources);
   });
 
   /* ==========================================================================
@@ -491,6 +554,9 @@ jQuery(document).ready(function ($) {
     $("#results-container").html(html);
     updateSummaryDisplay(categories, totals);
     updatePieChart(categories, totals);
+
+    // Restore collapse states after rendering categories
+    setTimeout(restoreCollapseStates, 50);
   }
 
   /**
@@ -683,8 +749,11 @@ jQuery(document).ready(function ($) {
     const expandedClass = config.defaultExpanded ? "expanded" : "";
     const categoryContent = getCategoryContent(categoryName, category);
 
+    // Create unique ID for this category section
+    const sectionId = 'category-' + categoryName.toLowerCase().replace(/\s+/g, '-');
+
     let html = '<div class="fcc-info-toggle-section">';
-    html += `<button class="fcc-info-toggle fcc-category-toggle ${config.toggleClass} ${expandedClass}">`;
+    html += `<button class="fcc-info-toggle fcc-category-toggle ${config.toggleClass} ${expandedClass}" data-toggle-target="${sectionId}">`;
     html += `<span style="color: var(--clr-light-txt) !important;">`;
     html += `${config.icon} ${categoryName} (${category.itemCount} items, ${
       category.totalFiles
@@ -692,7 +761,7 @@ jQuery(document).ready(function ($) {
     html += `</span>`;
     html += `<span class="fcc-toggle-icon" style="color: var(--clr-light-txt) !important;">▼</span>`;
     html += `</button>`;
-    html += `<div class="fcc-info-content ${expandedClass}">`;
+    html += `<div class="fcc-info-content ${expandedClass}" id="${sectionId}">`;
     html += categoryContent;
     html += `</div>`;
     html += `</div>`;
@@ -1317,6 +1386,13 @@ jQuery(document).ready(function ($) {
     div.textContent = text;
     return div.innerHTML;
   }
+
+  /* ==========================================================================
+     INITIALIZATION
+     ========================================================================== */
+
+  // Restore collapse states for About panel on page load
+  restoreCollapseStates();
 
   /* ==========================================================================
      END OF MEDIA INVENTORY FORGE ADMIN JAVASCRIPT

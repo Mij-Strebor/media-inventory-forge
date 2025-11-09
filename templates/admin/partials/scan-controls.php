@@ -17,9 +17,9 @@ defined('ABSPATH') || exit;
 <div class="fcc-panel">
     <h2 style="margin-bottom: 16px;">Scan Controls</h2>
 
-    <!-- Display Mode Selection -->
+    <!-- Image Display Mode Selection -->
     <div style="margin-bottom: 16px; padding: 12px; background: var(--clr-light); border-radius: var(--jimr-border-radius); border: 1px solid var(--clr-secondary);">
-        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--clr-primary);">Display Mode:</label>
+        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--clr-primary);">Image Display Mode:</label>
         <div style="display: flex; gap: 16px; align-items: center;">
             <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--clr-txt);">
                 <input type="radio" name="mif-display-mode" id="mif-display-card" value="card" checked />
@@ -36,7 +36,10 @@ defined('ABSPATH') || exit;
 
     <!-- Source Filters -->
     <div style="margin-bottom: 16px; padding: 12px; background: var(--clr-light); border-radius: var(--jimr-border-radius); border: 1px solid var(--clr-secondary);">
-        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--clr-primary);">Scan Sources:</label>
+        <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; cursor: pointer;">
+            <input type="checkbox" id="mif-toggle-all-sources" checked />
+            <span style="font-weight: 600; color: var(--clr-primary);">Scan Sources:</span>
+        </label>
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;">
             <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--clr-txt);">
                 <input type="checkbox" name="mif-source-filter" class="mif-source-filter" value="media-library" checked />
@@ -63,10 +66,6 @@ defined('ABSPATH') || exit;
                 <input type="checkbox" name="mif-source-filter" class="mif-source-filter" value="uploads" />
                 Uploads Directory
             </label>
-        </div>
-        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--clr-secondary);">
-            <button type="button" id="mif-select-all-sources" class="button button-small" style="margin-right: 8px;">Select All</button>
-            <button type="button" id="mif-deselect-all-sources" class="button button-small">Deselect All</button>
         </div>
     </div>
 

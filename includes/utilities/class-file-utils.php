@@ -47,7 +47,14 @@ class MIF_File_Utils
         if (strpos($mime_type, 'video/') === 0) return 'Videos';
         if (strpos($mime_type, 'audio/') === 0) return 'Audio';
         if (strpos($mime_type, 'application/pdf') === 0) return 'PDFs';
-        if (strpos($mime_type, 'font/') === 0 || strpos($mime_type, 'application/font') === 0) return 'Fonts';
+
+        // Font detection - includes EOT, TTF, WOFF variants
+        if (strpos($mime_type, 'font/') === 0 ||
+            strpos($mime_type, 'application/font') === 0 ||
+            strpos($mime_type, 'application/x-font') === 0 ||
+            $mime_type === 'application/vnd.ms-fontobject') {
+            return 'Fonts';
+        }
 
         // Archives - MUST come before generic application/ check
         if (in_array($mime_type, [

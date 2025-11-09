@@ -12,6 +12,50 @@
     'use strict';
 
     /**
+     * LocalStorage Helper Functions for Collapse State Persistence
+     */
+    function saveCollapseState(sectionId, isExpanded) {
+        try {
+            localStorage.setItem('mif_table_collapse_' + sectionId, isExpanded ? '1' : '0');
+        } catch (e) {
+            console.warn('Failed to save collapse state:', e);
+        }
+    }
+
+    function getCollapseState(sectionId) {
+        try {
+            const state = localStorage.getItem('mif_table_collapse_' + sectionId);
+            return state === '1'; // Returns true if expanded, false if collapsed
+        } catch (e) {
+            return true; // Default to expanded
+        }
+    }
+
+    function restoreTableCollapseStates() {
+        $('.mif-category-header').each(function() {
+            const $header = $(this);
+            const targetId = $header.data('target');
+
+            if (!targetId) return;
+
+            const savedState = localStorage.getItem('mif_table_collapse_' + targetId);
+            if (savedState === null) return; // No saved state, keep default
+
+            const shouldExpand = savedState === '1';
+            const $content = $('#' + targetId);
+            const $icon = $header.find('.mif-category-toggle-icon');
+
+            if (shouldExpand) {
+                $content.show();
+                $icon.removeClass('dashicons-arrow-up-alt2').addClass('dashicons-arrow-down-alt2');
+            } else {
+                $content.hide();
+                $icon.removeClass('dashicons-arrow-down-alt2').addClass('dashicons-arrow-up-alt2');
+            }
+        });
+    }
+
+    /**
      * Table View Manager
      */
     var MIF_TableView = {
@@ -190,14 +234,83 @@
                     // Collapse
                     $content.slideUp(300);
                     $icon.removeClass('dashicons-arrow-down-alt2').addClass('dashicons-arrow-up-alt2');
+                    saveCollapseState(targetId, false);
                 } else {
                     // Expand
                     $content.slideDown(300);
                     $icon.removeClass('dashicons-arrow-up-alt2').addClass('dashicons-arrow-down-alt2');
+                    saveCollapseState(targetId, true);
                 }
             });
 
+            // Sortable column headers
+            $('#mif-table-view').on('click', '.mif-sortable', function (e) {
+                e.preventDefault();
+                var $header = $(this);
+                var column = $header.data('column');
+                var currentSort = $header.attr('data-sort');
+                var newSort = currentSort === 'asc' ? 'desc' : 'asc';
+                var $table = $header.closest('table');
+                var $tbody = $table.find('tbody');
+
+                console.log('Sorting column:', column, 'direction:', newSort);
+
+                // Clear all sort indicators in this table
+                $table.find('.mif-sortable').removeAttr('data-sort');
+
+                // Set new sort direction
+                $header.attr('data-sort', newSort);
+
+                // Get column index
+                var columnIndex = $header.index();
+
+                // Get all main rows (not expanded details)
+                var $rows = $tbody.find('tr.mif-expandable-row');
+
+                // Sort rows
+                $rows.sort(function (a, b) {
+                    var $aCell = $(a).find('td').eq(columnIndex);
+                    var $bCell = $(b).find('td').eq(columnIndex);
+
+                    var aValue = $aCell.data('sort-value');
+                    var bValue = $bCell.data('sort-value');
+
+                    // Handle different data types
+                    if (typeof aValue === 'string') {
+                        aValue = aValue.toLowerCase();
+                        bValue = bValue.toLowerCase();
+                    } else {
+                        aValue = parseFloat(aValue) || 0;
+                        bValue = parseFloat(bValue) || 0;
+                    }
+
+                    if (newSort === 'asc') {
+                        return aValue > bValue ? 1 : (aValue < bValue ? -1 : 0);
+                    } else {
+                        return aValue < bValue ? 1 : (aValue > bValue ? -1 : 0);
+                    }
+                });
+
+                // Re-append sorted rows (maintaining row pairs: expandable + details)
+                $rows.each(function () {
+                    var $row = $(this);
+                    var targetId = $row.data('target');
+                    var $detailsRow = $('#' + targetId);
+
+                    // Append main row
+                    $tbody.append($row);
+
+                    // Append details row immediately after
+                    if ($detailsRow.length) {
+                        $tbody.append($detailsRow);
+                    }
+                });
+            });
+
             console.log('Table handlers attached');
+
+            // Restore collapse states after table is loaded
+            setTimeout(restoreTableCollapseStates, 100);
         },
 
         /**
