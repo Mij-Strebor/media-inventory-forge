@@ -212,13 +212,24 @@ jQuery(document).ready(function ($) {
     const $details = $('#' + targetId);
     const $icon = $row.find('.mif-expand-icon');
 
+    console.log('Card View - Row clicked:', targetId);
+    console.log('Card View - Details row found:', $details.length);
+    console.log('Card View - Details visible:', $details.is(':visible'));
+
+    if ($details.length === 0) {
+      console.error('Card View - Details row not found! ID:', targetId);
+      return;
+    }
+
     if ($details.is(':visible')) {
       // Collapse
-      $details.hide();
+      console.log('Card View - Collapsing row');
+      $details.css('display', 'none');
       $icon.removeClass('dashicons-minus').addClass('dashicons-plus-alt2');
     } else {
       // Expand
-      $details.show();
+      console.log('Card View - Expanding row');
+      $details.css('display', 'table-row');
       $icon.removeClass('dashicons-plus-alt2').addClass('dashicons-minus');
     }
   });

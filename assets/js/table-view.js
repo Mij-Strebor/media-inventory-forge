@@ -208,14 +208,23 @@
                 var $icon = $row.find('.mif-expand-icon');
 
                 console.log('Row clicked:', targetId);
+                console.log('Details row found:', $details.length);
+                console.log('Details row visible:', $details.is(':visible'));
+
+                if ($details.length === 0) {
+                    console.error('Details row not found! ID:', targetId);
+                    return;
+                }
 
                 if ($details.is(':visible')) {
                     // Collapse
-                    $details.hide();
+                    console.log('Collapsing row');
+                    $details.css('display', 'none');
                     $icon.removeClass('dashicons-minus').addClass('dashicons-plus-alt2');
                 } else {
                     // Expand
-                    $details.show();
+                    console.log('Expanding row');
+                    $details.css('display', 'table-row');
                     $icon.removeClass('dashicons-plus-alt2').addClass('dashicons-minus');
                 }
             });
