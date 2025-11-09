@@ -20,7 +20,7 @@ class MIF_Admin_Controller
 {
     /**
      * Constructor
-     * 
+     *
      * Initializes admin functionality with proper hook priorities
      * to ensure compatibility with shared menu systems.
      */
@@ -30,9 +30,14 @@ class MIF_Admin_Controller
         add_action('admin_menu', [$this, 'add_admin_menu'], 15);
         add_action('wp_ajax_media_inventory_scan', [$this, 'ajax_scan']);
         add_action('wp_ajax_media_inventory_export', [$this, 'ajax_export']);
+
+        // Usage tracking AJAX handlers (backend kept, UI removed for v4.0.0)
+        // Proper integration planned for v4.1.0
         add_action('wp_ajax_media_inventory_scan_usage', [$this, 'ajax_scan_usage']);
         add_action('wp_ajax_media_inventory_get_usage', [$this, 'ajax_get_usage']);
         add_action('wp_ajax_media_inventory_create_table', [$this, 'ajax_create_table']);
+
+        // Table view AJAX handlers
         add_action('wp_ajax_mif_get_table_view', [$this, 'ajax_get_table_view']);
         add_action('wp_ajax_mif_save_view_preference', [$this, 'ajax_save_view_preference']);
     }
