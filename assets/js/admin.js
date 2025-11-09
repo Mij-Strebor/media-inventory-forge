@@ -209,7 +209,8 @@ jQuery(document).ready(function ($) {
     e.preventDefault();
     const $row = $(this);
     const targetId = $row.data('target');
-    const $details = $('#' + targetId);
+    // IMPORTANT: Scope selector to #mif-card-view to avoid duplicate IDs in table view
+    const $details = $('#mif-card-view').find('#' + targetId);
     const $icon = $row.find('.mif-expand-icon');
 
     console.log('Card View - Row clicked:', targetId);

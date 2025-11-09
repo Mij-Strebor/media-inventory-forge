@@ -204,7 +204,8 @@
                 e.preventDefault();
                 var $row = $(this);
                 var targetId = $row.data('target');
-                var $details = $('#' + targetId);
+                // IMPORTANT: Scope selector to #mif-table-view to avoid duplicate IDs in card view
+                var $details = $('#mif-table-view').find('#' + targetId);
                 var $icon = $row.find('.mif-expand-icon');
 
                 console.log('Row clicked:', targetId);
@@ -220,34 +221,11 @@
                     // Collapse
                     console.log('Collapsing row');
                     $details.css('display', 'none');
-                    $details.css('background-color', '');
                     $icon.removeClass('dashicons-minus').addClass('dashicons-plus-alt2');
                 } else {
                     // Expand
                     console.log('Expanding row');
-                    console.log('Element being modified:', $details[0]);
-                    console.log('Element ID:', $details.attr('id'));
-                    console.log('Element tag:', $details.prop('tagName'));
-
-                    // Check parent chain for hidden elements
-                    console.log('=== PARENT CHAIN ===');
-                    $details.parents().each(function(index) {
-                        var $parent = $(this);
-                        console.log('Parent ' + index + ':', $parent.prop('tagName'),
-                                    'ID:', $parent.attr('id') || 'none',
-                                    'Class:', $parent.attr('class') || 'none',
-                                    'Display:', $parent.css('display'),
-                                    'Visible:', $parent.is(':visible'));
-                    });
-                    console.log('=== END PARENT CHAIN ===');
-
                     $details.css('display', 'table-row');
-                    $details.css('background-color', 'yellow');
-
-                    console.log('After CSS applied - display:', $details.css('display'));
-                    console.log('After CSS applied - background:', $details.css('background-color'));
-                    console.log('Element is visible?', $details.is(':visible'));
-
                     $icon.removeClass('dashicons-plus-alt2').addClass('dashicons-minus');
                 }
             });
