@@ -55,6 +55,34 @@ jQuery(document).ready(function ($) {
   let isScanning = false;
 
   /* ==========================================================================
+     1. INITIALIZATION
+     ========================================================================== */
+
+  /**
+   * Initialize tri-state checkbox for Scan Sources
+   * Sets the correct initial state based on which child checkboxes are checked
+   */
+  function initializeToggleAllCheckbox() {
+    var totalSources = $(".mif-source-filter").length;
+    var checkedSources = $(".mif-source-filter:checked").length;
+    var $toggleCheckbox = $("#mif-toggle-all-sources");
+
+    if (checkedSources === 0) {
+      $toggleCheckbox.prop("checked", false);
+      $toggleCheckbox.prop("indeterminate", false);
+    } else if (checkedSources === totalSources) {
+      $toggleCheckbox.prop("checked", true);
+      $toggleCheckbox.prop("indeterminate", false);
+    } else {
+      $toggleCheckbox.prop("checked", true);
+      $toggleCheckbox.prop("indeterminate", true);
+    }
+  }
+
+  // Call initialization on page load
+  initializeToggleAllCheckbox();
+
+  /* ==========================================================================
      2. INTERACTIVE COMPONENTS - UNIVERSAL TOGGLE SYSTEM
      ========================================================================== */
 
@@ -423,23 +451,50 @@ jQuery(document).ready(function ($) {
    * Toggle All Sources Checkbox Handler
    *
    * Checks or unchecks all source filter checkboxes based on toggle state.
+   * When in indeterminate state and clicked, checks all boxes.
    *
    * @since 4.0.0
    */
   $("#mif-toggle-all-sources").on("change", function () {
-    var isChecked = $(this).prop("checked");
+    var $this = $(this);
+    var isChecked = $this.prop("checked");
+
+    // When clicked from indeterminate state, always check all
+    // Otherwise, toggle all based on checked state
     $(".mif-source-filter").prop("checked", isChecked);
+
+    // Clear indeterminate state after click
+    $this.prop("indeterminate", false);
   });
 
   /**
    * Update Toggle All checkbox when individual sources change
+   *
+   * Implements tri-state checkbox:
+   * - Unchecked: no children checked
+   * - Indeterminate (faded): some but not all children checked
+   * - Checked: all children checked
    *
    * @since 4.0.0
    */
   $(document).on("change", ".mif-source-filter", function () {
     var totalSources = $(".mif-source-filter").length;
     var checkedSources = $(".mif-source-filter:checked").length;
-    $("#mif-toggle-all-sources").prop("checked", checkedSources === totalSources);
+    var $toggleCheckbox = $("#mif-toggle-all-sources");
+
+    if (checkedSources === 0) {
+      // No children checked - unchecked state
+      $toggleCheckbox.prop("checked", false);
+      $toggleCheckbox.prop("indeterminate", false);
+    } else if (checkedSources === totalSources) {
+      // All children checked - fully checked state
+      $toggleCheckbox.prop("checked", true);
+      $toggleCheckbox.prop("indeterminate", false);
+    } else {
+      // Some but not all checked - indeterminate state (faded checkmark)
+      $toggleCheckbox.prop("checked", true);
+      $toggleCheckbox.prop("indeterminate", true);
+    }
   });
 
   /* ==========================================================================
