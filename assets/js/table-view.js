@@ -5,32 +5,53 @@
  * AJAX table loading, sorting, and pagination.
  *
  * @package MediaInventoryForge
- * @since 4.0.0
+ * @since   4.0.0
+ * @author  Jim Roberts (Jim R Forge)
  */
 
 (function ($) {
     'use strict';
 
     /**
-     * LocalStorage Helper Functions for Collapse State Persistence
+     * Save category collapse state to localStorage
+     *
+     * @since 4.0.0
+     * @param {string}  sectionId  The section ID to save state for
+     * @param {boolean} isExpanded Whether the section is expanded
+     * @returns {void}
      */
     function saveCollapseState(sectionId, isExpanded) {
         try {
             localStorage.setItem('mif_table_collapse_' + sectionId, isExpanded ? '1' : '0');
         } catch (e) {
-            console.warn('Failed to save collapse state:', e);
+            // Silently fail if localStorage is unavailable
         }
     }
 
+    /**
+     * Get category collapse state from localStorage
+     *
+     * @since 4.0.0
+     * @param {string} sectionId The section ID to get state for
+     * @returns {boolean} True if expanded, false if collapsed
+     */
     function getCollapseState(sectionId) {
         try {
             const state = localStorage.getItem('mif_table_collapse_' + sectionId);
-            return state === '1'; // Returns true if expanded, false if collapsed
+            return state === '1';
         } catch (e) {
             return true; // Default to expanded
         }
     }
 
+    /**
+     * Restore collapse states for all table category headers
+     *
+     * Reads saved states from localStorage and applies them to category sections.
+     *
+     * @since 4.0.0
+     * @returns {void}
+     */
     function restoreTableCollapseStates() {
         $('.mif-category-header').each(function() {
             const $header = $(this);
@@ -39,7 +60,7 @@
             if (!targetId) return;
 
             const savedState = localStorage.getItem('mif_table_collapse_' + targetId);
-            if (savedState === null) return; // No saved state, keep default
+            if (savedState === null) return;
 
             const shouldExpand = savedState === '1';
             const $content = $('#' + targetId);
@@ -57,11 +78,18 @@
 
     /**
      * Table View Manager
+     *
+     * Manages table view display, AJAX loading, sorting, and user preferences.
+     *
+     * @since 4.0.0
      */
     var MIF_TableView = {
 
         /**
          * Initialize table view functionality
+         *
+         * @since 4.0.0
+         * @returns {void}
          */
         init: function () {
             this.bindEvents();
@@ -70,6 +98,9 @@
 
         /**
          * Bind event handlers
+         *
+         * @since 4.0.0
+         * @returns {void}
          */
         bindEvents: function () {
             var self = this;
@@ -87,6 +118,10 @@
 
         /**
          * Handle view change from radio buttons
+         *
+         * @since 4.0.0
+         * @param {string} view The view mode ('card' or 'table')
+         * @returns {void}
          */
         handleViewChange: function (view) {
             if (view === 'card') {
@@ -95,12 +130,14 @@
                 this.showTableView();
             }
 
-            // Save preference
             this.saveViewPreference(view);
         },
 
         /**
-         * Show card view
+         * Show card view and hide table view
+         *
+         * @since 4.0.0
+         * @returns {void}
          */
         showCardView: function () {
             $('#mif-card-view').show();
@@ -108,36 +145,30 @@
         },
 
         /**
-         * Show table view
+         * Show table view and hide card view
+         *
+         * Loads table data via AJAX if not already loaded.
+         *
+         * @since 4.0.0
+         * @returns {void}
          */
         showTableView: function () {
-            console.log('showTableView called');
             $('#mif-card-view').hide();
             $('#mif-table-view').show();
 
             var $tableView = $('#mif-table-view');
-            var isEmpty = $tableView.is(':empty');
-            var hasContent = $.trim($tableView.text()).length > 0;
             var hasTable = $tableView.find('table').length > 0;
 
-            console.log('Table view state:', {
-                isEmpty: isEmpty,
-                hasContent: hasContent,
-                hasTable: hasTable,
-                html: $tableView.html()
-            });
-
-            // Load table if not already loaded (check for actual table element)
             if (!hasTable) {
-                console.log('Loading table data...');
                 this.loadTableData();
-            } else {
-                console.log('Table already loaded, skipping AJAX call');
             }
         },
 
         /**
          * Apply current view based on radio selection
+         *
+         * @since 4.0.0
+         * @returns {void}
          */
         applyCurrentView: function () {
             var selectedView = $('input[name="mif-display-mode"]:checked').val() || 'card';
@@ -146,17 +177,22 @@
 
         /**
          * Load table data via AJAX
+         *
+         * @since 4.0.0
+         * @param {Object} params Optional parameters (page, orderby, order, per_page)
+         * @returns {void}
          */
         loadTableData: function (params) {
             var self = this;
             params = params || {};
 
-            console.log('loadTableData called with params:', params);
-            console.log('AJAX URL:', ajaxurl);
-            console.log('Nonce:', mifData.nonce);
-
             // Show loading state
-            $('#mif-table-view').html('<div class="mif-loading" style="text-align: center; padding: 40px;"><span class="dashicons dashicons-update spin" style="font-size: 40px; color: #2271b1;"></span><p>Loading table view...</p></div>');
+            $('#mif-table-view').html(
+                '<div class="mif-loading" style="text-align: center; padding: 40px;">' +
+                '<span class="dashicons dashicons-update spin" style="font-size: 40px; color: #2271b1;"></span>' +
+                '<p>Loading table view...</p>' +
+                '</div>'
+            );
 
             var ajaxData = {
                 action: 'mif_get_table_view',
@@ -167,64 +203,59 @@
                 per_page: params.per_page || 50
             };
 
-            console.log('Sending AJAX request with data:', ajaxData);
-
             $.ajax({
                 url: ajaxurl,
                 type: 'POST',
                 data: ajaxData,
                 success: function (response) {
-                    console.log('AJAX response received:', response);
                     if (response.success) {
-                        console.log('Success! HTML length:', response.data.html.length);
                         $('#mif-table-view').html(response.data.html);
                         self.attachTableHandlers();
                     } else {
-                        console.error('Response indicates failure:', response.data);
-                        $('#mif-table-view').html('<div class="error" style="padding: 20px; text-align: center;"><p>Error loading table view: ' + (response.data || 'Unknown error') + '</p></div>');
+                        $('#mif-table-view').html(
+                            '<div class="error" style="padding: 20px; text-align: center;">' +
+                            '<p>Error loading table view: ' + (response.data || 'Unknown error') + '</p>' +
+                            '</div>'
+                        );
                     }
                 },
                 error: function (xhr, status, error) {
-                    console.error('Table view AJAX error:', {xhr: xhr, status: status, error: error, responseText: xhr.responseText});
-                    $('#mif-table-view').html('<div class="error" style="padding: 20px; text-align: center;"><p>Error loading table view: ' + error + '</p><p>Check browser console for details.</p></div>');
+                    $('#mif-table-view').html(
+                        '<div class="error" style="padding: 20px; text-align: center;">' +
+                        '<p>Error loading table view: ' + error + '</p>' +
+                        '</div>'
+                    );
                 }
             });
         },
 
         /**
          * Attach event handlers to table elements
+         *
+         * Sets up click handlers for expandable rows, category headers,
+         * and sortable columns. Restores saved collapse states.
+         *
+         * @since 4.0.0
+         * @returns {void}
          */
         attachTableHandlers: function () {
-            var self = this;
-
-            console.log('Attaching table handlers...');
-
             // Expandable row click handlers
             $('#mif-table-view').on('click', '.mif-expandable-row', function (e) {
                 e.preventDefault();
                 var $row = $(this);
                 var targetId = $row.data('target');
-                // IMPORTANT: Scope selector to #mif-table-view to avoid duplicate IDs in card view
+                // Scope selector to #mif-table-view to avoid duplicate IDs in card view
                 var $details = $('#mif-table-view').find('#' + targetId);
                 var $icon = $row.find('.mif-expand-icon');
 
-                console.log('Row clicked:', targetId);
-                console.log('Details row found:', $details.length);
-                console.log('Details row visible:', $details.is(':visible'));
-
                 if ($details.length === 0) {
-                    console.error('Details row not found! ID:', targetId);
                     return;
                 }
 
                 if ($details.is(':visible')) {
-                    // Collapse
-                    console.log('Collapsing row');
                     $details.css('display', 'none');
                     $icon.removeClass('dashicons-minus').addClass('dashicons-plus-alt2');
                 } else {
-                    // Expand
-                    console.log('Expanding row');
                     $details.css('display', 'table-row');
                     $icon.removeClass('dashicons-plus-alt2').addClass('dashicons-minus');
                 }
@@ -238,15 +269,11 @@
                 var $content = $('#' + targetId);
                 var $icon = $header.find('.mif-category-toggle-icon');
 
-                console.log('Category header clicked:', targetId);
-
                 if ($content.is(':visible')) {
-                    // Collapse
                     $content.slideUp(300);
                     $icon.removeClass('dashicons-arrow-down-alt2').addClass('dashicons-arrow-up-alt2');
                     saveCollapseState(targetId, false);
                 } else {
-                    // Expand
                     $content.slideDown(300);
                     $icon.removeClass('dashicons-arrow-up-alt2').addClass('dashicons-arrow-down-alt2');
                     saveCollapseState(targetId, true);
@@ -257,13 +284,10 @@
             $('#mif-table-view').on('click', '.mif-sortable', function (e) {
                 e.preventDefault();
                 var $header = $(this);
-                var column = $header.data('column');
                 var currentSort = $header.attr('data-sort');
                 var newSort = currentSort === 'asc' ? 'desc' : 'asc';
                 var $table = $header.closest('table');
                 var $tbody = $table.find('tbody');
-
-                console.log('Sorting column:', column, 'direction:', newSort);
 
                 // Clear all sort indicators in this table
                 $table.find('.mif-sortable').removeAttr('data-sort');
@@ -307,24 +331,24 @@
                     var targetId = $row.data('target');
                     var $detailsRow = $('#' + targetId);
 
-                    // Append main row
                     $tbody.append($row);
 
-                    // Append details row immediately after
                     if ($detailsRow.length) {
                         $tbody.append($detailsRow);
                     }
                 });
             });
 
-            console.log('Table handlers attached');
-
             // Restore collapse states after table is loaded
             setTimeout(restoreTableCollapseStates, 100);
         },
 
         /**
-         * Save user's view preference
+         * Save user's view preference via AJAX
+         *
+         * @since 4.0.0
+         * @param {string} view The view mode to save ('card' or 'table')
+         * @returns {void}
          */
         saveViewPreference: function (view) {
             $.post(ajaxurl, {
@@ -336,12 +360,15 @@
 
         /**
          * Load user's saved view preference
+         *
+         * Reads the saved preference from PHP and sets the appropriate radio button.
+         *
+         * @since 4.0.0
+         * @returns {void}
          */
         loadUserPreference: function () {
-            // Get preference from PHP
             var savedView = mifData.viewPreference || 'card';
 
-            // Set the radio button
             if (savedView === 'table') {
                 $('#mif-display-table').prop('checked', true);
             } else {
@@ -351,25 +378,28 @@
     };
 
     /**
-     * Initialize when document ready
+     * Initialize table view manager when document is ready
+     *
+     * @since 4.0.0
      */
     $(document).ready(function () {
         MIF_TableView.init();
     });
 
     /**
-     * Add spin animation for loading spinner
+     * Add CSS for loading spinner animation
+     *
+     * @since 4.0.0
      */
     var style = document.createElement('style');
-    style.textContent = `
-        .dashicons.spin {
-            animation: mif-spin 1s linear infinite;
-        }
-        @keyframes mif-spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    `;
+    style.textContent =
+        '.dashicons.spin {' +
+        '    animation: mif-spin 1s linear infinite;' +
+        '}' +
+        '@keyframes mif-spin {' +
+        '    0% { transform: rotate(0deg); }' +
+        '    100% { transform: rotate(360deg); }' +
+        '}';
     document.head.appendChild(style);
 
 })(jQuery);
