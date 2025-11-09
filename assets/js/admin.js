@@ -1208,7 +1208,7 @@ jQuery(document).ready(function ($) {
     html += '<tbody>';
 
     category.items.forEach((item) => {
-      const rowId = 'image-' + item.id.replace(/[^a-z0-9]/gi, '-');
+      const rowId = 'image-' + String(item.id).replace(/[^a-z0-9]/gi, '-');
 
       // Main row
       html += '<tr class="mif-expandable-row" data-target="' + rowId + '">';
