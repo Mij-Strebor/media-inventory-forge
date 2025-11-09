@@ -229,6 +229,18 @@
                     console.log('Element ID:', $details.attr('id'));
                     console.log('Element tag:', $details.prop('tagName'));
 
+                    // Check parent chain for hidden elements
+                    console.log('=== PARENT CHAIN ===');
+                    $details.parents().each(function(index) {
+                        var $parent = $(this);
+                        console.log('Parent ' + index + ':', $parent.prop('tagName'),
+                                    'ID:', $parent.attr('id') || 'none',
+                                    'Class:', $parent.attr('class') || 'none',
+                                    'Display:', $parent.css('display'),
+                                    'Visible:', $parent.is(':visible'));
+                    });
+                    console.log('=== END PARENT CHAIN ===');
+
                     $details.css('display', 'table-row');
                     $details.css('background-color', 'yellow');
 
