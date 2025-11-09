@@ -79,16 +79,17 @@ jQuery(document).ready(function ($) {
       $toggleCheckbox.prop("indeterminate", false);
     } else {
       console.log('Setting to INDETERMINATE (faded)');
-      $toggleCheckbox.prop("checked", true);
-      $toggleCheckbox.prop("indeterminate", true);
+      // Set checked first, then indeterminate
+      $toggleCheckbox.prop("checked", false); // Reset first
+      $toggleCheckbox[0].indeterminate = true; // Use native property directly
     }
 
     // Verify the state was set
     console.log('Final state - checked:', $toggleCheckbox.prop("checked"), 'indeterminate:', $toggleCheckbox.prop("indeterminate"));
   }
 
-  // Call initialization on page load
-  initializeToggleAllCheckbox();
+  // Call initialization with slight delay to ensure DOM is fully ready
+  setTimeout(initializeToggleAllCheckbox, 100);
 
   /* ==========================================================================
      2. INTERACTIVE COMPONENTS - UNIVERSAL TOGGLE SYSTEM
@@ -463,16 +464,19 @@ jQuery(document).ready(function ($) {
    *
    * @since 4.0.0
    */
-  $("#mif-toggle-all-sources").on("change", function () {
+  $("#mif-toggle-all-sources").on("click", function () {
     var $this = $(this);
-    var isChecked = $this.prop("checked");
 
-    // When clicked from indeterminate state, always check all
-    // Otherwise, toggle all based on checked state
-    $(".mif-source-filter").prop("checked", isChecked);
-
-    // Clear indeterminate state after click
-    $this.prop("indeterminate", false);
+    // If currently indeterminate, next click should check all
+    if (this.indeterminate) {
+      $this.prop("checked", true);
+      this.indeterminate = false;
+      $(".mif-source-filter").prop("checked", true);
+    } else {
+      // Normal toggle behavior
+      var isChecked = $this.prop("checked");
+      $(".mif-source-filter").prop("checked", isChecked);
+    }
   });
 
   /**
@@ -496,20 +500,20 @@ jQuery(document).ready(function ($) {
       // No children checked - unchecked state
       console.log('Setting toggle to UNCHECKED');
       $toggleCheckbox.prop("checked", false);
-      $toggleCheckbox.prop("indeterminate", false);
+      $toggleCheckbox[0].indeterminate = false;
     } else if (checkedSources === totalSources) {
       // All children checked - fully checked state
       console.log('Setting toggle to FULLY CHECKED');
       $toggleCheckbox.prop("checked", true);
-      $toggleCheckbox.prop("indeterminate", false);
+      $toggleCheckbox[0].indeterminate = false;
     } else {
-      // Some but not all checked - indeterminate state (faded checkmark)
+      // Some but not all checked - indeterminate state (horizontal dash)
       console.log('Setting toggle to INDETERMINATE');
-      $toggleCheckbox.prop("checked", true);
-      $toggleCheckbox.prop("indeterminate", true);
+      $toggleCheckbox.prop("checked", false); // Reset to unchecked first
+      $toggleCheckbox[0].indeterminate = true; // Set indeterminate using native property
     }
 
-    console.log('After change - checked:', $toggleCheckbox.prop("checked"), 'indeterminate:', $toggleCheckbox.prop("indeterminate"));
+    console.log('After change - checked:', $toggleCheckbox.prop("checked"), 'indeterminate:', $toggleCheckbox[0].indeterminate);
   });
 
   /* ==========================================================================
