@@ -1340,5 +1340,39 @@ h2 {
 }
 
 /* ==========================================================================
+   TRI-STATE CHECKBOX STYLES
+   ========================================================================== */
+
+/**
+ * Tri-State Checkbox for Scan Sources Toggle
+ *
+ * Ensures indeterminate state is visually distinct with proper styling.
+ * The indeterminate state shows as a horizontal dash/line to indicate
+ * partial selection.
+ *
+ * States:
+ * - Unchecked: empty box
+ * - Indeterminate: box with horizontal dash
+ * - Checked: box with checkmark
+ *
+ * @since 4.0.0
+ */
+#mif-toggle-all-sources {
+    /* Ensure checkbox is visible and properly sized */
+    appearance: auto;
+    -webkit-appearance: checkbox;
+    -moz-appearance: checkbox;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+#mif-toggle-all-sources:indeterminate {
+    /* Browser default indeterminate styling should apply */
+    /* This ensures the dash/line is visible */
+    opacity: 1;
+}
+
+/* ==========================================================================
    END OF MEDIA INVENTORY FORGE ADMIN STYLESHEET
    ========================================================================== */

@@ -59,33 +59,51 @@ jQuery(document).ready(function ($) {
      ========================================================================== */
 
   /**
+   * Update the toggle checkbox state with visual refresh
+   */
+  function updateToggleCheckboxState(checkedCount, totalCount) {
+    var $toggleCheckbox = $("#mif-toggle-all-sources");
+    var element = $toggleCheckbox[0];
+
+    if (!element) return;
+
+    // Reset state first
+    element.checked = false;
+    element.indeterminate = false;
+
+    // Force a reflow to ensure browser registers the reset
+    void element.offsetHeight;
+
+    if (checkedCount === 0) {
+      // Unchecked state
+      element.checked = false;
+      element.indeterminate = false;
+    } else if (checkedCount === totalCount) {
+      // Fully checked state
+      element.checked = true;
+      element.indeterminate = false;
+    } else {
+      // Indeterminate state - set checked to true first, then indeterminate
+      element.checked = true;
+      element.indeterminate = true;
+    }
+
+    // Force another reflow to ensure visual update
+    void element.offsetHeight;
+
+    console.log('Toggle state updated - checked:', element.checked, 'indeterminate:', element.indeterminate);
+  }
+
+  /**
    * Initialize tri-state checkbox for Scan Sources
    * Sets the correct initial state based on which child checkboxes are checked
    */
   function initializeToggleAllCheckbox() {
     var totalSources = $(".mif-source-filter").length;
     var checkedSources = $(".mif-source-filter:checked").length;
-    var $toggleCheckbox = $("#mif-toggle-all-sources");
 
     console.log('Initializing toggle checkbox - Total:', totalSources, 'Checked:', checkedSources);
-
-    if (checkedSources === 0) {
-      console.log('Setting to UNCHECKED');
-      $toggleCheckbox.prop("checked", false);
-      $toggleCheckbox.prop("indeterminate", false);
-    } else if (checkedSources === totalSources) {
-      console.log('Setting to FULLY CHECKED');
-      $toggleCheckbox.prop("checked", true);
-      $toggleCheckbox.prop("indeterminate", false);
-    } else {
-      console.log('Setting to INDETERMINATE (faded)');
-      // Set checked first, then indeterminate
-      $toggleCheckbox.prop("checked", false); // Reset first
-      $toggleCheckbox[0].indeterminate = true; // Use native property directly
-    }
-
-    // Verify the state was set
-    console.log('Final state - checked:', $toggleCheckbox.prop("checked"), 'indeterminate:', $toggleCheckbox.prop("indeterminate"));
+    updateToggleCheckboxState(checkedSources, totalSources);
   }
 
   // Call initialization with slight delay to ensure DOM is fully ready
@@ -492,28 +510,9 @@ jQuery(document).ready(function ($) {
   $(document).on("change", ".mif-source-filter", function () {
     var totalSources = $(".mif-source-filter").length;
     var checkedSources = $(".mif-source-filter:checked").length;
-    var $toggleCheckbox = $("#mif-toggle-all-sources");
 
     console.log('Source filter changed - Total:', totalSources, 'Checked:', checkedSources);
-
-    if (checkedSources === 0) {
-      // No children checked - unchecked state
-      console.log('Setting toggle to UNCHECKED');
-      $toggleCheckbox.prop("checked", false);
-      $toggleCheckbox[0].indeterminate = false;
-    } else if (checkedSources === totalSources) {
-      // All children checked - fully checked state
-      console.log('Setting toggle to FULLY CHECKED');
-      $toggleCheckbox.prop("checked", true);
-      $toggleCheckbox[0].indeterminate = false;
-    } else {
-      // Some but not all checked - indeterminate state (horizontal dash)
-      console.log('Setting toggle to INDETERMINATE');
-      $toggleCheckbox.prop("checked", false); // Reset to unchecked first
-      $toggleCheckbox[0].indeterminate = true; // Set indeterminate using native property
-    }
-
-    console.log('After change - checked:', $toggleCheckbox.prop("checked"), 'indeterminate:', $toggleCheckbox[0].indeterminate);
+    updateToggleCheckboxState(checkedSources, totalSources);
   });
 
   /* ==========================================================================
