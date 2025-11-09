@@ -385,6 +385,7 @@
          * Load user's saved view preference
          *
          * Reads the saved preference from PHP and sets the appropriate radio button.
+         * View is applied when scan completes via applyCurrentView().
          *
          * @since 4.0.0
          * @returns {void}
