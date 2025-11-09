@@ -22,12 +22,17 @@ class MIF_Table_Builder
     /**
      * Build complete table view HTML
      *
-     * @return string HTML for all category tables
+     * Retrieves all media items from scanner and generates category-organized
+     * HTML tables with expandable row details.
+     *
+     * @since 4.0.0
+     *
+     * @return string HTML for all category tables, or message if no media found.
      */
     public function build_tables()
     {
         // Get scan data
-        $scanner = new MIF_Scanner(10000); // Get all items
+        $scanner = new MIF_Scanner(10000);
         $scan_results = $scanner->scan_batch(0);
         $all_items = $scan_results['data'] ?? [];
 
@@ -53,8 +58,12 @@ class MIF_Table_Builder
     /**
      * Group items by category
      *
-     * @param array $items Media items
-     * @return array Grouped by category
+     * Organizes media items into associative array grouped by category name.
+     *
+     * @since 4.0.0
+     *
+     * @param array $items Media items to group.
+     * @return array Associative array of items grouped by category.
      */
     private function group_by_category($items)
     {
@@ -76,8 +85,13 @@ class MIF_Table_Builder
     /**
      * Get ordered category names
      *
-     * @param array $category_names Available categories
-     * @return array Ordered category names
+     * Returns categories in predefined display order (Images first, then Fonts, etc.).
+     * Any categories not in the predefined order are appended at the end.
+     *
+     * @since 4.0.0
+     *
+     * @param array $category_names Available category names to order.
+     * @return array Ordered category names.
      */
     private function get_ordered_categories($category_names)
     {
@@ -103,9 +117,14 @@ class MIF_Table_Builder
     /**
      * Build HTML for a category section
      *
-     * @param string $category_name Category name
-     * @param array $items Items in this category
-     * @return string HTML for category table
+     * Creates collapsible category section with header showing item count and size,
+     * and appropriate table type based on category.
+     *
+     * @since 4.0.0
+     *
+     * @param string $category_name Category name (e.g., 'Fonts', 'Images').
+     * @param array  $items         Items in this category.
+     * @return string HTML for category table section.
      */
     private function build_category_section($category_name, $items)
     {
@@ -144,8 +163,13 @@ class MIF_Table_Builder
     /**
      * Build fonts table with expandable font families
      *
-     * @param array $items Font items
-     * @return string HTML table
+     * Groups font items by family and creates expandable rows showing
+     * font variants (WOFF, TTF, etc.) within each family.
+     *
+     * @since 4.0.0
+     *
+     * @param array $items Font items to display.
+     * @return string HTML table with expandable font family rows.
      */
     private function build_fonts_table($items)
     {
@@ -227,8 +251,13 @@ class MIF_Table_Builder
     /**
      * Build images table with expandable image details
      *
-     * @param array $items Image items
-     * @return string HTML table
+     * Creates table with thumbnails and expandable rows showing image variants
+     * (thumbnails, different sizes, etc.).
+     *
+     * @since 4.0.0
+     *
+     * @param array $items Image items to display.
+     * @return string HTML table with expandable image rows.
      */
     private function build_images_table($items)
     {
@@ -302,8 +331,13 @@ class MIF_Table_Builder
     /**
      * Build default table for other categories
      *
-     * @param array $items Media items
-     * @return string HTML table
+     * Creates generic expandable table for categories that don't have
+     * specialized table layouts (Videos, PDFs, Documents, etc.).
+     *
+     * @since 4.0.0
+     *
+     * @param array $items Media items to display.
+     * @return string HTML table with expandable rows.
      */
     private function build_default_table($items)
     {
