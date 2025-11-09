@@ -67,16 +67,24 @@ jQuery(document).ready(function ($) {
     var checkedSources = $(".mif-source-filter:checked").length;
     var $toggleCheckbox = $("#mif-toggle-all-sources");
 
+    console.log('Initializing toggle checkbox - Total:', totalSources, 'Checked:', checkedSources);
+
     if (checkedSources === 0) {
+      console.log('Setting to UNCHECKED');
       $toggleCheckbox.prop("checked", false);
       $toggleCheckbox.prop("indeterminate", false);
     } else if (checkedSources === totalSources) {
+      console.log('Setting to FULLY CHECKED');
       $toggleCheckbox.prop("checked", true);
       $toggleCheckbox.prop("indeterminate", false);
     } else {
+      console.log('Setting to INDETERMINATE (faded)');
       $toggleCheckbox.prop("checked", true);
       $toggleCheckbox.prop("indeterminate", true);
     }
+
+    // Verify the state was set
+    console.log('Final state - checked:', $toggleCheckbox.prop("checked"), 'indeterminate:', $toggleCheckbox.prop("indeterminate"));
   }
 
   // Call initialization on page load
@@ -482,19 +490,26 @@ jQuery(document).ready(function ($) {
     var checkedSources = $(".mif-source-filter:checked").length;
     var $toggleCheckbox = $("#mif-toggle-all-sources");
 
+    console.log('Source filter changed - Total:', totalSources, 'Checked:', checkedSources);
+
     if (checkedSources === 0) {
       // No children checked - unchecked state
+      console.log('Setting toggle to UNCHECKED');
       $toggleCheckbox.prop("checked", false);
       $toggleCheckbox.prop("indeterminate", false);
     } else if (checkedSources === totalSources) {
       // All children checked - fully checked state
+      console.log('Setting toggle to FULLY CHECKED');
       $toggleCheckbox.prop("checked", true);
       $toggleCheckbox.prop("indeterminate", false);
     } else {
       // Some but not all checked - indeterminate state (faded checkmark)
+      console.log('Setting toggle to INDETERMINATE');
       $toggleCheckbox.prop("checked", true);
       $toggleCheckbox.prop("indeterminate", true);
     }
+
+    console.log('After change - checked:', $toggleCheckbox.prop("checked"), 'indeterminate:', $toggleCheckbox.prop("indeterminate"));
   });
 
   /* ==========================================================================
