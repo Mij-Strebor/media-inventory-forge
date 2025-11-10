@@ -6,7 +6,7 @@
 ![Media Inventory Forge Banner](./docs/screenshots/banner.jpg)
 
 [![WordPress Plugin](https://img.shields.io/badge/WordPress-Plugin-blue.svg)](https://wordpress.org/)
-[![Version](https://img.shields.io/badge/version-4.0.0-blue.svg)](https://github.com/Mij-Strebor/media-inventory-forge/releases)
+[![Version](https://img.shields.io/badge/version-4.0.1-blue.svg)](https://github.com/Mij-Strebor/media-inventory-forge/releases)
 [![WordPress](https://img.shields.io/badge/WordPress-5.0%2B-blue.svg)](https://wordpress.org/)
 [![License](https://img.shields.io/badge/license-GPL%20v2%2B-green.svg)](LICENSE)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-purple.svg)](https://php.net/)
@@ -35,17 +35,9 @@ Every WordPress site accumulates media files over time, but understanding what y
 ---
 
 ## Quick Start
-
-⚠️ **Important for v2.x Users Upgrading to v3.0+:**
-If you're upgrading from Media Inventory Forge v2.1.0 or earlier, please follow these steps:
-1. **Deactivate** the old Media Inventory plugin (v2.x)
-2. **Delete** the old plugin from your WordPress installation
-3. **Install** the new Media Inventory Forge v3.0.0+
-4. **Activate** the new version
-   
-  **Note:** Due to plugin slug changes between v2.x and v3.0+, WordPress will not automatically replace the old version. Following these steps prevents having duplicate menu entries.
   
-  **Fresh Installation:**- Download from [Releases](https://github.com/Mij-Strebor/media-inventory-forge/releases)- Upload via WordPress Admin or extract to `/wp-content/plugins/`- Activate through WordPress admin
+### 1. Installation  
+Download from [Releases](https://github.com/Mij-Strebor/media-inventory-forge/releases)- Upload via WordPress Admin or extract to `/wp-content/plugins/`- Activate through WordPress admin
 
 ### 2. Access Plugin
 Navigate to: **Tools → Media Inventory** in your WordPress admin menu sidebar
@@ -76,7 +68,6 @@ Default Settings:
 
 ### Professional Interface
 - **Progressive Scanning**: Handles thousands of files with batch processing
-- **Live Thumbnails**: Visual previews with hover effects
 - **Memory Optimized**: Intelligent resource management
 - **Error Handling**: Graceful handling of missing/corrupted files
 - **Real-time Progress**: Visual progress bars with statistics
@@ -243,7 +234,15 @@ Potential Optimization Opportunities:
 
 ## Version History
 
-### Version 4.0.0 (Latest)
+### Version 4.0.1 (Latest)
+**Bug Fix & Community Release**
+- **Race Condition Fix**: Resolved Table View "no media available" issue on fresh installs
+- **Table View Reliability**: Proper session-based scan requirement (no auto-cache loading)
+- **Community Panel**: Added Jim R Forge ecosystem showcase with related plugins
+- **Data Synchronization**: Enhanced window.inventoryData consistency across JavaScript files
+- **Documentation**: Comprehensive readme.txt improvements highlighting v4.0 features
+
+### Version 4.0.0
 **Major Feature Release - Unused Media Detection & Table View**
 - **Unused Media Detection**: Identify media items not used anywhere on your site
 - **Usage Tracking**: See exact locations where each media item is used
