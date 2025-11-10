@@ -5,7 +5,7 @@ Tags: media, inventory, scanner, analysis, optimization
 Requires at least: 5.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 4.0.0
+Stable tag: 4.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,13 @@ The plugin uses direct filesystem access to get precise file sizes, including al
 5. Professional admin interface with WordPress integration
 
 == Changelog ==
+
+= 4.0.1 =
+* Fix: Resolved race condition causing "no media available" message on first scan in Table View
+* Fix: Table View now properly requires explicit scan in current session (no auto-loading from cache)
+* Feature: Added Community & Tools panel showcasing Jim R Forge ecosystem plugins
+* Enhancement: Synchronized window.inventoryData across JavaScript files for better session tracking
+* Enhancement: Community panel with links to related plugins and support options
 
 = 4.0.0 =
 * Major Feature: Unused media detection - identify media not used anywhere on your site
