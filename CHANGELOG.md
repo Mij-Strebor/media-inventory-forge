@@ -4,6 +4,20 @@
 
 ## [4.0.0] - 2025-11-05
 
+### 🐛 Bug Fixes (2025-11-10)
+
+**Table View Session Behavior**
+- ✅ Fixed Table View requiring explicit scan in current session (no auto-loading from cache)
+- ✅ Synchronized window.inventoryData across JavaScript files for proper session tracking
+- ✅ Consistent "start scan" messages between Card and Table views
+- ✅ Removed debug console.log/warn/error statements from production code
+
+**Table View Sorting**
+- ✅ Fixed browser lockup when clicking sortable column headers
+- ✅ Rewrote sorting algorithm using HTML string approach instead of DOM manipulation
+- ✅ All three columns (Title, Files, Total Size) now sort correctly ascending/descending
+- ✅ Eliminated jQuery iteration conflicts during DOM updates
+
 ### 🚀 Major New Features
 
 **Unused Media Detection & Usage Tracking**

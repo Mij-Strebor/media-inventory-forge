@@ -1,9 +1,9 @@
 # Media Inventory Forge - Version 4.0.0 Feature Planning
 
 **Date:** 2025-11-05
-**Current Version:** 3.0.0
-**Target Version:** 4.0.0 (Major Release)
-**Planning Status:** Feature evaluation and free/Pro tier recommendations
+**Current Version:** 4.0.0
+**Target Version:** 4.0.0 (Major Release - COMPLETED)
+**Planning Status:** Released 2025-11-05 with bug fixes 2025-11-10
 
 ---
 

@@ -243,7 +243,16 @@ Potential Optimization Opportunities:
 
 ## Version History
 
-### Version 3.0.0 (Latest)
+### Version 4.0.0 (Latest)
+**Major Feature Release - Unused Media Detection & Table View**
+- **Unused Media Detection**: Identify media items not used anywhere on your site
+- **Usage Tracking**: See exact locations where each media item is used
+- **Table View Mode**: Professional tabular display with sortable columns
+- **Advanced Filtering**: Filter by type, size, usage status, and upload date
+- **Enhanced Scanning**: Multi-source scanning (Media Library, Theme, Plugins)
+- **Performance Optimizations**: Improved memory management and AJAX handling
+
+### Version 3.0.0
 **Forge Header & File Distribution Release**
 - **Forge Header System**: Dramatic multi-directional gradient with seamless integration
 - **File Distribution Pie Chart**: Interactive canvas-based visualization with color-coded legend

@@ -1,7 +1,7 @@
 # Media Inventory Forge - Comprehensive Test Plan
 
 **Plugin:** Media Inventory Forge (MIF)
-**Version:** 3.0.0
+**Version:** 4.0.0
 **Last Updated:** 2025-11-04
 **Test Environment:** WordPress 5.0+, PHP 7.4+
 
