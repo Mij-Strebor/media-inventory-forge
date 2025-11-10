@@ -1,0 +1,41 @@
+# Directories
+.git
+.github
+.wordpress-org
+node_modules
+vendor
+
+# Files
+.gitignore
+.gitattributes
+.editorconfig
+.eslintrc
+.eslintignore
+.phpcs.xml
+.phpcs.xml.dist
+phpcs.xml
+phpcs.xml.dist
+.distignore
+.DS_Store
+Thumbs.db
+composer.json
+composer.lock
+package.json
+package-lock.json
+yarn.lock
+phpunit.xml
+phpunit.xml.dist
+webpack.config.js
+gulpfile.js
+Gruntfile.js
+
+# Documentation
+README.md
+CHANGELOG.md
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+LICENSE.md
+
+# Build artifacts
+*.zip
+*.tar.gz

@@ -31,13 +31,23 @@ class MIF_Table_Builder
      */
     public function build_tables()
     {
-        // Get scan data
-        $scanner = new MIF_Scanner(10000);
-        $scan_results = $scanner->scan_batch(0);
-        $all_items = $scan_results['data'] ?? [];
+        // Try to get saved scan results from transient
+        $user_id = get_current_user_id();
+        $saved_results = get_transient('mif_scan_results_' . $user_id);
 
-        if (empty($all_items)) {
-            return '<div style="text-align: center; padding: 40px; color: var(--clr-txt); font-style: italic;">No media files found. Run a scan first.</div>';
+        if (!empty($saved_results)) {
+            // Use saved results instead of re-scanning
+            $all_items = json_decode($saved_results, true);
+
+            if (is_array($all_items) && !empty($all_items)) {
+                // Successfully loaded saved results
+            } else {
+                // Invalid saved data
+                return '<div style="text-align: center; padding: 40px; color: var(--clr-txt); font-style: italic;">No scan results available. Click "start scan" to begin inventory scanning.</div>';
+            }
+        } else {
+            // No saved results - user needs to scan first
+            return '<div style="text-align: center; padding: 40px; color: var(--clr-txt); font-style: italic;">No scan results available. Click "start scan" to begin inventory scanning.</div>';
         }
 
         // Group by category

@@ -6,14 +6,13 @@
  * Description: Professional media library scanner and analyzer for WordPress developers
  * Version: 4.0.0
  * Author: Jim R. (JimRWeb)
- * * Author URI: https://jimrweb.com
- * Update URI: https://github.com/jimrweb/media-inventory-forge
+ * Author URI: https://jimrweb.com
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: media-inventory-forge
  * Domain Path: /languages
  * Requires at least: 5.0
- * Tested up to: 6.7
+ * Tested up to: 6.8
  * Requires PHP: 7.4
  * Network: true
  */

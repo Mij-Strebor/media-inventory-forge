@@ -40,6 +40,7 @@ class MIF_Admin_Controller
         // Table view AJAX handlers
         add_action('wp_ajax_mif_get_table_view', [$this, 'ajax_get_table_view']);
         add_action('wp_ajax_mif_save_view_preference', [$this, 'ajax_save_view_preference']);
+        add_action('wp_ajax_mif_save_scan_results', [$this, 'ajax_save_scan_results']);
     }
 
     /**
@@ -80,7 +81,7 @@ class MIF_Admin_Controller
 
         // Get source filters
         $sources = isset($_POST['sources']) && is_array($_POST['sources'])
-            ? array_map('sanitize_text_field', $_POST['sources'])
+            ? array_map('sanitize_text_field', wp_unslash($_POST['sources']))
             : ['media-library']; // Default to media library only
 
         if ($offset < 0) {
@@ -94,6 +95,9 @@ class MIF_Admin_Controller
         }
 
         try {
+            // Store source filters for use by table view
+            update_user_meta(get_current_user_id(), 'mif_last_scan_sources', $sources);
+
             $scanner = new MIF_Scanner($batch_size);
             $scanner->set_source_filters($sources);
             $result = $scanner->scan_batch($offset);
@@ -234,7 +238,7 @@ class MIF_Admin_Controller
 
         try {
             global $wpdb;
-            $table_name = $wpdb->prefix . 'mif_usage';
+            $table_name = esc_sql($wpdb->prefix . 'mif_usage');
 
             $results = $wpdb->get_results(
                 "SELECT * FROM {$table_name} ORDER BY found_at DESC LIMIT 50",
@@ -313,7 +317,9 @@ class MIF_Admin_Controller
 
             wp_send_json_success(['html' => $html]);
         } catch (Exception $e) {
-            error_log('MIF Table View Error: ' . $e->getMessage());
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('MIF Table View Error: ' . $e->getMessage());
+            }
             wp_send_json_error('Error loading table view: ' . $e->getMessage());
         }
     }
@@ -334,9 +340,9 @@ class MIF_Admin_Controller
             return;
         }
 
-        $view = sanitize_text_field($_POST['view'] ?? 'card');
+        $view = isset($_POST['view']) ? sanitize_text_field(wp_unslash($_POST['view'])) : 'card';
 
-        if (!in_array($view, ['card', 'table'])) {
+        if (!in_array($view, ['card', 'table'], true)) {
             wp_send_json_error('Invalid view type');
             return;
         }
@@ -344,6 +350,36 @@ class MIF_Admin_Controller
         update_user_meta(get_current_user_id(), 'mif_view_preference', $view);
 
         wp_send_json_success(['message' => 'Preference saved']);
+    }
+
+    /**
+     * AJAX handler for saving scan results
+     *
+     * Saves the complete scan results for use by table view
+     *
+     * @since 4.0.0
+     */
+    public function ajax_save_scan_results()
+    {
+        check_ajax_referer('media_inventory_nonce', 'nonce');
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Permission denied');
+            return;
+        }
+
+        $scan_data = isset($_POST['scan_data']) ? wp_unslash($_POST['scan_data']) : '';
+
+        if (empty($scan_data)) {
+            wp_send_json_error('No scan data provided');
+            return;
+        }
+
+        // Store scan results in transient (24 hour expiration, handles large data better)
+        $user_id = get_current_user_id();
+        set_transient('mif_scan_results_' . $user_id, $scan_data, DAY_IN_SECONDS);
+
+        wp_send_json_success(['message' => 'Scan results saved', 'data_length' => strlen($scan_data)]);
     }
 
     /**

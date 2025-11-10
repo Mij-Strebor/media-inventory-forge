@@ -30,7 +30,7 @@ if (!defined('ABSPATH')) {
 
 <div class="mif-type-explanation mif-type-<?php echo esc_attr($type); ?>" data-media-type="<?php echo esc_attr($type); ?>">
     <div class="mif-type-header">
-        <span class="mif-type-icon"><?php echo $icon; ?></span>
+        <span class="mif-type-icon"><?php echo wp_kses_post($icon); ?></span>
         <h3 class="mif-type-title"><?php echo esc_html($title); ?></h3>
         <span class="mif-type-count"><?php echo esc_html($count); ?> items</span>
     </div>
@@ -74,18 +74,18 @@ if (!defined('ABSPATH')) {
         ?>
         <span class="mif-stat-used" title="Used in content">
             <span class="mif-stat-label">Used:</span>
-            <span class="mif-stat-value"><?php echo $used; ?></span>
+            <span class="mif-stat-value"><?php echo esc_html($used); ?></span>
         </span>
         <span class="mif-stat-separator">•</span>
         <span class="mif-stat-unused" title="Not found in scanned content">
             <span class="mif-stat-label">Unused:</span>
-            <span class="mif-stat-value"><?php echo $unused; ?></span>
+            <span class="mif-stat-value"><?php echo esc_html($unused); ?></span>
         </span>
         <?php if ($unknown > 0): ?>
         <span class="mif-stat-separator">•</span>
         <span class="mif-stat-unknown" title="Unable to determine usage">
             <span class="mif-stat-label">Unknown:</span>
-            <span class="mif-stat-value"><?php echo $unknown; ?></span>
+            <span class="mif-stat-value"><?php echo esc_html($unknown); ?></span>
         </span>
         <?php endif; ?>
     </div>

@@ -102,9 +102,14 @@ class MIF_Media_List_Table extends WP_List_Table
         $scan_results = $this->scanner->scan_batch(0);
         $all_items = $scan_results['data'] ?? [];
 
-        // Apply sorting
-        $orderby = $_GET['orderby'] ?? 'title';
-        $order = $_GET['order'] ?? 'asc';
+        // Apply sorting with sanitization
+        $valid_orderby = ['title', 'type', 'source', 'files', 'size'];
+        $orderby = isset($_GET['orderby']) ? sanitize_key(wp_unslash($_GET['orderby'])) : 'title';
+        $orderby = in_array($orderby, $valid_orderby, true) ? $orderby : 'title';
+
+        $order = isset($_GET['order']) ? sanitize_key(wp_unslash($_GET['order'])) : 'asc';
+        $order = in_array($order, ['asc', 'desc'], true) ? $order : 'asc';
+
         $all_items = $this->sort_items($all_items, $orderby, $order);
 
         // Setup pagination

@@ -123,19 +123,22 @@ class MIF_Usage_Database {
     public function store_usage($attachment_id, $usage_type, $usage_id = 0, $usage_context = '', $usage_data = array()) {
         // Validate required parameters
         if (empty($attachment_id) || empty($usage_type)) {
-            error_log('MIF: store_usage failed - empty attachment_id or usage_type');
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('MIF: store_usage failed - empty attachment_id or usage_type');
+            }
             return false;
         }
 
         // Check if table exists
         if (!$this->table_exists()) {
-            error_log('MIF: store_usage failed - table does not exist!');
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('MIF: store_usage failed - table does not exist!');
+            }
             return false;
         }
 
         // Check if this exact usage already exists
         if ($this->usage_exists($attachment_id, $usage_type, $usage_id, $usage_context)) {
-            error_log('MIF: Usage already exists - skipping duplicate');
             return true; // Already tracked, no need to duplicate
         }
 
@@ -153,12 +156,13 @@ class MIF_Usage_Database {
         $result = $this->wpdb->insert($this->full_table_name, $data, $format);
 
         if ($result === false) {
-            error_log('MIF: Database insert failed! Error: ' . $this->wpdb->last_error);
-            error_log('MIF: Attempted to insert: ' . print_r($data, true));
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('MIF: Database insert failed! Error: ' . $this->wpdb->last_error);
+                error_log('MIF: Attempted to insert: ' . wp_json_encode($data));
+            }
             return false;
         }
 
-        error_log('MIF: Successfully stored usage for attachment ' . $attachment_id . ' (ID: ' . $this->wpdb->insert_id . ')');
         return $this->wpdb->insert_id;
     }
 
@@ -173,12 +177,15 @@ class MIF_Usage_Database {
      * @return bool
      */
     private function usage_exists($attachment_id, $usage_type, $usage_id, $usage_context) {
-        $count = $this->wpdb->get_var($this->wpdb->prepare(
-            "SELECT COUNT(*) FROM {$this->full_table_name}
+        $table = esc_sql($this->full_table_name);
+        $query = "SELECT COUNT(*) FROM $table
              WHERE attachment_id = %d
              AND usage_type = %s
              AND usage_id = %d
-             AND usage_context = %s",
+             AND usage_context = %s";
+
+        $count = $this->wpdb->get_var($this->wpdb->prepare(
+            $query,
             $attachment_id,
             $usage_type,
             $usage_id,
@@ -200,12 +207,15 @@ class MIF_Usage_Database {
             return array();
         }
 
-        $results = $this->wpdb->get_results($this->wpdb->prepare(
-            "SELECT * FROM {$this->full_table_name}
+        $table = esc_sql($this->full_table_name);
+        $query = "SELECT * FROM $table
              WHERE attachment_id = %d
-             ORDER BY found_at DESC",
-            $attachment_id
-        ), ARRAY_A);
+             ORDER BY found_at DESC";
+
+        $results = $this->wpdb->get_results(
+            $this->wpdb->prepare($query, $attachment_id),
+            ARRAY_A
+        );
 
         if (!$results) {
             return array();
@@ -259,9 +269,9 @@ class MIF_Usage_Database {
         }
 
         // Get attachment IDs that have usage
-        $used_ids = $this->wpdb->get_col(
-            "SELECT DISTINCT attachment_id FROM {$this->full_table_name}"
-        );
+        $table = esc_sql($this->full_table_name);
+        $query = "SELECT DISTINCT attachment_id FROM $table";
+        $used_ids = $this->wpdb->get_col($query);
 
         // Return attachments that are NOT in the used list
         $unused = array_diff($all_attachments, $used_ids);
@@ -277,14 +287,17 @@ class MIF_Usage_Database {
      * @return array Array of attachment IDs and usage counts
      */
     public function get_frequently_used($min_usage = 2) {
-        $results = $this->wpdb->get_results($this->wpdb->prepare(
-            "SELECT attachment_id, COUNT(*) as usage_count
-             FROM {$this->full_table_name}
+        $table = esc_sql($this->full_table_name);
+        $query = "SELECT attachment_id, COUNT(*) as usage_count
+             FROM $table
              GROUP BY attachment_id
              HAVING COUNT(*) >= %d
-             ORDER BY usage_count DESC",
-            $min_usage
-        ), ARRAY_A);
+             ORDER BY usage_count DESC";
+
+        $results = $this->wpdb->get_results(
+            $this->wpdb->prepare($query, $min_usage),
+            ARRAY_A
+        );
 
         return $results ? $results : array();
     }
@@ -296,25 +309,24 @@ class MIF_Usage_Database {
      * @return array Statistics about media usage
      */
     public function get_usage_stats() {
+        $table = esc_sql($this->full_table_name);
+
         // Total attachments
         $total_attachments = wp_count_posts('attachment')->inherit;
 
         // Used attachments
-        $used_count = $this->wpdb->get_var(
-            "SELECT COUNT(DISTINCT attachment_id) FROM {$this->full_table_name}"
-        );
+        $query = "SELECT COUNT(DISTINCT attachment_id) FROM $table";
+        $used_count = $this->wpdb->get_var($query);
 
         // Unused attachments
         $unused_count = $total_attachments - $used_count;
 
         // Usage by type
-        $usage_by_type = $this->wpdb->get_results(
-            "SELECT usage_type, COUNT(*) as count
-             FROM {$this->full_table_name}
+        $query = "SELECT usage_type, COUNT(*) as count
+             FROM $table
              GROUP BY usage_type
-             ORDER BY count DESC",
-            ARRAY_A
-        );
+             ORDER BY count DESC";
+        $usage_by_type = $this->wpdb->get_results($query, ARRAY_A);
 
         return array(
             'total_attachments' => $total_attachments,
@@ -351,7 +363,9 @@ class MIF_Usage_Database {
      * @return int|false Number of rows deleted, or false on failure
      */
     public function clear_all_usage() {
-        return $this->wpdb->query("TRUNCATE TABLE {$this->full_table_name}");
+        $table = esc_sql($this->full_table_name);
+        $query = "TRUNCATE TABLE $table";
+        return $this->wpdb->query($query);
     }
 
     /**
@@ -362,11 +376,11 @@ class MIF_Usage_Database {
      * @return int|false Number of rows deleted
      */
     public function delete_old_usage($days = 30) {
-        return $this->wpdb->query($this->wpdb->prepare(
-            "DELETE FROM {$this->full_table_name}
-             WHERE found_at < DATE_SUB(NOW(), INTERVAL %d DAY)",
-            $days
-        ));
+        $table = esc_sql($this->full_table_name);
+        $query = "DELETE FROM $table
+             WHERE found_at < DATE_SUB(NOW(), INTERVAL %d DAY)";
+
+        return $this->wpdb->query($this->wpdb->prepare($query, $days));
     }
 
     /**
@@ -377,13 +391,16 @@ class MIF_Usage_Database {
      * @return array Usage count by type
      */
     public function get_usage_by_type($attachment_id) {
-        $results = $this->wpdb->get_results($this->wpdb->prepare(
-            "SELECT usage_type, COUNT(*) as count
-             FROM {$this->full_table_name}
+        $table = esc_sql($this->full_table_name);
+        $query = "SELECT usage_type, COUNT(*) as count
+             FROM $table
              WHERE attachment_id = %d
-             GROUP BY usage_type",
-            $attachment_id
-        ), ARRAY_A);
+             GROUP BY usage_type";
+
+        $results = $this->wpdb->get_results(
+            $this->wpdb->prepare($query, $attachment_id),
+            ARRAY_A
+        );
 
         $counts = array();
         foreach ($results as $result) {
@@ -402,7 +419,9 @@ class MIF_Usage_Database {
      * @return bool True on success, false on failure
      */
     public function drop_table() {
-        $result = $this->wpdb->query("DROP TABLE IF EXISTS {$this->full_table_name}");
+        $table = esc_sql($this->full_table_name);
+        $query = "DROP TABLE IF EXISTS $table";
+        $result = $this->wpdb->query($query);
         return $result !== false;
     }
 }

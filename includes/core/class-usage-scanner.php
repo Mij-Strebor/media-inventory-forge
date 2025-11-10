@@ -1264,7 +1264,7 @@ class MIF_Usage_Scanner {
      */
     private function url_to_path($url) {
         // Remove protocol and domain
-        $path = parse_url($url, PHP_URL_PATH);
+        $path = wp_parse_url($url, PHP_URL_PATH);
 
         if (!$path) {
             return false;

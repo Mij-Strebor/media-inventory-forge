@@ -209,6 +209,17 @@
             var self = this;
             params = params || {};
 
+            // Check if we have inventory data in current session
+            // Access the global inventoryData from admin.js
+            if (typeof window.inventoryData === 'undefined' || window.inventoryData.length === 0) {
+                $('#mif-table-view').html(
+                    '<div style="text-align: center; padding: 40px; color: var(--clr-txt); font-style: italic;">' +
+                    'Click "start scan" to begin inventory scanning.' +
+                    '</div>'
+                );
+                return;
+            }
+
             // Show loading state
             $('#mif-table-view').html(
                 '<div class="mif-loading" style="text-align: center; padding: 40px;">' +
@@ -321,21 +332,50 @@
                 // Get column index
                 var columnIndex = $header.index();
 
-                // Get all main rows (not expanded details)
-                var $rows = $tbody.find('tr.mif-expandable-row');
+                // Collect all row pairs with their HTML
+                var rowPairs = [];
+                var $allRows = $tbody.children('tr');
 
-                // Sort rows
-                $rows.sort(function (a, b) {
-                    var $aCell = $(a).find('td').eq(columnIndex);
-                    var $bCell = $(b).find('td').eq(columnIndex);
+                for (var i = 0; i < $allRows.length; i++) {
+                    var $row = $allRows.eq(i);
 
-                    var aValue = $aCell.data('sort-value');
-                    var bValue = $bCell.data('sort-value');
+                    // Skip if already processed as a detail row
+                    if ($row.hasClass('mif-expanded-details')) {
+                        continue;
+                    }
+
+                    if ($row.hasClass('mif-expandable-row')) {
+                        var targetId = $row.attr('data-target');
+                        var $detailRow = null;
+
+                        // Find the next row if it's the detail row
+                        if (i + 1 < $allRows.length) {
+                            var $nextRow = $allRows.eq(i + 1);
+                            if ($nextRow.attr('id') === targetId) {
+                                $detailRow = $nextRow;
+                                i++; // Skip the detail row in next iteration
+                            }
+                        }
+
+                        var sortValue = $row.find('td').eq(columnIndex).attr('data-sort-value');
+
+                        rowPairs.push({
+                            mainHtml: $row[0].outerHTML,
+                            detailHtml: $detailRow ? $detailRow[0].outerHTML : null,
+                            sortValue: sortValue
+                        });
+                    }
+                }
+
+                // Sort the pairs
+                rowPairs.sort(function(a, b) {
+                    var aValue = a.sortValue;
+                    var bValue = b.sortValue;
 
                     // Handle different data types
                     if (typeof aValue === 'string') {
                         aValue = aValue.toLowerCase();
-                        bValue = bValue.toLowerCase();
+                        bValue = (bValue || '').toLowerCase();
                     } else {
                         aValue = parseFloat(aValue) || 0;
                         bValue = parseFloat(bValue) || 0;
@@ -348,18 +388,17 @@
                     }
                 });
 
-                // Re-append sorted rows (maintaining row pairs: expandable + details)
-                $rows.each(function () {
-                    var $row = $(this);
-                    var targetId = $row.data('target');
-                    var $detailsRow = $('#' + targetId);
-
-                    $tbody.append($row);
-
-                    if ($detailsRow.length) {
-                        $tbody.append($detailsRow);
+                // Build new HTML
+                var newHtml = '';
+                for (var j = 0; j < rowPairs.length; j++) {
+                    newHtml += rowPairs[j].mainHtml;
+                    if (rowPairs[j].detailHtml) {
+                        newHtml += rowPairs[j].detailHtml;
                     }
-                });
+                }
+
+                // Replace tbody content
+                $tbody.html(newHtml);
             });
 
             // Restore collapse states after table is loaded

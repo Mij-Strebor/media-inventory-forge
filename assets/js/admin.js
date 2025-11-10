@@ -44,9 +44,11 @@
 jQuery(document).ready(function ($) {
   /**
    * Global inventory data storage
+   * Exposed to window for table-view.js access
    * @type {Array<Object>}
    */
-  let inventoryData = [];
+  window.inventoryData = window.inventoryData || [];
+  let inventoryData = window.inventoryData;
 
   /**
    * Scanning state flag
@@ -117,7 +119,7 @@ jQuery(document).ready(function ($) {
     try {
       localStorage.setItem('mif_collapse_' + sectionId, isExpanded ? '1' : '0');
     } catch (e) {
-      console.warn('Failed to save collapse state:', e);
+      // Silently fail if localStorage is unavailable
     }
   }
 
@@ -205,7 +207,6 @@ jQuery(document).ready(function ($) {
     }
 
     if (!$content.length) {
-      console.warn("Toggle content not found for:", $toggle);
       return;
     }
 
@@ -265,23 +266,16 @@ jQuery(document).ready(function ($) {
     const $details = $('#mif-card-view').find('#' + targetId);
     const $icon = $row.find('.mif-expand-icon');
 
-    console.log('Card View - Row clicked:', targetId);
-    console.log('Card View - Details row found:', $details.length);
-    console.log('Card View - Details visible:', $details.is(':visible'));
-
     if ($details.length === 0) {
-      console.error('Card View - Details row not found! ID:', targetId);
       return;
     }
 
     if ($details.is(':visible')) {
       // Collapse
-      console.log('Card View - Collapsing row');
       $details.css('display', 'none');
       $icon.removeClass('dashicons-minus').addClass('dashicons-plus-alt2');
     } else {
       // Expand
-      console.log('Card View - Expanding row');
       $details.css('display', 'table-row');
       $icon.removeClass('dashicons-plus-alt2').addClass('dashicons-minus');
     }
@@ -375,6 +369,7 @@ jQuery(document).ready(function ($) {
 
     isScanning = true;
     inventoryData = [];
+    window.inventoryData = inventoryData;
 
     $("#start-scan").prop("disabled", true).text("scanning...").hide();
     $("#stop-scan").show();
@@ -557,11 +552,7 @@ jQuery(document).ready(function ($) {
 
         if (response.success) {
           inventoryData = inventoryData.concat(response.data.data);
-
-          // Show any errors
-          if (response.data.errors && response.data.errors.length > 0) {
-            console.warn("Scan warnings:", response.data.errors);
-          }
+          window.inventoryData = inventoryData; // Keep window reference synchronized
 
           // Update progress
           const progress = Math.round(
@@ -584,6 +575,13 @@ jQuery(document).ready(function ($) {
             $("#export-csv").show();
 
             displayResults();
+
+            // Save scan results for table view
+            $.post(ajaxurl, {
+              action: 'mif_save_scan_results',
+              nonce: mifData.nonce,
+              scan_data: JSON.stringify(inventoryData)
+            });
 
             // Trigger custom event for view toggle
             $(document).trigger('mif_scan_complete');
@@ -947,10 +945,8 @@ jQuery(document).ready(function ($) {
    * @note Specialized handlers: Fonts, SVG, Images
    * @note All other categories use displayDefaultTable()
    * @note Images respects "Image Display Mode" toggle
-   * @note Logs category name to console for debugging
    */
   function getCategoryContent(categoryName, category) {
-    console.log("Building content for:", categoryName);
 
     if (categoryName === "Fonts") {
       return displayFonts(category);
