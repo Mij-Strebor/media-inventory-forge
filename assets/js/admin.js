@@ -576,15 +576,17 @@ jQuery(document).ready(function ($) {
 
             displayResults();
 
-            // Save scan results for table view
+            // Save scan results for table view, then trigger event
             $.post(ajaxurl, {
               action: 'mif_save_scan_results',
               nonce: mifData.nonce,
               scan_data: JSON.stringify(inventoryData)
+            })
+            .always(function() {
+              // Trigger event after save completes (or fails)
+              // This ensures transient is ready when table view tries to load
+              $(document).trigger('mif_scan_complete');
             });
-
-            // Trigger custom event for view toggle
-            $(document).trigger('mif_scan_complete');
           } else {
             // Continue scanning
             setTimeout(function () {
