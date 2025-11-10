@@ -50,10 +50,10 @@ if (!defined('ABSPATH')) {
             All Jim R Forge tools are free and open source. If you find them useful, please consider supporting development:
         </p>
         <div style="display: flex; gap: 12px; flex-wrap: wrap; padding-left: 20px;">
-            <a href="https://www.buymeacoffee.com/jimrweb" target="_blank" rel="noopener" class="button button-secondary" style="background: #f6f7f7 !important; border: none !important; color: #2271b1 !important; font-weight: 400 !important; text-transform: none !important; text-decoration: none !important;">
+            <a href="https://www.buymeacoffee.com/jimrweb" target="_blank" rel="noopener" class="button button-secondary" style="background: #f6f7f7 !important; border: 1px solid #2271b1 !important; color: #2271b1 !important; font-weight: 400 !important; text-transform: none !important; text-decoration: none !important;">
                 ☕ Buy Me a Coffee
             </a>
-            <a href="https://github.com/Mij-Strebor/media-inventory-forge/stargazers" target="_blank" rel="noopener" class="button button-secondary" style="background: #f6f7f7 !important; border: none !important; color: #2271b1 !important; font-weight: 400 !important; text-transform: none !important; text-decoration: none !important;">
+            <a href="https://github.com/Mij-Strebor/media-inventory-forge/stargazers" target="_blank" rel="noopener" class="button button-secondary" style="background: #f6f7f7 !important; border: 1px solid #2271b1 !important; color: #2271b1 !important; font-weight: 400 !important; text-transform: none !important; text-decoration: none !important;">
                 ⭐ Star on GitHub
             </a>
         </div>
