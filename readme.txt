@@ -13,13 +13,18 @@ Professional media library scanner and analyzer for WordPress developers and adm
 
 == Description ==
 
-Media Inventory Forge is a comprehensive media library scanning and analysis tool designed for WordPress developers and administrators. The plugin provides detailed insights into media assets, file organization, and optimization opportunities.
+Media Inventory Forge is a comprehensive media library scanning and analysis tool designed for WordPress developers and administrators. The plugin provides detailed insights into media assets, file organization, usage tracking, and optimization opportunities through an intuitive dual-view interface.
 
 **Key Features:**
 
+* **Dual View Modes** – Switch between Card View for detailed browsing or Table View for sortable data analysis
+* **Visual Distribution Chart** – Interactive graphic showing media breakdown by file type at a glance
+* **Unused Media Detection** – Identify media files not used anywhere on your site for safe cleanup
+* **Usage Location Tracking** – See exactly where each media item is used (posts, pages, widgets, theme files)
+* **Advanced Filtering** – Filter results by file type, size, usage status, and upload date
+* **Sortable Table Columns** – Click column headers to sort by name, size, type, or upload date in Table View
 * **Comprehensive Media Scanning** – Analyzes all media types including images, videos, audio, fonts, documents, and SVGs
 * **Detailed File Information** – Extracts metadata, dimensions, file sizes, and WordPress-generated variations
-* **Category Organization** – Groups media by type with detailed breakdowns and statistics
 * **Storage Analysis** – Provides precise storage usage by category with optimization recommendations
 * **Progressive Scanning** – Handles large media libraries efficiently with batch processing
 * **CSV Export** – Generate detailed reports for analysis, auditing, or cleanup planning
@@ -50,8 +55,12 @@ Media Inventory Forge is a comprehensive media library scanning and analysis too
 1. Upload the plugin files to the `/wp-content/plugins/media-inventory-forge` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the 'Plugins' screen in WordPress.
 3. Navigate to Tools > Media Inventory Forge to access the scanner.
-4. Click "start scan" to begin analyzing your media library.
-5. Use the export function to generate CSV reports for further analysis.
+4. Click "Start Scan" to begin analyzing your media library.
+5. View results in Card View or Table View using the toggle buttons.
+6. Review the visual distribution chart to see media breakdown by type.
+7. Use filters to narrow results by type, size, usage, or date.
+8. Sort table columns by clicking headers in Table View.
+9. Export to CSV for detailed external analysis.
 
 == Frequently Asked Questions ==
 
@@ -79,13 +88,26 @@ Yes. Media Inventory Forge works with both single-site and multisite WordPress i
 
 The plugin uses direct filesystem access to get precise file sizes, including all WordPress-generated variations and thumbnails.
 
+= What's the difference between Card View and Table View? =
+
+Card View displays media in an expandable card format, perfect for browsing individual files with detailed metadata. Table View shows all media in a sortable table with columns for quick comparison and analysis. Switch between views anytime using the toggle buttons.
+
+= How does unused media detection work? =
+
+The plugin scans your entire WordPress installation including posts, pages, widgets, theme files, and page builders to identify where each media file is used. Files with no detected usage are flagged as "unused" - though you should always verify before deleting as some uses (like hardcoded URLs in custom code) may not be detectable.
+
+= Can I sort the results in Table View? =
+
+Yes! Click any column header in Table View to sort by that column. Click again to reverse the sort order. You can sort by filename, file size, file type, upload date, and usage status.
+
 == Screenshots ==
 
-1. Main scanning interface with progress tracking and controls
-2. Detailed results with categorized media breakdown
-3. Expandable sections showing file details and metadata
-4. CSV export functionality for external analysis
-5. Professional admin interface with WordPress integration
+1. Main scanning interface with progress tracking and visual media distribution chart
+2. Card View mode showing expandable media cards with detailed metadata
+3. Table View mode with sortable columns and advanced filtering options
+4. Usage location tracking showing where each media file is used
+5. Unused media detection with filtering by usage status
+6. CSV export functionality for detailed external analysis
 
 == Changelog ==
 
@@ -147,14 +169,11 @@ The plugin uses direct filesystem access to get precise file sizes, including al
 
 == Upgrade Notice ==
 
-= 2.1.1 =
-Documentation and code quality improvements. Includes WordPress.org compliance enhancements. Safe to update from any previous version.
+= 4.0.1 =
+Bug fix release improving Table View reliability on fresh installs. Adds Community & Tools panel. Safe update from 4.0.0.
 
-= 2.1.0 =
-Major update with enhanced performance, improved security, and WordPress.org compliance. Recommended for all users.
-
-= 2.0.0 =
-Complete rewrite with professional features. Backup your settings before upgrading.
+= 4.0.0 =
+Major feature release with unused media detection, usage tracking, dual view modes (Card/Table), visual distribution charts, advanced filtering, and sortable columns. Recommended upgrade for all users.
 
 == Privacy Policy ==
 
