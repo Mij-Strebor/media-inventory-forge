@@ -42,7 +42,7 @@ if (!defined('ABSPATH')) {
 
         <h3 style="color: var(--clr-primary); font-size: 18px; font-weight: 600; margin: 0 0 12px 0;">Project Hub</h3>
         <p style="margin: 0 0 16px 0; padding-left: 20px; font-size: 16px; line-height: 1.6; color: var(--clr-txt);">
-            Soon you can visit <a href="https://jimrforge.com" target="_blank" rel="noopener" style="color: var(--clr-link); text-decoration: underline; font-weight: 600;">jimrforge.com</a> for complete documentation and information. Coming.
+            Soon you can visit <a href="https://jimrforge.com" target="_blank" rel="noopener" style="color: var(--clr-link); text-decoration: underline; font-weight: 600;">jimrforge.com</a> for complete documentation and information. Coming soon.
         </p>
 
         <h3 style="color: var(--clr-primary); font-size: 18px; font-weight: 600; margin: 0 0 12px 0;">Support Development</h3>
@@ -50,10 +50,10 @@ if (!defined('ABSPATH')) {
             All Jim R Forge tools are free and open source. If you find them useful, please consider supporting development:
         </p>
         <div style="display: flex; gap: 12px; flex-wrap: wrap; padding-left: 20px;">
-            <a href="https://www.buymeacoffee.com/jimrweb" target="_blank" rel="noopener" class="button button-secondary" style="background: #f6f7f7 !important; border-color: #2271b1 !important; color: #2271b1 !important; text-transform: none !important; text-decoration: none !important;">
+            <a href="https://www.buymeacoffee.com/jimrweb" target="_blank" rel="noopener" class="button button-secondary" style="background: #f6f7f7 !important; border: none !important; color: #2271b1 !important; font-weight: 400 !important; text-transform: none !important; text-decoration: none !important;">
                 ☕ Buy Me a Coffee
             </a>
-            <a href="https://github.com/Mij-Strebor/media-inventory-forge/stargazers" target="_blank" rel="noopener" class="button button-secondary" style="background: #f6f7f7 !important; border-color: #2271b1 !important; color: #2271b1 !important; text-transform: none !important; text-decoration: none !important;">
+            <a href="https://github.com/Mij-Strebor/media-inventory-forge/stargazers" target="_blank" rel="noopener" class="button button-secondary" style="background: #f6f7f7 !important; border: none !important; color: #2271b1 !important; font-weight: 400 !important; text-transform: none !important; text-decoration: none !important;">
                 ⭐ Star on GitHub
             </a>
         </div>
