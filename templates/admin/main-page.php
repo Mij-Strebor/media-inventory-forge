@@ -41,4 +41,7 @@ defined('ABSPATH') || exit;
             <?php include MIF_PLUGIN_DIR . 'templates/admin/partials/results-section.php'; ?>
         </div>
     </div>
+
+    <!-- Jim R Forge Community & Tools Panel -->
+    <?php include MIF_PLUGIN_DIR . 'templates/admin/partials/community-panel.php'; ?>
 </div>
