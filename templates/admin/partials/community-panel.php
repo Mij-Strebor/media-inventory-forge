@@ -16,10 +16,10 @@ if (!defined('ABSPATH')) {
 ?>
 
 <div class="fcc-info-toggle-section" style="margin-top: 40px; max-width: 1280px; margin-left: auto; margin-right: auto;">
-    <div class="fcc-info-header-static">
-        <span style="color: #FAF9F6;">Community & Tools</span>
+    <div style="width: 100%; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; background: var(--clr-secondary); cursor: default; font-weight: 600; font-size: 18px; border-radius: var(--jimr-border-radius-lg) var(--jimr-border-radius-lg) 0 0;">
+        <span style="color: #FAF9F6; font-size: 24px; font-weight: 600;">Community & Tools</span>
     </div>
-    <div class="fcc-info-content-static" style="background: #faf9f6; padding: 32px;">
+    <div style="background: #faf9f6; padding: 32px; border-radius: 0 0 var(--jimr-border-radius-lg) var(--jimr-border-radius-lg);">
         <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6; color: var(--clr-txt);">
             Media Inventory Forge is part of the Jim R Forge ecosystem - a growing collection of professional WordPress tools for designers and developers.
         </p>
@@ -50,10 +50,10 @@ if (!defined('ABSPATH')) {
             All Jim R Forge tools are free and open source. If you find them useful, please consider supporting development:
         </p>
         <div style="display: flex; gap: 12px; flex-wrap: wrap; padding-left: 20px;">
-            <a href="https://www.buymeacoffee.com/jimrweb" target="_blank" rel="noopener" class="button button-secondary" style="text-transform: none !important;">
+            <a href="https://www.buymeacoffee.com/jimrweb" target="_blank" rel="noopener" class="button button-secondary" style="background: #2271b1 !important; border-color: #2271b1 !important; color: #fff !important; text-transform: none !important; text-decoration: none !important;">
                 ☕ Buy Me a Coffee
             </a>
-            <a href="https://github.com/Mij-Strebor/media-inventory-forge/stargazers" target="_blank" rel="noopener" class="button button-secondary" style="text-transform: none !important;">
+            <a href="https://github.com/Mij-Strebor/media-inventory-forge/stargazers" target="_blank" rel="noopener" class="button button-secondary" style="background: #2271b1 !important; border-color: #2271b1 !important; color: #fff !important; text-transform: none !important; text-decoration: none !important;">
                 ⭐ Star on GitHub
             </a>
         </div>
