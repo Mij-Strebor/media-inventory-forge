@@ -104,9 +104,11 @@ class MIF_Media_List_Table extends WP_List_Table
 
         // Apply sorting with sanitization
         $valid_orderby = ['title', 'type', 'source', 'files', 'size'];
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Table sorting via WP_List_Table, read-only operation
         $orderby = isset($_GET['orderby']) ? sanitize_key(wp_unslash($_GET['orderby'])) : 'title';
         $orderby = in_array($orderby, $valid_orderby, true) ? $orderby : 'title';
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Table sorting via WP_List_Table, read-only operation
         $order = isset($_GET['order']) ? sanitize_key(wp_unslash($_GET['order'])) : 'asc';
         $order = in_array($order, ['asc', 'desc'], true) ? $order : 'asc';
 

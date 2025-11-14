@@ -123,17 +123,11 @@ class MIF_Usage_Database {
     public function store_usage($attachment_id, $usage_type, $usage_id = 0, $usage_context = '', $usage_data = array()) {
         // Validate required parameters
         if (empty($attachment_id) || empty($usage_type)) {
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('MIF: store_usage failed - empty attachment_id or usage_type');
-            }
             return false;
         }
 
         // Check if table exists
         if (!$this->table_exists()) {
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('MIF: store_usage failed - table does not exist!');
-            }
             return false;
         }
 
@@ -156,10 +150,6 @@ class MIF_Usage_Database {
         $result = $this->wpdb->insert($this->full_table_name, $data, $format);
 
         if ($result === false) {
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('MIF: Database insert failed! Error: ' . $this->wpdb->last_error);
-                error_log('MIF: Attempted to insert: ' . wp_json_encode($data));
-            }
             return false;
         }
 

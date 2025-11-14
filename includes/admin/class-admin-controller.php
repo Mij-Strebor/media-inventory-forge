@@ -240,6 +240,7 @@ class MIF_Admin_Controller
             global $wpdb;
             $table_name = esc_sql($wpdb->prefix . 'mif_usage');
 
+            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Static query with escaped table name, admin-only debug view
             $results = $wpdb->get_results(
                 "SELECT * FROM {$table_name} ORDER BY found_at DESC LIMIT 50",
                 ARRAY_A
@@ -317,9 +318,6 @@ class MIF_Admin_Controller
 
             wp_send_json_success(['html' => $html]);
         } catch (Exception $e) {
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('MIF Table View Error: ' . $e->getMessage());
-            }
             wp_send_json_error('Error loading table view: ' . $e->getMessage());
         }
     }
@@ -368,6 +366,7 @@ class MIF_Admin_Controller
             return;
         }
 
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON data validated below
         $scan_data = isset($_POST['scan_data']) ? wp_unslash($_POST['scan_data']) : '';
 
         if (empty($scan_data)) {
@@ -375,6 +374,12 @@ class MIF_Admin_Controller
             return;
         }
 
+        // Validate that scan_data is valid JSON
+        json_decode($scan_data);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            wp_send_json_error('Invalid scan data format');
+            return;
+        }
         // Store scan results in transient (24 hour expiration, handles large data better)
         $user_id = get_current_user_id();
         set_transient('mif_scan_results_' . $user_id, $scan_data, DAY_IN_SECONDS);
