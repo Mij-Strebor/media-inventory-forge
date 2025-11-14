@@ -444,6 +444,7 @@ class MIF_Usage_Scanner {
      */
     private function scan_featured_images() {
         global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Read-only query for featured image detection, no caching needed for scan operation
 
         $results = $wpdb->get_results(
             "SELECT post_id, meta_value as attachment_id
@@ -484,6 +485,7 @@ class MIF_Usage_Scanner {
 
         $widget_count = 0;
 
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Read-only query for background image detection, no caching needed for scan operation
         // Get all widget options
         $widget_options = $wpdb->get_results(
             "SELECT option_name, option_value
@@ -856,6 +858,7 @@ class MIF_Usage_Scanner {
     private function scan_elementor_data() {
         global $wpdb;
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Read-only query for page builder meta detection, no caching needed for scan operation
         // Query all posts that have Elementor data
         $results = $wpdb->get_results(
             "SELECT post_id, meta_value

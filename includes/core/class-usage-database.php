@@ -99,6 +99,7 @@ class MIF_Usage_Database {
      * @since 4.0.0
      * @return bool True if table exists, false otherwise
      */
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive, $wpdb->prepare() is used
     public function table_exists() {
         $table = $this->wpdb->get_var(
             $this->wpdb->prepare(
@@ -166,6 +167,7 @@ class MIF_Usage_Database {
      * @param string $usage_context
      * @return bool
      */
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive, $wpdb->prepare() is used, table name escaped with esc_sql()
     private function usage_exists($attachment_id, $usage_type, $usage_id, $usage_context) {
         $table = esc_sql($this->full_table_name);
         $query = "SELECT COUNT(*) FROM $table
@@ -192,6 +194,7 @@ class MIF_Usage_Database {
      * @param int $attachment_id The attachment ID
      * @return array Array of usage records
      */
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive, $wpdb->prepare() is used, table name escaped with esc_sql()
     public function get_usage($attachment_id) {
         if (empty($attachment_id)) {
             return array();
@@ -243,6 +246,7 @@ class MIF_Usage_Database {
      * @param array $args Optional query arguments
      * @return array Array of attachment IDs with no usage
      */
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query with escaped table name, attachment IDs from WordPress
     public function get_unused_media($args = array()) {
         $defaults = array(
             'post_type' => 'attachment',
@@ -276,6 +280,7 @@ class MIF_Usage_Database {
      * @param int $min_usage Minimum number of uses (default: 2)
      * @return array Array of attachment IDs and usage counts
      */
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive, $wpdb->prepare() is used
     public function get_frequently_used($min_usage = 2) {
         $table = esc_sql($this->full_table_name);
         $query = "SELECT attachment_id, COUNT(*) as usage_count
@@ -299,12 +304,14 @@ class MIF_Usage_Database {
      * @return array Statistics about media usage
      */
     public function get_usage_stats() {
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query with escaped table name, read-only COUNT operation
         $table = esc_sql($this->full_table_name);
 
         // Total attachments
         $total_attachments = wp_count_posts('attachment')->inherit;
 
         // Used attachments
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query with escaped table name, read-only aggregate query
         $query = "SELECT COUNT(DISTINCT attachment_id) FROM $table";
         $used_count = $this->wpdb->get_var($query);
 
@@ -312,6 +319,7 @@ class MIF_Usage_Database {
         $unused_count = $total_attachments - $used_count;
 
         // Usage by type
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query with escaped table name, read-only GROUP BY operation
         $query = "SELECT usage_type, COUNT(*) as count
              FROM $table
              GROUP BY usage_type
@@ -353,6 +361,7 @@ class MIF_Usage_Database {
      * @return int|false Number of rows deleted, or false on failure
      */
     public function clear_all_usage() {
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static TRUNCATE query with escaped table name
         $table = esc_sql($this->full_table_name);
         $query = "TRUNCATE TABLE $table";
         return $this->wpdb->query($query);
@@ -366,6 +375,7 @@ class MIF_Usage_Database {
      * @return int|false Number of rows deleted
      */
     public function delete_old_usage($days = 30) {
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive, $wpdb->prepare() is used, table name escaped with esc_sql()
         $table = esc_sql($this->full_table_name);
         $query = "DELETE FROM $table
              WHERE found_at < DATE_SUB(NOW(), INTERVAL %d DAY)";
@@ -380,6 +390,7 @@ class MIF_Usage_Database {
      * @param int $attachment_id The attachment ID
      * @return array Usage count by type
      */
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive, $wpdb->prepare() is used, table name escaped with esc_sql()
     public function get_usage_by_type($attachment_id) {
         $table = esc_sql($this->full_table_name);
         $query = "SELECT usage_type, COUNT(*) as count
@@ -408,6 +419,7 @@ class MIF_Usage_Database {
      * @since 4.0.0
      * @return bool True on success, false on failure
      */
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static DROP TABLE query with escaped table name
     public function drop_table() {
         $table = esc_sql($this->full_table_name);
         $query = "DROP TABLE IF EXISTS $table";
