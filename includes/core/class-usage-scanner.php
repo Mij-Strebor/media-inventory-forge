@@ -10,6 +10,10 @@
  * @subpackage Core
  * @since      4.0.0
  * @version    4.0.0
+ *
+ * Direct database queries are used for one-time scan operations that don't benefit from caching.
+ *
+ * phpcs:disable WordPress.DB.DirectDatabaseQuery
  */
 
 // Prevent direct file access

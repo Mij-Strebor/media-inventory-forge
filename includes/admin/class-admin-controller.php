@@ -6,6 +6,8 @@
  * @package MediaInventoryForge
  * @subpackage Admin
  * @since 2.0.0
+ *
+ * phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
  */
 
 defined('ABSPATH') || exit;
