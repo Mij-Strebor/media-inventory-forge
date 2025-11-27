@@ -14,12 +14,12 @@ defined('ABSPATH') || exit;
 ?>
 
 <!-- About Section -->
-<div class="fcc-info-toggle-section">
-    <button class="fcc-info-toggle expanded" data-toggle-target="about-content">
-        <span style="color: #FAF9F6 !important;">ℹ️ About Media Inventory Forge</span>
-        <span class="fcc-toggle-icon" style="color: #FAF9F6 !important;">▼</span>
+<div class="mif-info-toggle-section">
+    <button class="mif-info-toggle expanded" data-toggle-target="about-content">
+        <span style="color: #FAF9F6 !important;">about media inventory forge</span>
+        <span class="mif-toggle-icon" style="color: #FAF9F6 !important;">▼</span>
     </button>
-    <div class="fcc-info-content expanded" id="about-content">
+    <div class="mif-info-content expanded" id="about-content">
         <div style="color: var(--clr-txt); font-size: 14px; line-height: 1.6;">
             <p style="margin: 0 0 16px 0; color: var(--clr-txt);">
                 Media Inventory Forge is a <strong>read-only analysis tool</strong> that scans your WordPress uploads directory and generates detailed reports about your media files. It catalogs file types, sizes, categories, dimensions, and WordPress-generated variations. <strong>Media Inventory Forge does not modify, optimize, or delete any files</strong> - it only reads and reports what exists. Use this information to understand your media library before making optimization decisions with other tools.

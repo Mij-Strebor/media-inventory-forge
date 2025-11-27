@@ -155,7 +155,7 @@
                 $resultsContainer.show();
 
                 // Ensure all category sections within card view are visible
-                $resultsContainer.find('.fcc-info-toggle-section').each(function() {
+                $resultsContainer.find('.mif-info-toggle-section').each(function() {
                     var $section = $(this);
                     if ($section.css('display') === 'none') {
                         $section.show();

@@ -106,7 +106,7 @@
  * Positions the header content above the background with proper z-index.
  * Centered alignment matches body panels. Top padding positions H1 at top third.
  */
-.fcc-header-section {
+.mif-header-section {
     position: relative !important;
     z-index: 1 !important;           /* Above ::before background */
     padding-top: 16vh !important;    /* Position H1 at top third (~33% of 50vh header) */
@@ -126,7 +126,7 @@
  * Positions ONLY the first About panel closer to header, just below the fade transition.
  * Targets About section inside header using descendant selector to prevent affecting inventory category panels.
  */
-.fcc-header-section .fcc-info-toggle-section {
+.mif-header-section .mif-info-toggle-section {
     margin-top: 36vh !important;  /* Move up closer to header fade */
     margin-top: max(280px, 36vh) !important;  /* Minimum 280px for small screens */
 }
@@ -139,7 +139,7 @@
  *
  * Gradient strategy: Radial from top-left (bright yellow) to bottom-right (deep orange)
  */
-.fcc-header-section h1 {
+.mif-header-section h1 {
     /* STRONGER multi-directional gradient - radial for top-to-bottom + left-to-right */
     background: radial-gradient(
         ellipse at top left,
@@ -195,11 +195,11 @@
 /**
  * About Panel Positioning (Outside Header)
  *
- * Since About panel is now outside .fcc-header-section, we need to position it
+ * Since About panel is now outside .mif-header-section, we need to position it
  * appropriately below the forge background fade. Uses negative margin to pull
  * it up into the faded area for seamless integration.
  */
-.wrap > .fcc-info-toggle-section:first-of-type {
+.wrap > .mif-info-toggle-section:first-of-type {
     margin-top: -20vh !important;  /* Pull up into bottom fade area */
     max-width: 1280px !important;  /* Match header and container width */
     margin-left: auto !important;

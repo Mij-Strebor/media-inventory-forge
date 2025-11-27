@@ -14,7 +14,7 @@ defined('ABSPATH') || exit;
 ?>
 
 <!-- File Distribution Panel -->
-<div class="fcc-panel">
+<div class="mif-panel">
     <h2 style="margin-bottom: 16px;">File Distribution</h2>
 
     <!-- Pie Chart Container -->

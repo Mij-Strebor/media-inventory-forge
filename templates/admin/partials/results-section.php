@@ -14,7 +14,7 @@ defined('ABSPATH') || exit;
 ?>
 
 <!-- Results Section -->
-<div class="fcc-panel">
+<div class="mif-panel">
     <h2 style="margin-bottom: 16px;">Inventory Results</h2>
 
     <!-- Card View Container -->

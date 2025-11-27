@@ -1,4 +1,4 @@
-# Media Inventory Forge - Complete GitHub Workflow Guide
+#  Complete GitHub Workflow Guide
 
 **For:** Jim R. (New to GitHub Release Management)
 **Repository:** https://github.com/Mij-Strebor/media-inventory-forge
@@ -94,23 +94,23 @@ Open Local app → Start "site"
 ```
 
 **3. Open your working folder:**
-```
+```powershell
 cd E:\onedrive\projects\plugins\mif
 ```
 
 **4. Check what branch you're on:**
-```bash
+```powershell
 git branch
 # Should show: * development (or * master)
 ```
 
 **5. Switch to development branch (if not already):**
-```bash
+```powershell
 git checkout development
 ```
 
 **6. Pull latest changes (if working from multiple machines):**
-```bash
+```powershell
 git pull origin development
 ```
 
@@ -128,7 +128,7 @@ Tools → Media Inventory
 ```
 
 **3. Check what you changed:**
-```bash
+```powershell
 git status
 # Shows modified files
 
@@ -137,7 +137,7 @@ git diff
 ```
 
 **4. When you reach a good stopping point, commit:**
-```bash
+```powershell
 # Add all changes
 git add -A
 
@@ -149,7 +149,7 @@ git commit -m "Add CSV filtering by file type"
 ```
 
 **5. Push to GitHub:**
-```bash
+```powershell
 git push origin development
 ```
 
@@ -158,13 +158,13 @@ git push origin development
 ### End of Day: Wrap Up
 
 **1. Make sure everything is committed:**
-```bash
+```powershell
 git status
 # Should show: "nothing to commit, working tree clean"
 ```
 
 **2. Push any remaining commits:**
-```bash
+```powershell
 git push origin development
 ```
 
@@ -181,7 +181,7 @@ Right-click OneDrive icon → Resume syncing
 
 **BEFORE you start, verify ALL of these:**
 
-```bash
+```powershell
 cd E:\onedrive\projects\plugins\mif
 
 # 1. Pause OneDrive
@@ -194,10 +194,10 @@ git checkout master
 git merge development
 
 # 4. Check for version synchronization (all 6 locations)
-grep -n "Version: " media-inventory-forge.php
-grep -n "MIF_VERSION" media-inventory-forge.php
-grep -n "Stable tag:" readme.txt
-grep -n "version-" README.md
+Select-String -Pattern "Version: " -Path media-inventory-forge.php | Select-Object LineNumber, Line
+Select-String -Pattern "MIF_VERSION" -Path media-inventory-forge.php | Select-Object LineNumber, Line
+Select-String -Pattern "Stable tag:" -Path readme.txt | Select-Object LineNumber, Line
+Select-String -Pattern "version-" -Path README.md | Select-Object LineNumber, Line
 
 # All should show the SAME version!
 ```
@@ -211,15 +211,15 @@ grep -n "version-" README.md
 6. `README.md` (line 9): `version-3.0.1`
 
 **Remove any debug text:**
-```bash
-grep -rn "TEST\|DEBUG\|CACHE.*TEST" templates/
+```powershell
+Get-ChildItem -Path templates -Recurse -File | Select-String -Pattern "TEST|DEBUG|CACHE.*TEST"
 # Should return nothing!
 ```
 
 ### Release Steps
 
 **1. Commit version changes:**
-```bash
+```powershell
 git add -A
 git commit -m "Release v3.0.1: [Brief description]
 
@@ -231,12 +231,12 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 ```
 
 **2. Push master to GitHub:**
-```bash
+```powershell
 git push origin master
 ```
 
 **3. Create and push tag:**
-```bash
+```powershell
 # Create tag
 git tag -a v3.0.1 -m "Media Inventory Forge v3.0.1"
 
@@ -245,14 +245,14 @@ git push origin v3.0.1
 ```
 
 **4. Merge changes back to development:**
-```bash
+```powershell
 git checkout development
 git merge master
 git push origin development
 ```
 
 **5. Go back to master:**
-```bash
+```powershell
 git checkout master
 ```
 
@@ -359,7 +359,7 @@ After publishing, check:
 ### Switching Branches
 
 **To work on a feature (development):**
-```bash
+```powershell
 git checkout development
 # Edit files, test, commit
 git add -A
@@ -368,10 +368,10 @@ git push origin development
 ```
 
 **To prepare a release (master):**
-```bash
+```powershell
 git checkout master
 git merge development
-# Update version numbers
+# [Update version numbers in files]
 git add -A
 git commit -m "Release v3.0.1"
 git push origin master
@@ -380,13 +380,13 @@ git push origin v3.0.1
 ```
 
 **To go back to development:**
-```bash
+```powershell
 git checkout development
 ```
 
 ### Check Which Branch You're On
 
-```bash
+```powershell
 git branch
 # * indicates current branch
 
@@ -401,7 +401,7 @@ git branch
 ### Problem: "Changes not showing on GitHub"
 
 **Solution:**
-```bash
+```powershell
 # Check if you pushed
 git status
 
@@ -414,7 +414,7 @@ git push origin [branch-name]
 **Cause:** OneDrive is syncing while Git is working
 
 **Solution:**
-```bash
+```powershell
 # Pause OneDrive (right-click icon → Pause syncing)
 # Then:
 git status
@@ -425,14 +425,14 @@ git reset --hard HEAD
 ### Problem: "Can't switch branches - uncommitted changes"
 
 **Solution Option 1 - Commit your changes:**
-```bash
+```powershell
 git add -A
 git commit -m "Work in progress"
 git checkout [other-branch]
 ```
 
 **Solution Option 2 - Stash your changes:**
-```bash
+```powershell
 git stash
 git checkout [other-branch]
 # Later, get changes back:
@@ -442,12 +442,12 @@ git stash pop
 ### Problem: "GitHub not showing my README banner"
 
 **Check:**
-```bash
+```powershell
 # Make sure banner exists:
-ls docs/screenshots/banner.png
+Get-ChildItem docs\screenshots\banner.png
 
 # Check README.md uses correct path:
-grep "banner" README.md
+Select-String -Pattern "banner" -Path README.md
 # Should show: ![...](docs/screenshots/banner.png)
 
 # Commit and push if needed:
@@ -459,7 +459,7 @@ git push origin master
 ### Problem: "I committed to wrong branch"
 
 **Solution:**
-```bash
+```powershell
 # If you committed to master but meant development:
 git checkout development
 git merge master
@@ -470,7 +470,7 @@ git reset --hard HEAD~1  # Undo last commit on master
 ### Problem: "I forgot to update version numbers before releasing"
 
 **Solution:**
-```bash
+```powershell
 # Make the version changes
 # Then:
 git add -A
@@ -488,7 +488,7 @@ git push origin v3.0.1
 
 ### Daily Work Commands
 
-```bash
+```powershell
 # Start work
 git checkout development
 git pull origin development
@@ -508,7 +508,7 @@ git checkout [branch-name]
 
 ### Release Commands
 
-```bash
+```powershell
 # Prepare release
 git checkout master
 git merge development
@@ -529,7 +529,7 @@ git push origin development
 
 ### Checking Commands
 
-```bash
+```powershell
 # What branch am I on?
 git branch
 
@@ -617,7 +617,7 @@ git remote show origin
 ### If Stuck:
 
 **Save your current state:**
-```bash
+```powershell
 # Take a snapshot of what you have
 git add -A
 git commit -m "WIP - before getting help"
@@ -670,5 +670,6 @@ Before your first release using this new workflow:
 ---
 
 **Created:** 2025-11-04
+**Updated:** 2025-11-26 (Converted to PowerShell)
 **For:** MIF v3.0.0+
 **Workflow:** Direct Git integration (no separate release folder)

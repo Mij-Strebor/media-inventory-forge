@@ -133,7 +133,7 @@ jQuery(document).ready(function ($) {
   }
 
   function restoreCollapseStates() {
-    $('.fcc-info-toggle').each(function() {
+    $('.mif-info-toggle').each(function() {
       const $toggle = $(this);
       let targetId;
 
@@ -141,7 +141,7 @@ jQuery(document).ready(function ($) {
       if ($toggle.data('toggle-target')) {
         targetId = $toggle.data('toggle-target');
       } else {
-        const $content = $toggle.next('.fcc-info-content');
+        const $content = $toggle.next('.mif-info-content');
         targetId = $content.attr('id');
       }
 
@@ -167,7 +167,7 @@ jQuery(document).ready(function ($) {
    * Universal Toggle System with Dynamic Height Calculation
    *
    * Provides collapsible panel functionality for any element with the
-   * fcc-info-toggle class. Automatically calculates content height for
+   * mif-info-toggle class. Automatically calculates content height for
    * smooth animations regardless of content size. Supports both explicit
    * data-toggle-target attributes and implicit next-sibling relationships.
    *
@@ -178,11 +178,11 @@ jQuery(document).ready(function ($) {
    * @returns {void}
    *
    * @note Uses CSS transition duration of 400ms for animations
-   * @note Requires matching CSS classes: fcc-info-toggle, fcc-info-content, expanded
+   * @note Requires matching CSS classes: mif-info-toggle, mif-info-content, expanded
    * @note Searches for content in three ways: explicit target, next sibling, parent search
    * @note Saves collapse state to localStorage for persistence
    */
-  $(document).on("click", ".fcc-info-toggle", function (e) {
+  $(document).on("click", ".mif-info-toggle", function (e) {
     e.preventDefault();
     e.stopPropagation();
 
@@ -195,13 +195,13 @@ jQuery(document).ready(function ($) {
     if (targetId) {
       $content = $("#" + targetId);
     } else {
-      // Fall back to next sibling with fcc-info-content class
-      $content = $toggle.next(".fcc-info-content");
+      // Fall back to next sibling with mif-info-content class
+      $content = $toggle.next(".mif-info-content");
       if (!$content.length) {
         // If not immediate sibling, look in parent container
         $content = $toggle
-          .closest(".fcc-info-toggle-section")
-          .find(".fcc-info-content");
+          .closest(".mif-info-toggle-section")
+          .find(".mif-info-content");
       }
       targetId = $content.attr('id');
     }
@@ -402,7 +402,7 @@ jQuery(document).ready(function ($) {
    */
   $("#stop-scan").on("click", function () {
     isScanning = false;
-    $("#start-scan").prop("disabled", false).text("🔍 start scan").show();
+    $("#start-scan").prop("disabled", false).text("start scan").show();
     $("#stop-scan").hide();
     $("#scan-progress").hide();
     $("#export-csv").show();
@@ -596,7 +596,7 @@ jQuery(document).ready(function ($) {
         } else {
           alert("Error: " + response.data);
           isScanning = false;
-          $("#start-scan").prop("disabled", false).text("🔍 start scan").show();
+          $("#start-scan").prop("disabled", false).text("start scan").show();
           $("#stop-scan").hide();
           $("#scan-progress").hide();
         }
@@ -614,7 +614,7 @@ jQuery(document).ready(function ($) {
 
         alert(errorMsg);
         isScanning = false;
-        $("#start-scan").prop("disabled", false).text("🔍 start scan").show();
+        $("#start-scan").prop("disabled", false).text("start scan").show();
         $("#stop-scan").hide();
         $("#scan-progress").hide();
       });
@@ -650,22 +650,22 @@ jQuery(document).ready(function ($) {
     // Category icon and behavior configuration
     const categoryConfig = {
       Images: {
-        icon: "🖼️",
+        icon: "",
         toggleClass: "images-toggle",
         defaultExpanded: true,
       },
       PDFs: {
-        icon: "📄",
+        icon: "",
         toggleClass: "pdfs-toggle",
         defaultExpanded: true,
       },
       Documents: {
-        icon: "📋",
+        icon: "",
         toggleClass: "documents-toggle",
         defaultExpanded: true,
       },
       Fonts: {
-        icon: "🔤",
+        icon: "",
         toggleClass: "fonts-toggle",
         defaultExpanded: true,
       },
@@ -702,7 +702,7 @@ jQuery(document).ready(function ($) {
     orderedCategories.forEach(function (catName) {
       const category = categories[catName];
       const config = categoryConfig[catName] || {
-        icon: "📁",
+        icon: "",
         toggleClass: "",
         defaultExpanded: true,
       };
@@ -901,7 +901,7 @@ jQuery(document).ready(function ($) {
    * @param {boolean} config.defaultExpanded - Whether to start expanded
    * @returns {string} Complete HTML for collapsible section
    *
-   * @note Uses fcc-info-toggle-section wrapper structure
+   * @note Uses mif-info-toggle-section wrapper structure
    * @note Applies expanded class if defaultExpanded is true
    * @note Displays item count, file count, and total size in header
    * @note Content generated by getCategoryContent()
@@ -913,16 +913,16 @@ jQuery(document).ready(function ($) {
     // Create unique ID for this category section
     const sectionId = 'category-' + categoryName.toLowerCase().replace(/\s+/g, '-');
 
-    let html = '<div class="fcc-info-toggle-section">';
-    html += `<button class="fcc-info-toggle fcc-category-toggle ${config.toggleClass} ${expandedClass}" data-toggle-target="${sectionId}">`;
+    let html = '<div class="mif-info-toggle-section">';
+    html += `<button class="mif-info-toggle mif-category-toggle ${config.toggleClass} ${expandedClass}" data-toggle-target="${sectionId}">`;
     html += `<span style="color: var(--clr-light-txt) !important;">`;
-    html += `${config.icon} ${categoryName} (${category.itemCount} items, ${
+    html += `${categoryName} (${category.itemCount} items, ${
       category.totalFiles
     } files, ${formatBytes(category.totalSize)})`;
     html += `</span>`;
-    html += `<span class="fcc-toggle-icon" style="color: var(--clr-light-txt) !important;">▼</span>`;
+    html += `<span class="mif-toggle-icon" style="color: var(--clr-light-txt) !important;">▼</span>`;
     html += `</button>`;
-    html += `<div class="fcc-info-content ${expandedClass}" id="${sectionId}">`;
+    html += `<div class="mif-info-content ${expandedClass}" id="${sectionId}">`;
     html += categoryContent;
     html += `</div>`;
     html += `</div>`;

@@ -14,7 +14,7 @@ defined('ABSPATH') || exit;
 ?>
 
 <!-- Controls Section -->
-<div class="fcc-panel">
+<div class="mif-panel">
     <h2 style="margin-bottom: 16px;">Scan Controls</h2>
 
     <!-- Image Display Mode Selection -->
@@ -70,9 +70,9 @@ defined('ABSPATH') || exit;
     </div>
 
     <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap;">
-        <button id="start-scan" class="fcc-btn">🔍 start scan</button>
-        <button id="stop-scan" class="fcc-btn fcc-btn-danger" style="display: none;">⏹️ stop scan</button>
-        <button id="export-csv" class="fcc-btn" style="display: none;">📊 export csv</button>
+        <button id="start-scan" class="mif-btn">start scan</button>
+        <button id="stop-scan" class="mif-btn mif-btn-danger" style="display: none;">stop scan</button>
+        <button id="export-csv" class="mif-btn" style="display: none;">export csv</button>
     </div>
 
     <div id="scan-progress" style="display: none;">

@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 ?>
 
-<div class="fcc-info-toggle-section" style="margin-top: 40px; max-width: 1280px; margin-left: auto; margin-right: auto;">
+<div class="mif-info-toggle-section" style="margin-top: 40px; max-width: 1280px; margin-left: auto; margin-right: auto;">
     <div style="width: 100%; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; background: var(--clr-secondary); cursor: default; font-weight: 600; font-size: 18px; border-radius: var(--jimr-border-radius-lg) var(--jimr-border-radius-lg) 0 0;">
         <span style="color: #FAF9F6; font-size: 24px; font-weight: 600;">Community & Tools</span>
     </div>

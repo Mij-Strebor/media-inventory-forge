@@ -182,6 +182,7 @@ class MIF_Usage_Database {
              AND usage_id = %d
              AND usage_context = %s";
 
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query variable is prepared above with placeholders
         $count = $this->wpdb->get_var($this->wpdb->prepare(
             $query,
             $attachment_id,
@@ -211,6 +212,7 @@ class MIF_Usage_Database {
              WHERE attachment_id = %d
              ORDER BY found_at DESC";
 
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query variable is prepared above with placeholders
         $results = $this->wpdb->get_results(
             $this->wpdb->prepare($query, $attachment_id),
             ARRAY_A
@@ -271,6 +273,7 @@ class MIF_Usage_Database {
         // Get attachment IDs that have usage
         $table = esc_sql($this->full_table_name);
         $query = "SELECT DISTINCT attachment_id FROM $table";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Simple SELECT with no user input, table name escaped
         $used_ids = $this->wpdb->get_col($query);
 
         // Return attachments that are NOT in the used list
@@ -295,6 +298,7 @@ class MIF_Usage_Database {
              HAVING COUNT(*) >= %d
              ORDER BY usage_count DESC";
 
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query variable is prepared above with placeholders
         $results = $this->wpdb->get_results(
             $this->wpdb->prepare($query, $min_usage),
             ARRAY_A
@@ -317,19 +321,19 @@ class MIF_Usage_Database {
         $total_attachments = wp_count_posts('attachment')->inherit;
 
         // Used attachments
-        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query with escaped table name, read-only aggregate query
         $query = "SELECT COUNT(DISTINCT attachment_id) FROM $table";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query with escaped table name, read-only aggregate query
         $used_count = $this->wpdb->get_var($query);
 
         // Unused attachments
         $unused_count = $total_attachments - $used_count;
 
         // Usage by type
-        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query with escaped table name, read-only GROUP BY operation
         $query = "SELECT usage_type, COUNT(*) as count
              FROM $table
              GROUP BY usage_type
              ORDER BY count DESC";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query with escaped table name, read-only GROUP BY operation
         $usage_by_type = $this->wpdb->get_results($query, ARRAY_A);
 
         return array(
@@ -367,9 +371,9 @@ class MIF_Usage_Database {
      * @return int|false Number of rows deleted, or false on failure
      */
     public function clear_all_usage() {
-        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static TRUNCATE query with escaped table name
         $table = esc_sql($this->full_table_name);
         $query = "TRUNCATE TABLE $table";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static TRUNCATE query with escaped table name
         return $this->wpdb->query($query);
     }
 
@@ -381,11 +385,11 @@ class MIF_Usage_Database {
      * @return int|false Number of rows deleted
      */
     public function delete_old_usage($days = 30) {
-        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive, $wpdb->prepare() is used, table name escaped with esc_sql()
         $table = esc_sql($this->full_table_name);
         $query = "DELETE FROM $table
              WHERE found_at < DATE_SUB(NOW(), INTERVAL %d DAY)";
 
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query variable is prepared above with placeholders
         return $this->wpdb->query($this->wpdb->prepare($query, $days));
     }
 
@@ -404,6 +408,7 @@ class MIF_Usage_Database {
              WHERE attachment_id = %d
              GROUP BY usage_type";
 
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query variable is prepared above with placeholders
         $results = $this->wpdb->get_results(
             $this->wpdb->prepare($query, $attachment_id),
             ARRAY_A
@@ -429,6 +434,7 @@ class MIF_Usage_Database {
     public function drop_table() {
         $table = esc_sql($this->full_table_name);
         $query = "DROP TABLE IF EXISTS $table";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static DROP TABLE query with escaped table name
         $result = $this->wpdb->query($query);
         return $result !== false;
     }

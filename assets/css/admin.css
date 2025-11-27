@@ -1,15 +1,15 @@
 /**
  * Media Inventory Forge - Professional Admin Interface Stylesheet
- * ENHANCED DESIGN SYSTEM v3.0
+ * JIMRFORGE DESIGN SYSTEM v4.1
  *
  * Comprehensive styling system for the media inventory management interface.
- * Implements unified JimRWeb brand design system with Inter font family,
+ * Implements unified Jim R Forge brand design system with Inter font family,
  * enhanced typography scale, and professional design patterns.
  *
  * @package MediaInventoryForge
- * @version 3.0.0
- * @author Jim R (JimRWeb)
- * @link https://jimrweb.com
+ * @version 4.1.0
+ * @author Jim R Forge
+ * @link https://jimrforge.com
  * @since 1.0.0
  *
  * Architecture Overview:
@@ -135,23 +135,26 @@
      *
      * Styleguide 1.1
      */
-    --clr-primary: #3d2f1f;         /* Enhanced Dark Brown (was #3C2017) */
-    --clr-secondary: #6d4c2f;       /* Enhanced Medium Brown (was #5C3324) */
-    --clr-accent: #f4c542;          /* Brighter Gold (was #FFD700) */
-    --clr-accent-hover: #e5b12d;    /* Gold hover state */
+    --clr-primary: #3d2f1f;         /* Deep Brown - headings, button text */
+    --clr-secondary: #6d4c2f;       /* Medium Brown - body text, panel headers */
+    --clr-secondary-hover: #5d3f26; /* Secondary hover - 15% darker */
+    --clr-accent: #f4c542;          /* Gold - buttons, highlights */
+    --clr-btn-hover: #dda824;       /* Gold hover - JIMRFORGE standard */
+    --clr-accent-hover: #dda824;    /* Alias for backward compatibility */
 
     /**
-     * ENHANCED Typography Color System
+     * Typography Color System (JIMRFORGE Standard)
      *
-     * Updated text colors with burnt orange for links (accessibility).
+     * Updated to match JIMRFORGE-UI-STANDARDS.md v1.2.5
      *
      * Styleguide 1.2
      */
-    --clr-txt: #6d4c2f;             /* Enhanced brown for body text */
-    --clr-txt-dark: #3d2f1f;        /* Darker for headings */
-    --clr-light-txt: #FAF9F6;
-    --clr-link: #c97b3c;            /* BURNT ORANGE for accessible links */
-    --clr-link-hover: #a8632e;      /* Link hover state */
+    --clr-txt: #6d4c2f;             /* Main body text */
+    --clr-txt-dark: #3d2f1f;        /* Headings */
+    --clr-txt-light: #faf9f6;       /* Light text on dark backgrounds */
+    --clr-txt-muted: #64748b;       /* Muted/disabled text (slate gray) */
+    --clr-link: #ce6565;            /* Coral red - JIMRFORGE standard */
+    --clr-link-hover: #b54545;      /* Darker coral - hover state */
 
     /**
      * ENHANCED Background & Surface Colors
@@ -387,19 +390,19 @@ button, .button, input[type="submit"], input[type="button"] {
 }
 
 /* Category headers - CAPITALIZE (override lowercase) */
-.fcc-info-toggle, .category-header, button.fcc-info-toggle {
+.mif-info-toggle, .category-header, button.mif-info-toggle {
     text-transform: capitalize !important;
-    /* border-radius removed - handled by .fcc-info-toggle rule below */
+    /* border-radius removed - handled by .mif-info-toggle rule below */
 }
 /* Category headers - CAPITALIZE (override lowercase) */
-.fcc-info-toggle, .category-header, button.fcc-info-toggle {
+.mif-info-toggle, .category-header, button.mif-info-toggle {
     text-transform: capitalize !important;
-    /* border-radius removed - handled by .fcc-info-toggle rule below */
+    /* border-radius removed - handled by .mif-info-toggle rule below */
 }
 /* Category headers - CAPITALIZE (override lowercase) */
-.fcc-info-toggle, .category-header, button.fcc-info-toggle {
+.mif-info-toggle, .category-header, button.mif-info-toggle {
     text-transform: capitalize !important;
-    /* border-radius removed - handled by .fcc-info-toggle rule below */
+    /* border-radius removed - handled by .mif-info-toggle rule below */
 }
 }
 
@@ -533,7 +536,7 @@ h2 {
  *
  * Styleguide 4.1
  */
-.fcc-panel {
+.mif-panel {
     background: var(--clr-light);
     padding: var(--jimr-space-5);
     border-radius: var(--jimr-border-radius-lg);
@@ -563,7 +566,7 @@ h2 {
  *
  * Styleguide 5.1
  */
-.fcc-btn {
+.mif-btn-legacy {
     background: var(--clr-accent);
     color: var(--clr-btn-txt);
     border: 2px solid var(--clr-btn-bdr);
@@ -593,7 +596,7 @@ h2 {
  *
  * Styleguide 5.1.1
  */
-.fcc-btn:hover {
+.mif-btn-legacy:hover {
     background: var(--clr-btn-hover);
     transform: translateY(-2px);
     box-shadow: var(--clr-shadow-lg);
@@ -607,7 +610,7 @@ h2 {
  *
  * Styleguide 5.2
  */
-.fcc-btn-primary {
+.mif-btn-legacy-primary {
     background: var(--clr-info);
     color: white;
     border-color: var(--clr-info);
@@ -616,7 +619,7 @@ h2 {
     letter-spacing: normal;
 }
 
-.fcc-btn-danger {
+.mif-btn-legacy-danger {
     background: var(--clr-danger);
     color: white;
     border-color: var(--clr-danger-dark);
@@ -625,13 +628,254 @@ h2 {
     letter-spacing: normal;
 }
 
-.fcc-btn-ghost {
+.mif-btn-legacy-ghost {
     background: var(--jimr-gray-500);
     color: white;
     border-color: var(--jimr-gray-600);
     font-style: normal;
     text-transform: none;
     letter-spacing: normal;
+}
+
+/* ==========================================================================
+   JIMRFORGE BUTTON SYSTEM (v4.1.0)
+   ========================================================================== */
+
+/**
+ * JIMRFORGE Standard Button System
+ *
+ * Primary button styling following JIMRFORGE-UI-STANDARDS.md v1.2.5
+ * Gold background with brown text, dramatic hover effects, lowercase HTML text.
+ *
+ * Styleguide 5.2 (JIMRFORGE)
+ */
+
+/**
+ * Primary Button (Gold)
+ *
+ * Standard JIMRFORGE button with gold background, brown text, and
+ * up-and-left hover transform for dramatic interaction feedback.
+ *
+ * IMPORTANT: Using !important to override WordPress default button styles
+ */
+button.mif-btn,
+.mif-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    background: var(--clr-accent) !important;          /* Gold #f4c542 */
+    color: var(--clr-primary) !important;              /* Brown text #3d2f1f */
+    border: none !important;
+    border-radius: 8px !important;                     /* JIMRFORGE standard */
+    padding: 8px 16px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    font-style: normal !important;
+    text-transform: none !important;                   /* Use lowercase in HTML */
+    letter-spacing: 0.5px !important;
+    cursor: pointer !important;
+    position: relative !important;
+    gap: 8px !important;
+    text-decoration: none !important;
+    transition: all 0.25s ease !important;
+    box-shadow: 0 4px 6px rgba(61, 47, 31, 0.12) !important;
+}
+
+button.mif-btn:hover,
+.mif-btn:hover {
+    background: var(--clr-btn-hover) !important;       /* Darker gold #dda824 */
+    color: var(--clr-primary) !important;              /* Keep brown text on hover */
+    transform: translate(-2px, -2px) !important;       /* UP and LEFT */
+    box-shadow: 0 10px 20px rgba(61, 47, 31, 0.15) !important;
+}
+
+button.mif-btn:active,
+.mif-btn:active {
+    background: var(--clr-btn-hover) !important;
+    color: var(--clr-primary) !important;
+    transform: translate(-1px, -1px) !important;       /* Less lift when pressed */
+    box-shadow: 0 4px 6px rgba(61, 47, 31, 0.12) !important;
+}
+
+button.mif-btn:disabled,
+.mif-btn:disabled {
+    background: #9e9e9e !important;                    /* Gray */
+    color: #fafafa !important;
+    opacity: 0.7 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/**
+ * Secondary Button (Cancel/Dismiss)
+ *
+ * Use for cancel buttons, dismiss actions, secondary choices in modals.
+ * Slate gray background with white text.
+ */
+button.mif-btn-secondary,
+.mif-btn-secondary {
+    background: var(--clr-txt-muted) !important;       /* Slate gray #64748b */
+    color: #fff !important;
+    border: none !important;
+    font-style: normal !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+}
+
+button.mif-btn-secondary:hover,
+.mif-btn-secondary:hover {
+    background: #475569 !important;                    /* Darker slate */
+    color: #fff !important;
+}
+
+/**
+ * Danger Button (Destructive Actions)
+ *
+ * Use for delete confirmations, destructive actions.
+ * Red background with white text.
+ */
+button.mif-btn-danger,
+.mif-btn-danger {
+    background: #dc2626 !important;                    /* Red */
+    color: white !important;
+}
+
+button.mif-btn-danger:hover,
+.mif-btn-danger:hover {
+    background: #b91c1c !important;                    /* Darker red */
+    color: white !important;
+    transform: translate(-2px, -2px) !important;
+    box-shadow: 0 10px 20px rgba(220, 38, 38, 0.15) !important;
+}
+
+/* ==========================================================================
+   JIMRFORGE LAYOUT SYSTEM (v4.1.0)
+   ========================================================================== */
+
+/**
+ * MIF Layout Classes
+ *
+ * Replaces inline styles with reusable CSS classes following
+ * JIMRFORGE standards (1280px max-width, 36px panel padding).
+ */
+
+.mif-wrap {
+    background: var(--clr-page-bg);
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.mif-header-section {
+    width: 1280px;
+    max-width: 100%;
+    margin: 0 auto 40px auto;           /* Add bottom margin for spacing */
+}
+
+.mif-header-section h1 {
+    font-size: 32px;                    /* Large heading */
+    font-weight: 700;
+    color: var(--clr-primary);
+    margin: 0 0 8px 0;
+}
+
+.mif-version-info {
+    font-size: 11px;                    /* Slightly larger for readability */
+    color: rgba(109, 76, 47, 0.5);
+    font-style: italic;
+    font-weight: 400;
+    margin: 0 0 28px 0;                 /* Positive margin - space below version */
+    width: 1280px;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.mif-container {
+    margin: 0 auto;
+    max-width: 1280px;
+    background: var(--clr-card-bg);
+    border-radius: var(--jimr-border-radius-lg);
+    box-shadow: 0 20px 30px rgba(61, 47, 31, 0.18);
+    overflow: hidden;
+    border: 2px solid var(--clr-primary);
+}
+
+.mif-panel {
+    padding: 36px;                          /* JIMRFORGE standard */
+}
+
+.mif-panel-compact {
+    padding: 20px;
+}
+
+.mif-grid-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+/* MIF-specific toggle classes (aliases for .fcc- classes) */
+.mif-info-toggle-section {
+    margin-bottom: var(--jimr-space-4);
+    border: 2px solid var(--clr-secondary);
+    border-radius: var(--jimr-border-radius-lg) !important;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--clr-light), var(--clr-card-bg));
+    box-shadow: var(--clr-shadow);
+}
+
+.mif-info-toggle {
+    width: 100%;
+    background: var(--clr-secondary);
+    color: var(--clr-light-txt) !important;
+    border: none;
+    padding: var(--jimr-space-4) var(--jimr-space-5);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--jimr-font-lg);
+    border-radius: var(--jimr-border-radius) var(--jimr-border-radius) 0 0 !important;
+    font-weight: 600;
+    transition: var(--jimr-transition-slow);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    text-align: left;
+    text-transform: none;                   /* lowercase text in HTML */
+}
+
+.mif-info-toggle:hover {
+    background: var(--clr-secondary-hover);  /* 15% darker brown */
+    color: var(--clr-txt-light) !important;  /* Keep high contrast light text */
+    transform: translateY(-1px);
+}
+
+.mif-toggle-icon {
+    transition: transform 0.3s ease;
+    font-size: var(--jimr-font-base);
+    color: var(--clr-light-txt) !important;
+    flex-shrink: 0;
+    margin-left: var(--jimr-space-2);
+}
+
+.mif-info-toggle.expanded .mif-toggle-icon {
+    transform: rotate(180deg);
+}
+
+.mif-info-content {
+    padding: var(--jimr-space-5);
+    background: var(--clr-light);
+    color: var(--clr-txt);
+    font-size: var(--jimr-font-sm);
+    line-height: 1.7;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease;
+}
+
+.mif-info-content.expanded {
+    max-height: 2000px;
+    padding: var(--jimr-space-5);
 }
 
 /**
@@ -652,7 +896,7 @@ h2 {
  *
  * Styleguide 5.3.1
  */
-.fcc-info-toggle-section {
+.mif-info-toggle-section {
     margin-bottom: var(--jimr-space-4);  /* 16px - reduced from 24px for tighter spacing */
     border: 2px solid var(--clr-secondary);
     border-radius: var(--jimr-border-radius-lg) !important;  /* 5px - matches all corners */
@@ -669,7 +913,7 @@ h2 {
  *
  * Styleguide 5.3.2
  */
-.fcc-info-toggle {
+.mif-info-toggle {
     width: 100%;
     background: var(--clr-secondary);
     color: var(--clr-light-txt) !important;
@@ -696,9 +940,9 @@ h2 {
  *
  * Styleguide 5.3.3
  */
-.fcc-info-toggle:hover {
-    background: var(--clr-primary);
-    color: var(--clr-light-txt) !important;
+.mif-info-toggle:hover {
+    background: var(--clr-secondary-hover);  /* 15% darker brown */
+    color: var(--clr-txt-light) !important;  /* Keep high contrast light text */
     transform: translateY(-1px);
 }
 
@@ -710,7 +954,7 @@ h2 {
  *
  * Styleguide 5.3.4
  */
-.fcc-toggle-icon {
+.mif-toggle-icon {
     transition: transform 0.3s ease;
     font-size: var(--jimr-font-base);
     color: var(--clr-light-txt) !important;
@@ -718,7 +962,7 @@ h2 {
     margin-left: var(--jimr-space-2);
 }
 
-.fcc-info-toggle.expanded .fcc-toggle-icon {
+.mif-info-toggle.expanded .mif-toggle-icon {
     transform: rotate(180deg);
 }
 
@@ -730,7 +974,7 @@ h2 {
  *
  * Styleguide 5.3.5
  */
-.fcc-info-content {
+.mif-info-content {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.4s ease, padding 0.4s ease;
@@ -738,7 +982,7 @@ h2 {
     color: var(--clr-txt);
 }
 
-.fcc-info-content.expanded {
+.mif-info-content.expanded {
     max-height: none;
     padding: var(--jimr-space-5);
 }
@@ -1291,7 +1535,7 @@ h2 {
      *
      * Styleguide 9.1.1
      */
-    .fcc-header-section {
+    .mif-header-section {
         width: 100% !important;
         padding: 0 16px;
     }
