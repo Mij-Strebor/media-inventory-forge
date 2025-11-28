@@ -169,7 +169,7 @@
     font-weight: 700 !important;
     font-size: 32px !important;
     margin-left: 180px !important;
-    margin-bottom: var(--jimr-space-8) !important;
+    margin-bottom: var(--sp-8) !important;
     letter-spacing: -0.5px !important;
 
     /* Center vertically within header height */

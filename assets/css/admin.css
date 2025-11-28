@@ -108,15 +108,15 @@
     --mif-font-mono: Consolas, Monaco, 'Courier New', monospace;
 
     /* ==========================================================================
-       ENHANCED TYPOGRAPHY SCALE - 16PX BASE
+       ENHANCED TYPOGRAPHY SCALE - 16PX BASE (JIMRFORGE STANDARD)
        ========================================================================== */
-    --jimr-font-xs: 12px;       /* Upgraded from 10px */
-    --jimr-font-sm: 14px;       /* Upgraded from 12px */
-    --jimr-font-base: 16px;     /* BASE SIZE UPGRADE from 14px */
-    --jimr-font-lg: 18px;       /* Upgraded from 16px */
-    --jimr-font-xl: 20px;       /* Upgraded from 18px */
-    --jimr-font-2xl: 24px;      /* Upgraded from 20px */
-    --jimr-font-3xl: 32px;      /* New size for H1 */
+    --fs-xs: 12px;       /* Footnotes, fine print */
+    --fs-sm: 14px;       /* Labels, secondary text, button text */
+    --fs-md: 16px;       /* Body text - BASE */
+    --fs-lg: 18px;       /* Emphasized text */
+    --fs-xl: 20px;       /* H3 headings */
+    --fs-xxl: 24px;      /* H2 headings */
+    --fs-xxxl: 32px;     /* H1 headings, page titles */
 
     /* ==========================================================================
        LAYOUT CONSTRAINTS
@@ -262,15 +262,15 @@
      *
      * Styleguide 1.11
      */
-    --jimr-space-1: 4px;
-    --jimr-space-2: 8px;
-    --jimr-space-3: 12px;
-    --jimr-space-4: 16px;
-    --jimr-space-5: 20px;
-    --jimr-space-6: 24px;
-    --jimr-space-8: 32px;        /* New spacing value */
-    --jimr-space-9: 36px;        /* Panel padding */
-    --jimr-space-18: 72px;       /* Double panel padding for notices */
+    --sp-1: 4px;
+    --sp-2: 8px;
+    --sp-3: 12px;
+    --sp-4: 16px;
+    --sp-5: 20px;
+    --sp-6: 24px;
+    --sp-8: 32px;        /* New spacing value */
+    --sp-9: 36px;        /* Panel padding */
+    --sp-18: 72px;       /* Double panel padding for notices */
 }
 
 /* ==========================================================================
@@ -306,7 +306,7 @@
     background: var(--clr-page-bg) !important;
     color: var(--clr-txt) !important;
     font-family: var(--mif-font-body) !important;
-    font-size: var(--jimr-font-base) !important;  /* 16px base */
+    font-size: var(--fs-md) !important;  /* 16px base */
 }
 
 /* ==========================================================================
@@ -330,7 +330,7 @@
 .toplevel_page_media-inventory select,
 .toplevel_page_media-inventory textarea,
 .toplevel_page_media-inventory button {
-    font-size: var(--jimr-font-base) !important;  /* 16px */
+    font-size: var(--fs-md) !important;  /* 16px */
     line-height: 1.6 !important;
 }
 
@@ -338,7 +338,7 @@
 .toplevel_page_media-inventory p {
     color: var(--clr-txt) !important;
     font-weight: 500 !important;
-    margin-bottom: var(--jimr-space-4) !important;
+    margin-bottom: var(--sp-4) !important;
 }
 
 /* Global Link Styling - Burnt Orange - SCOPED */
@@ -364,7 +364,7 @@
 /* H3 Enhanced - SCOPED */
 .toplevel_page_media-inventory h3 {
     font-family: var(--mif-font-heading) !important;
-    font-size: var(--jimr-font-xl) !important;  /* 20px */
+    font-size: var(--fs-xl) !important;  /* 20px */
     font-weight: 600 !important;
     line-height: 1.4 !important;
     color: var(--clr-txt-dark) !important;
@@ -378,7 +378,7 @@
 /* All buttons - enhanced with lowercase and dramatic hover */
 button, .button, input[type="submit"], input[type="button"] {
     font-family: var(--mif-font-body) !important;
-    font-size: var(--jimr-font-base) !important;  /* 16px */
+    font-size: var(--fs-md) !important;  /* 16px */
     font-weight: 700 !important;
     text-transform: lowercase !important;
     padding: 12px 24px !important;
@@ -452,16 +452,16 @@ button:disabled, .button:disabled, input:disabled {
 
 /* Main container padding upgrade */
 .wrap, #wpbody-content > .wrap {
-    padding: var(--jimr-space-9) !important;  /* 36px */
+    padding: var(--sp-9) !important;  /* 36px */
     max-width: var(--mif-container-max) !important;  /* 1280px */
 }
 
 /* Notices and alerts - double margins */
 .notice, .updated, .error, .warning {
-    margin-left: var(--jimr-space-18) !important;  /* 72px */
-    margin-right: var(--jimr-space-18) !important;
-    font-size: var(--jimr-font-base) !important;  /* 16px */
-    padding: var(--jimr-space-5) !important;
+    margin-left: var(--sp-18) !important;  /* 72px */
+    margin-right: var(--sp-18) !important;
+    font-size: var(--fs-md) !important;  /* 16px */
+    padding: var(--sp-5) !important;
 }
 
 /* ==========================================================================
@@ -487,7 +487,7 @@ button:disabled, .button:disabled, input:disabled {
 h1 {
     color: var(--clr-txt-dark) !important;
     font-family: var(--mif-font-heading) !important;
-    font-size: var(--jimr-font-3xl) !important;  /* 32px */
+    font-size: var(--fs-xxxl) !important;  /* 32px */
     font-weight: 700 !important;
     line-height: 1.25 !important;
     letter-spacing: -0.3px !important;
@@ -504,15 +504,15 @@ h1 {
 h2 {
     color: var(--clr-txt-dark) !important;
     font-family: var(--mif-font-heading) !important;
-    font-size: var(--jimr-font-2xl) !important;  /* 24px - upgraded */
+    font-size: var(--fs-xxl) !important;  /* 24px - upgraded */
     font-weight: 700 !important;  /* Bolder */
     line-height: 1.3 !important;
     letter-spacing: -0.3px !important;
     border-bottom-color: var(--clr-tan) !important;
     text-shadow: 0 1px 2px rgba(61, 47, 31, 0.1);
-    margin: 0 0 var(--jimr-space-5) 0;
+    margin: 0 0 var(--sp-5) 0;
     border-bottom: 2px solid var(--clr-tan);
-    padding-bottom: var(--jimr-space-3);
+    padding-bottom: var(--sp-3);
 }
 
 /* ==========================================================================
@@ -538,7 +538,7 @@ h2 {
  */
 .mif-panel {
     background: var(--clr-light);
-    padding: var(--jimr-space-5);
+    padding: var(--sp-5);
     border-radius: var(--jimr-border-radius-lg);
     border: 2px solid var(--clr-secondary);
     box-shadow: var(--clr-shadow-lg);
@@ -570,9 +570,9 @@ h2 {
     background: var(--clr-accent);
     color: var(--clr-btn-txt);
     border: 2px solid var(--clr-btn-bdr);
-    padding: var(--jimr-space-2) var(--jimr-space-4);
+    padding: var(--sp-2) var(--sp-4);
     border-radius: var(--jimr-border-radius);
-    font-size: var(--jimr-font-sm);
+    font-size: var(--fs-sm);
     font-weight: 600;
     font-style: italic;
     text-transform: lowercase;
@@ -584,7 +584,7 @@ h2 {
     overflow: hidden;
     display: inline-flex;
     align-items: center;
-    gap: var(--jimr-space-2);
+    gap: var(--sp-2);
     text-decoration: none;
 }
 
@@ -817,7 +817,7 @@ button.mif-btn-danger:hover,
 
 /* MIF-specific toggle classes (aliases for .fcc- classes) */
 .mif-info-toggle-section {
-    margin-bottom: var(--jimr-space-4);
+    margin-bottom: var(--sp-4);
     border: 2px solid var(--clr-secondary);
     border-radius: var(--jimr-border-radius-lg) !important;
     overflow: hidden;
@@ -830,12 +830,12 @@ button.mif-btn-danger:hover,
     background: var(--clr-secondary);
     color: var(--clr-light-txt) !important;
     border: none;
-    padding: var(--jimr-space-4) var(--jimr-space-5);
+    padding: var(--sp-4) var(--sp-5);
     cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: var(--jimr-font-lg);
+    font-size: var(--fs-lg);
     border-radius: var(--jimr-border-radius) var(--jimr-border-radius) 0 0 !important;
     font-weight: 600;
     transition: var(--jimr-transition-slow);
@@ -852,10 +852,10 @@ button.mif-btn-danger:hover,
 
 .mif-toggle-icon {
     transition: transform 0.3s ease;
-    font-size: var(--jimr-font-base);
+    font-size: var(--fs-md);
     color: var(--clr-light-txt) !important;
     flex-shrink: 0;
-    margin-left: var(--jimr-space-2);
+    margin-left: var(--sp-2);
 }
 
 .mif-info-toggle.expanded .mif-toggle-icon {
@@ -863,10 +863,10 @@ button.mif-btn-danger:hover,
 }
 
 .mif-info-content {
-    padding: var(--jimr-space-5);
+    padding: 0;
     background: var(--clr-light);
     color: var(--clr-txt);
-    font-size: var(--jimr-font-sm);
+    font-size: var(--fs-sm);
     line-height: 1.7;
     max-height: 0;
     overflow: hidden;
@@ -875,7 +875,7 @@ button.mif-btn-danger:hover,
 
 .mif-info-content.expanded {
     max-height: 2000px;
-    padding: var(--jimr-space-5);
+    padding: var(--sp-5);
 }
 
 /**
@@ -897,7 +897,7 @@ button.mif-btn-danger:hover,
  * Styleguide 5.3.1
  */
 .mif-info-toggle-section {
-    margin-bottom: var(--jimr-space-4);  /* 16px - reduced from 24px for tighter spacing */
+    margin-bottom: var(--sp-4);  /* 16px - reduced from 24px for tighter spacing */
     border: 2px solid var(--clr-secondary);
     border-radius: var(--jimr-border-radius-lg) !important;  /* 5px - matches all corners */
     overflow: hidden;
@@ -918,12 +918,12 @@ button.mif-btn-danger:hover,
     background: var(--clr-secondary);
     color: var(--clr-light-txt) !important;
     border: none;
-    padding: var(--jimr-space-4) var(--jimr-space-5);
+    padding: var(--sp-4) var(--sp-5);
     cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: var(--jimr-font-lg);
+    font-size: var(--fs-lg);
     border-radius: var(--jimr-border-radius) var(--jimr-border-radius) 0 0 !important;  /* Round top corners only */
     /* 3px top corners to perfectly align with 5px panel corners (prevents "ears") */
     font-weight: 600;
@@ -956,10 +956,10 @@ button.mif-btn-danger:hover,
  */
 .mif-toggle-icon {
     transition: transform 0.3s ease;
-    font-size: var(--jimr-font-base);
+    font-size: var(--fs-md);
     color: var(--clr-light-txt) !important;
     flex-shrink: 0;
-    margin-left: var(--jimr-space-2);
+    margin-left: var(--sp-2);
 }
 
 .mif-info-toggle.expanded .mif-toggle-icon {
@@ -984,7 +984,7 @@ button.mif-btn-danger:hover,
 
 .mif-info-content.expanded {
     max-height: none;
-    padding: var(--jimr-space-5);
+    padding: var(--sp-5);
 }
 
 /* ==========================================================================
@@ -1040,7 +1040,7 @@ button.mif-btn-danger:hover,
     padding: 12px;
     text-align: left;
     border-bottom: none; /* Remove divider lines between rows */
-    font-size: var(--jimr-font-sm);
+    font-size: var(--fs-sm);
 }
 
 /**
@@ -1057,7 +1057,7 @@ button.mif-btn-danger:hover,
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    font-size: var(--jimr-font-xs);
+    font-size: var(--fs-xs);
 }
 
 /**
@@ -1123,7 +1123,7 @@ button.mif-btn-danger:hover,
     color: var(--clr-light-txt);
     padding: 16px 20px;
     margin: 0;
-    font-size: var(--jimr-font-lg);
+    font-size: var(--fs-lg);
     font-weight: 600;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
@@ -1150,7 +1150,7 @@ button.mif-btn-danger:hover,
     justify-content: space-between;
     padding: 8px 0;
     border-bottom: 1px solid var(--jimr-gray-200);
-    font-size: var(--jimr-font-sm);
+    font-size: var(--fs-sm);
 }
 
 /**
@@ -1179,7 +1179,7 @@ button.mif-btn-danger:hover,
  * Styleguide 6.3.3
  */
 .file-details {
-    font-size: var(--jimr-font-xs);
+    font-size: var(--fs-xs);
     color: var(--jimr-gray-600);
     max-width: 300px;
     line-height: 1.4;
@@ -1287,7 +1287,7 @@ button.mif-btn-danger:hover,
     background: var(--clr-light);
     padding: 12px 16px;
     border-bottom: 1px solid var(--clr-secondary);
-    font-size: var(--jimr-font-base);
+    font-size: var(--fs-md);
     display: flex;
     align-items: flex-start;
     gap: 16px;
@@ -1345,7 +1345,7 @@ button.mif-btn-danger:hover,
     align-items: center;
     justify-content: center;
     color: var(--clr-txt);
-    font-size: var(--jimr-font-xs);
+    font-size: var(--fs-xs);
 }
 
 /* .image-thumbnail.error styles removed - no longer used
@@ -1395,14 +1395,14 @@ button.mif-btn-danger:hover,
 
 .main-dimensions {
     color: var(--jimr-gray-600);
-    font-size: var(--jimr-font-xs);
+    font-size: var(--fs-xs);
     font-style: italic;
 }
 
 .image-stats {
     color: var(--clr-txt);
     font-weight: normal;
-    font-size: var(--jimr-font-sm);
+    font-size: var(--fs-sm);
 }
 
 /**
@@ -1438,7 +1438,7 @@ button.mif-btn-danger:hover,
     padding: 6px 0;
     border-bottom: 1px solid var(--jimr-gray-100);
     font-family: monospace;
-    font-size: var(--jimr-font-sm);
+    font-size: var(--fs-sm);
     line-height: 1.4;
 }
 
@@ -1708,7 +1708,7 @@ button.mif-btn-danger:hover,
 .mif-progress-bar-container {
     background: #e0e0e0;
     height: 24px;
-    border-radius: var(--jimr-border-radius);
+    border-radius: 12px;
     overflow: hidden;
     position: relative;
     margin-bottom: 8px;
@@ -1897,7 +1897,7 @@ button.mif-btn-danger:hover,
     .inventory-table th,
     .inventory-table td {
         padding: 8px 6px;
-        font-size: var(--jimr-font-xs);
+        font-size: var(--fs-xs);
     }
 
     /**
