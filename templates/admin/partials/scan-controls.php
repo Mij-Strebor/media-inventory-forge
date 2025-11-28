@@ -4,9 +4,9 @@
  * Scan controls template
  * @package MediaInventoryForge
  * @subpackage Templates
- * @since 2.0.0 
- * 
- * Provides the scan control buttons, progress bar, and summary stats section. 
+ * @since 2.0.0
+ *
+ * Provides the scan control buttons, progress bar, and summary stats section.
  */
 
 // Prevent direct access
@@ -15,80 +15,82 @@ defined('ABSPATH') || exit;
 
 <!-- Controls Section -->
 <div class="mif-panel">
-    <h2 style="margin-bottom: 16px;">Scan Controls</h2>
+    <h2 class="mif-section-heading">Scan Controls</h2>
 
     <!-- Image Display Mode Selection -->
-    <div style="margin-bottom: 16px; padding: 12px; background: var(--clr-light); border-radius: var(--jimr-border-radius); border: 1px solid var(--clr-secondary);">
-        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--clr-primary);">Image Display Mode:</label>
-        <div style="display: flex; gap: 16px; align-items: center;">
-            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--clr-txt);">
+    <div class="mif-control-group">
+        <label class="mif-control-label" style="display: block;">
+            <span class="mif-control-label-text">Image Display Mode:</span>
+        </label>
+        <div class="mif-display-mode-group">
+            <label class="mif-mode-option">
                 <input type="radio" name="mif-display-mode" id="mif-display-card" value="card" checked />
-                <span class="dashicons dashicons-grid-view" style="font-size: 16px;"></span>
+                <span class="dashicons dashicons-grid-view mif-mode-icon"></span>
                 Card View
             </label>
-            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--clr-txt);">
+            <label class="mif-mode-option">
                 <input type="radio" name="mif-display-mode" id="mif-display-table" value="table" />
-                <span class="dashicons dashicons-list-view" style="font-size: 16px;"></span>
+                <span class="dashicons dashicons-list-view mif-mode-icon"></span>
                 Table View
             </label>
         </div>
     </div>
 
     <!-- Source Filters -->
-    <div style="margin-bottom: 16px; padding: 12px; background: var(--clr-light); border-radius: var(--jimr-border-radius); border: 1px solid var(--clr-secondary);">
-        <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; cursor: pointer;">
+    <div class="mif-control-group">
+        <label class="mif-control-label">
             <input type="checkbox" id="mif-toggle-all-sources" />
-            <span style="font-weight: 600; color: var(--clr-primary);">Scan Sources:</span>
+            <span class="mif-control-label-text">Scan Sources:</span>
         </label>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;">
-            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--clr-txt);">
+        <div class="mif-source-grid">
+            <label class="mif-source-option">
                 <input type="checkbox" name="mif-source-filter" class="mif-source-filter" value="media-library" checked />
                 <strong>Media Library</strong>
-                <span style="font-size: 11px; color: #666;">(Primary)</span>
+                <span class="mif-source-meta">(Primary)</span>
             </label>
-            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--clr-txt);">
+            <label class="mif-source-option">
                 <input type="checkbox" name="mif-source-filter" class="mif-source-filter" value="theme" />
                 Active Theme
             </label>
-            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--clr-txt);">
+            <label class="mif-source-option">
                 <input type="checkbox" name="mif-source-filter" class="mif-source-filter" value="parent-theme" />
                 Parent Theme
             </label>
-            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--clr-txt);">
+            <label class="mif-source-option">
                 <input type="checkbox" name="mif-source-filter" class="mif-source-filter" value="plugins" />
                 Plugins
             </label>
-            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--clr-txt);">
+            <label class="mif-source-option">
                 <input type="checkbox" name="mif-source-filter" class="mif-source-filter" value="wordpress-core" />
                 WordPress Core
             </label>
-            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--clr-txt);">
+            <label class="mif-source-option">
                 <input type="checkbox" name="mif-source-filter" class="mif-source-filter" value="uploads" />
                 Uploads Directory
             </label>
         </div>
     </div>
 
-    <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap;">
+    <div class="mif-button-group">
         <button id="start-scan" class="mif-btn">start scan</button>
         <button id="stop-scan" class="mif-btn mif-btn-danger" style="display: none;">stop scan</button>
         <button id="export-csv" class="mif-btn" style="display: none;">export csv</button>
     </div>
 
     <div id="scan-progress" style="display: none;">
-        <div style="margin-bottom: 12px;">
-            <strong style="color: var(--clr-primary);">Scanning Progress:</strong>
+        <div class="mif-progress-wrapper">
+            <strong class="mif-progress-label">Scanning Progress:</strong>
         </div>
-        <div style="background: var(--clr-light); height: 24px; border-radius: 12px; overflow: hidden; border: 2px solid var(--clr-secondary); margin-bottom: 8px;">
-            <div id="progress-bar" style="background: linear-gradient(90deg, var(--clr-accent), var(--clr-btn-hover)); height: 100%; width: 0%; transition: width 0.3s ease; position: relative; overflow: hidden;">
+        <div class="mif-progress-bar-container">
+            <div id="progress-bar" class="mif-progress-bar" style="width: 0%;">
                 <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); animation: shimmer 2s infinite;"></div>
             </div>
         </div>
-        <p id="progress-text" style="margin: 0; color: var(--clr-txt); font-weight: 500;">0 / 0 processed</p>
+        <p id="progress-text" class="mif-progress-status">0 / 0 processed</p>
     </div>
 
     <div id="summary-stats" style="margin-top: 20px; display: none;">
-        <h3 style="color: var(--clr-primary); margin: 0 0 12px 0;">Summary</h3>
-        <div id="summary-content" style="background: var(--clr-light); padding: 16px; border-radius: var(--jimr-border-radius); border: 1px solid var(--clr-secondary);"></div>
+        <h3 class="mif-section-heading">Summary</h3>
+        <div id="summary-content" class="mif-control-group"></div>
     </div>
 </div>

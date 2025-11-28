@@ -1474,6 +1474,348 @@ button.mif-btn-danger:hover,
 }
 
 /* ==========================================================================
+   TEMPLATE-SPECIFIC STYLES (Replaces Inline Styles)
+   ========================================================================== */
+
+/**
+ * About Section Styles
+ */
+.mif-about-wrapper {
+    color: var(--clr-txt);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.mif-about-intro {
+    margin: 0 0 16px 0;
+    color: var(--clr-txt);
+}
+
+.mif-features-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 20px;
+}
+
+.mif-feature-heading {
+    color: var(--clr-secondary);
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+}
+
+.mif-feature-text {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.mif-about-notice {
+    background: rgba(60, 32, 23, 0.1);
+    padding: 12px 16px;
+    border-radius: 6px;
+    border-left: 4px solid var(--clr-accent);
+    margin-top: 20px;
+}
+
+.mif-about-notice p {
+    margin: 0;
+    font-size: 13px;
+    opacity: 0.95;
+    line-height: 1.5;
+    color: var(--clr-txt);
+}
+
+/**
+ * Community Panel Styles
+ */
+.mif-community-section {
+    margin-top: 40px;
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.mif-community-header {
+    width: 100%;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--clr-secondary);
+    cursor: default;
+    font-weight: 600;
+    font-size: 18px;
+    border-radius: var(--jimr-border-radius-lg) var(--jimr-border-radius-lg) 0 0;
+}
+
+.mif-community-title {
+    color: #FAF9F6;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.mif-community-content {
+    background: #faf9f6;
+    padding: 32px;
+    border-radius: 0 0 var(--jimr-border-radius-lg) var(--jimr-border-radius-lg);
+}
+
+.mif-community-intro {
+    margin: 0 0 20px 0;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--clr-txt);
+}
+
+.mif-community-heading {
+    color: var(--clr-primary);
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+}
+
+.mif-community-list {
+    margin: 0 0 20px 0;
+    padding-left: 20px;
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--clr-txt);
+}
+
+.mif-community-text {
+    margin: 0 0 16px 0;
+    padding-left: 20px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--clr-txt);
+}
+
+.mif-community-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-left: 20px;
+}
+
+.mif-community-link {
+    display: inline-block !important;
+    font-size: 13px !important;
+    line-height: 2.15384615 !important;
+    min-height: 30px !important;
+    margin: 0 !important;
+    padding: 0 10px !important;
+    border-radius: 3px !important;
+    border: 1px solid #2271b1 !important;
+    background: #f6f7f7 !important;
+    color: #2271b1 !important;
+    font-weight: 400 !important;
+    text-transform: none !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+    box-sizing: border-box !important;
+}
+
+/**
+ * Toggle Header Text Styles
+ */
+.mif-toggle-text {
+    color: #FAF9F6 !important;
+}
+
+/**
+ * Scan Controls Styles
+ */
+.mif-section-heading {
+    margin-bottom: 16px;
+}
+
+.mif-control-group {
+    margin-bottom: 16px;
+    padding: 12px;
+    background: var(--clr-light);
+    border-radius: var(--jimr-border-radius);
+    border: 1px solid var(--clr-secondary);
+}
+
+.mif-control-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+
+.mif-control-label-text {
+    font-weight: 600;
+    color: var(--clr-primary);
+}
+
+.mif-display-mode-group {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.mif-mode-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    color: var(--clr-txt);
+}
+
+.mif-mode-icon {
+    font-size: 16px;
+}
+
+.mif-source-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+}
+
+.mif-source-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    color: var(--clr-txt);
+}
+
+.mif-source-meta {
+    font-size: 11px;
+    color: #666;
+}
+
+.mif-button-group {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.mif-progress-wrapper {
+    margin-bottom: 12px;
+}
+
+.mif-progress-label {
+    color: var(--clr-primary);
+}
+
+.mif-progress-bar-container {
+    background: #e0e0e0;
+    height: 24px;
+    border-radius: var(--jimr-border-radius);
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.mif-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--clr-accent), var(--clr-btn-hover));
+    transition: width 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mif-progress-text {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--clr-primary);
+}
+
+.mif-progress-status {
+    font-size: 13px;
+    color: var(--clr-txt);
+}
+
+.mif-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.mif-summary-card {
+    background: white;
+    padding: 16px;
+    border-radius: var(--jimr-border-radius);
+    border-left: 4px solid var(--clr-accent);
+    box-shadow: var(--clr-shadow-sm);
+}
+
+.mif-summary-label {
+    font-size: 12px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.mif-summary-value {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--clr-primary);
+}
+
+/**
+ * File Distribution Chart Styles
+ */
+.mif-chart-container {
+    padding: 16px;
+}
+
+.mif-chart-header {
+    margin-bottom: 16px;
+}
+
+.mif-chart-wrapper {
+    width: 100%;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mif-chart-canvas {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.mif-empty-state {
+    padding: 40px;
+    text-align: center;
+    color: var(--clr-txt);
+    font-style: italic;
+}
+
+.mif-empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.3;
+}
+
+.mif-empty-message {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.mif-empty-instruction {
+    font-size: 14px;
+    color: #999;
+}
+
+.mif-results-placeholder {
+    min-height: 120px;
+}
+
+/* ==========================================================================
    8. ANIMATION & STATE MANAGEMENT
    ========================================================================== */
 

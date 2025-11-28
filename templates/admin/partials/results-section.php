@@ -5,7 +5,7 @@
  * @package MediaInventoryForge
  * @subpackage Templates
  * @since 2.0.0
- * 
+ *
  * Provides the results display area for scan outputs.
  */
 
@@ -15,12 +15,12 @@ defined('ABSPATH') || exit;
 
 <!-- Results Section -->
 <div class="mif-panel">
-    <h2 style="margin-bottom: 16px;">Inventory Results</h2>
+    <h2 class="mif-section-heading">Inventory Results</h2>
 
     <!-- Card View Container -->
     <div id="mif-card-view" class="mif-view-container">
-        <div id="results-container" style="min-height: 120px;">
-            <div style="text-align: center; padding: 40px; color: var(--clr-txt); font-style: italic;">
+        <div id="results-container" class="mif-results-placeholder">
+            <div class="mif-empty-state">
                 Click "start scan" to begin inventory scanning.
             </div>
         </div>
