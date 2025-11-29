@@ -11,30 +11,30 @@
 Understanding where your code lives and what each location is for:
 
 ```
-┌─────────────────────────────────────────────────────────┐
+┌────────────────────────────────────────────────────────┐
 │  TIER 1: Your Local Working Files                      │
 │  Location: E:\onedrive\projects\plugins\mif            │
 │  Purpose: Where YOU edit, test, and develop            │
 │  Backed up by: OneDrive (with .git excluded)           │
-└─────────────────────────────────────────────────────────┘
+└────────────────────────────────────────────────────────┘
                            ↓
                     git push origin
                            ↓
-┌─────────────────────────────────────────────────────────┐
+┌────────────────────────────────────────────────────────┐
 │  TIER 2: GitHub Code Repository                        │
 │  Location: github.com/Mij-Strebor/media-inventory-forge│
 │  Purpose: Version control, collaboration, backup       │
 │  Shows: Source code, docs, history                     │
-└─────────────────────────────────────────────────────────┘
+└────────────────────────────────────────────────────────┘
                            ↓
                    Create GitHub Release
                            ↓
-┌─────────────────────────────────────────────────────────┐
+┌────────────────────────────────────────────────────────┐
 │  TIER 3: GitHub Releases                               │
 │  Location: github.com/.../releases                     │
 │  Purpose: Downloadable versions for end users          │
 │  Shows: Version tags, release notes, ZIP downloads     │
-└─────────────────────────────────────────────────────────┘
+└────────────────────────────────────────────────────────┘
 ```
 
 ### What Each Tier Is For
