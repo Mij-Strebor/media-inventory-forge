@@ -4,7 +4,7 @@
  * Plugin Name: Media Inventory Forge
  * Plugin URI: https://jimrforge.com/plugins/media-inventory-forge
  * Description: Professional media library scanner and analyzer for WordPress developers
- * Version: 5.0.0
+ * Version: 5.0.1
  * Author: Jim R Forge
  * Author URI: https://jimrforge.com
  * License: GPL v2 or later
@@ -55,7 +55,7 @@
  * @package    MediaInventoryForge
  * @subpackage Core
  * @since      1.0.0
- * @version    4.1.0
+ * @version    5.0.1
  * @author     Jim R Forge
  * @link       https://jimrforge.com/plugins/media-inventory-forge
  * @license    GPL-2.0-or-later
@@ -104,7 +104,7 @@ if (!defined('ABSPATH')) {
  * @var   string MIF_VERSION Current plugin version
  */
 if (!defined('MIF_VERSION')) {
-    define('MIF_VERSION', '5.0.0');
+    define('MIF_VERSION', '5.0.1');
 }
 
 /**
@@ -273,6 +273,32 @@ require_once MIF_PLUGIN_DIR . 'includes/admin/class-admin-controller.php';
 require_once MIF_PLUGIN_DIR . 'includes/admin/class-table-builder.php';
 
 /* ==========================================================================
+   INTERNATIONALIZATION (I18N)
+   ========================================================================== */
+
+/**
+ * Load Plugin Text Domain for Translations
+ *
+ * Loads the plugin's translated strings from the /languages directory.
+ * This enables the plugin to be translated into any language, meeting
+ * WordPress.org internationalization requirements.
+ *
+ * The text domain 'media-inventory-forge' must match the Text Domain
+ * header in the plugin file and be used in all translation functions.
+ *
+ * @since 5.0.1
+ * @return void
+ */
+function mif_load_textdomain() {
+    load_plugin_textdomain(
+        'media-inventory-forge',
+        false,
+        dirname(plugin_basename(__FILE__)) . '/languages'
+    );
+}
+add_action('plugins_loaded', 'mif_load_textdomain');
+
+/* ==========================================================================
    PLUGIN INITIALIZATION
    ========================================================================== */
 
@@ -316,23 +342,30 @@ if (is_admin()) {
  * Plugin Lifecycle Management
  *
  * WordPress provides hooks for plugin activation, deactivation, and uninstall
- * events. These should be registered here for proper plugin lifecycle management.
- * 
- * Note: Activation/deactivation hooks should be implemented as the plugin
- * develops to handle database setup, cleanup, and configuration management.
+ * events. These hooks manage database setup, cleanup, and complete removal.
  *
- * @todo  Implement activation hook for database setup
- * @todo  Implement deactivation hook for cleanup
- * @todo  Implement uninstall hook for complete removal
+ * Current Implementation:
+ * ✅ Activation hook - Creates database tables and sets initial options
+ * ⚠️ Deactivation hook - Not implemented (optional for this plugin)
+ * ✅ Uninstall hook - Handled via uninstall.php (WordPress best practice)
+ *
+ * @since 4.0.0
+ * @version 5.0.1
  */
 
 /**
  * Plugin Activation Callback
  *
  * Called when the plugin is activated. Creates database tables and sets
- * default options.
+ * default options for proper plugin initialization.
+ *
+ * Actions performed:
+ * - Creates wp_mif_usage custom table for media usage tracking
+ * - Sets activation timestamp for plugin lifecycle tracking
+ * - Stores current plugin version for future upgrade checks
  *
  * @since 4.0.0
+ * @return void
  */
 function mif_activate_plugin() {
     // Create usage tracking table
@@ -347,36 +380,46 @@ function mif_activate_plugin() {
 /**
  * Register Plugin Activation Hook
  *
- * Called when the plugin is activated. Handles database table creation,
- * default option setting, and initial configuration.
+ * Registers the activation callback to run when the plugin is activated.
+ * This ensures proper database setup and option initialization.
  *
  * @since 4.0.0
  */
 register_activation_hook(MIF_PLUGIN_FILE, 'mif_activate_plugin');
 
 /**
- * Register Plugin Deactivation Hook
+ * Plugin Deactivation Hook
  *
- * Called when the plugin is deactivated. Should handle:
- * - Cleanup of temporary data
- * - Scheduled event removal
- * - Cache clearing
+ * Deactivation hook is intentionally NOT implemented for this plugin.
+ * The plugin does not use scheduled events or temporary data that requires
+ * cleanup on deactivation. All persistent data is removed via uninstall.php
+ * when the plugin is deleted.
  *
- * @todo  Implement deactivation callback function
+ * @since 5.0.1
+ * @note Deactivation != Deletion. Use uninstall.php for complete cleanup.
  */
-// register_deactivation_hook(MIF_PLUGIN_FILE, 'mif_deactivate_plugin');
+// Deactivation hook intentionally not registered
 
 /**
- * Register Plugin Uninstall Hook
+ * Plugin Uninstall Hook
  *
- * Called when the plugin is deleted. Should handle:
- * - Database table removal
- * - Option cleanup
- * - Complete data removal
+ * Uninstall cleanup is handled via uninstall.php (WordPress best practice).
+ * The uninstall.php file is automatically executed when the plugin is deleted
+ * from the WordPress admin interface.
  *
- * @todo  Implement uninstall callback function
+ * Cleanup performed in uninstall.php:
+ * ✅ Drops wp_mif_usage custom table
+ * ✅ Deletes all plugin options (mif_*)
+ * ✅ Removes all user transients
+ * ✅ Removes all user meta data
+ * ✅ Flushes WordPress cache
+ *
+ * @since 4.0.0
+ * @version 5.0.1
+ * @see uninstall.php Complete uninstall implementation
+ * @note Using uninstall.php instead of register_uninstall_hook() per WordPress guidelines
  */
-// register_uninstall_hook(MIF_PLUGIN_FILE, 'mif_uninstall_plugin');
+// Uninstall handled by uninstall.php
 
 /* ==========================================================================
    END OF PLUGIN BOOTSTRAP

@@ -101,13 +101,10 @@ The plugin scans your entire WordPress installation including posts, pages, widg
 Yes! Click any column header in Table View to sort by that column. Click again to reverse the sort order. You can sort by filename, file size, file type, upload date, and usage status.
 
 == Screenshots ==
-
-1. Main scanning interface with progress tracking and visual media distribution chart
-2. Card View mode showing expandable media cards with detailed metadata
-3. Table View mode with sortable columns and advanced filtering options
-4. Usage location tracking showing where each media file is used
-5. Unused media detection with filtering by usage status
-6. CSV export functionality for detailed external analysis
+1. Full application view
+2. Main scanning interface with progress tracking and visual media distribution chart
+3. Card View mode showing expandable media cards with detailed metadata
+4. Table View mode with sortable columns and advanced filtering options
 
 == Changelog ==
 

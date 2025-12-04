@@ -151,7 +151,7 @@
      */
     --clr-txt: #6d4c2f;             /* Main body text */
     --clr-txt-dark: #3d2f1f;        /* Headings */
-    --clr-txt-light: #faf9f6;       /* Light text on dark backgrounds */
+    --clr-txt-light: #ffffff;       /* Light text on dark backgrounds - white */
     --clr-txt-muted: #64748b;       /* Muted/disabled text (slate gray) */
     --clr-link: #ce6565;            /* Coral red - JIMRFORGE standard */
     --clr-link-hover: #b54545;      /* Darker coral - hover state */
@@ -828,7 +828,7 @@ button.mif-btn-danger:hover,
 .mif-info-toggle {
     width: 100%;
     background: var(--clr-secondary);
-    color: var(--clr-light-txt) !important;
+    color: var(--clr-txt-light) !important;
     border: none;
     padding: var(--sp-4) var(--sp-5);
     cursor: pointer;
@@ -853,7 +853,7 @@ button.mif-btn-danger:hover,
 .mif-toggle-icon {
     transition: transform 0.3s ease;
     font-size: var(--fs-md);
-    color: var(--clr-light-txt) !important;
+    color: var(--clr-txt-light) !important;
     flex-shrink: 0;
     margin-left: var(--sp-2);
 }
@@ -916,7 +916,7 @@ button.mif-btn-danger:hover,
 .mif-info-toggle {
     width: 100%;
     background: var(--clr-secondary);
-    color: var(--clr-light-txt) !important;
+    color: var(--clr-txt-light) !important;
     border: none;
     padding: var(--sp-4) var(--sp-5);
     cursor: pointer;
@@ -957,7 +957,7 @@ button.mif-btn-danger:hover,
 .mif-toggle-icon {
     transition: transform 0.3s ease;
     font-size: var(--fs-md);
-    color: var(--clr-light-txt) !important;
+    color: var(--clr-txt-light) !important;
     flex-shrink: 0;
     margin-left: var(--sp-2);
 }
@@ -1120,7 +1120,7 @@ button.mif-btn-danger:hover,
  */
 .category-header {
     background: var(--clr-secondary);
-    color: var(--clr-light-txt);
+    color: var(--clr-txt-light);
     padding: 16px 20px;
     margin: 0;
     font-size: var(--fs-lg);

@@ -147,7 +147,7 @@ class MIF_Table_Builder
         $html = '<div class="mif-category-table-section" style="margin-bottom: 20px;">';
 
         // Collapsible header
-        $html .= '<h3 class="mif-category-header" data-target="' . $section_id . '" style="background: var(--clr-primary); color: var(--clr-light-txt); padding: 12px 16px; margin: 0; border-radius: var(--jimr-border-radius) var(--jimr-border-radius) 0 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">';
+        $html .= '<h3 class="mif-category-header" data-target="' . $section_id . '">';
         $html .= '<span>' . esc_html($category_name) . ' (' . $item_count . ' items, ' . $formatted_size . ')</span>';
         $html .= '<span class="dashicons dashicons-arrow-down-alt2 mif-category-toggle-icon"></span>';
         $html .= '</h3>';
