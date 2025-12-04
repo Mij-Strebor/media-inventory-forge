@@ -2,6 +2,21 @@
 ![Media Inventory Forge Banner](assets/images/changelog-1544x500.png)
 # Media Inventory Forge
 
+## [5.0.1] - 2025-12-04
+
+### 🔧 Maintenance Release
+
+**Version Synchronization**
+- ✅ Updated all version numbers to 5.0.1 for consistency
+- ✅ Synchronized readme.txt stable tag with plugin version
+- ✅ Updated CHANGELOG.md to reflect current release
+
+**Notes**
+- No functional changes from v5.0.0
+- Maintenance release to ensure version consistency across all files
+
+---
+
 ## [5.0.0] - 2025-11-27
 
 ### 🎨 JIMRFORGE Standards Compliance - Complete Refactoring
