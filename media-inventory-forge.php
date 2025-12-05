@@ -10,9 +10,8 @@
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: media-inventory-forge
- * Domain Path: /languages
  * Requires at least: 5.0
- * Tested up to: 6.8
+ * Tested up to: 6.7
  * Requires PHP: 7.4
  * Network: true
  */
@@ -277,26 +276,20 @@ require_once MIF_PLUGIN_DIR . 'includes/admin/class-table-builder.php';
    ========================================================================== */
 
 /**
- * Load Plugin Text Domain for Translations
+ * Translation Support
  *
- * Loads the plugin's translated strings from the /languages directory.
- * This enables the plugin to be translated into any language, meeting
- * WordPress.org internationalization requirements.
+ * As of WordPress 4.6, translation loading for plugins hosted on WordPress.org
+ * is handled automatically by WordPress. The load_plugin_textdomain() function
+ * is no longer needed when using the standard text domain that matches the
+ * plugin slug.
  *
- * The text domain 'media-inventory-forge' must match the Text Domain
- * header in the plugin file and be used in all translation functions.
+ * Translation files are managed through translate.wordpress.org and loaded
+ * automatically when available for the site's locale.
+ *
+ * Text domain: media-inventory-forge (matches plugin slug)
  *
  * @since 5.0.1
- * @return void
  */
-function mif_load_textdomain() {
-    load_plugin_textdomain(
-        'media-inventory-forge',
-        false,
-        dirname(plugin_basename(__FILE__)) . '/languages'
-    );
-}
-add_action('plugins_loaded', 'mif_load_textdomain');
 
 /* ==========================================================================
    PLUGIN INITIALIZATION
