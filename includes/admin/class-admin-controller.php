@@ -368,25 +368,78 @@ class MIF_Admin_Controller
             return;
         }
 
-        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON data validated below
-        $scan_data = isset($_POST['scan_data']) ? wp_unslash($_POST['scan_data']) : '';
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized after JSON decode
+        $scan_data_raw = isset($_POST['scan_data']) ? wp_unslash($_POST['scan_data']) : '';
 
-        if (empty($scan_data)) {
+        if (empty($scan_data_raw)) {
             wp_send_json_error('No scan data provided');
             return;
         }
 
-        // Validate that scan_data is valid JSON
-        json_decode($scan_data);
+        // Decode and validate JSON format
+        $scan_data_decoded = json_decode($scan_data_raw, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             wp_send_json_error('Invalid scan data format');
             return;
         }
-        // Store scan results in transient (24 hour expiration, handles large data better)
-        $user_id = get_current_user_id();
-        set_transient('mif_scan_results_' . $user_id, $scan_data, DAY_IN_SECONDS);
 
-        wp_send_json_success(['message' => 'Scan results saved', 'data_length' => strlen($scan_data)]);
+        // Recursively sanitize all array values
+        $scan_data_sanitized = $this->mif_sanitize_scan_data($scan_data_decoded);
+
+        // Re-encode sanitized data for storage
+        $scan_data_clean = wp_json_encode($scan_data_sanitized);
+
+        // Store sanitized scan results in transient (24 hour expiration)
+        $user_id = get_current_user_id();
+        set_transient('mif_scan_results_' . $user_id, $scan_data_clean, DAY_IN_SECONDS);
+
+        wp_send_json_success(['message' => 'Scan results saved', 'data_length' => strlen($scan_data_clean)]);
+    }
+
+    /**
+     * Recursively sanitize scan data array
+     *
+     * Sanitizes all string values in the scan data array using appropriate
+     * WordPress sanitization functions based on data type.
+     *
+     * @since 5.0.2
+     * @param mixed $data Data to sanitize (array, string, int, etc.)
+     * @return mixed Sanitized data
+     */
+    private function mif_sanitize_scan_data($data)
+    {
+        // Handle arrays recursively
+        if (is_array($data)) {
+            $sanitized = [];
+            foreach ($data as $key => $value) {
+                $sanitized_key = sanitize_key($key);
+                $sanitized[$sanitized_key] = $this->mif_sanitize_scan_data($value);
+            }
+            return $sanitized;
+        }
+
+        // Handle strings - use text_field for most data
+        if (is_string($data)) {
+            return sanitize_text_field($data);
+        }
+
+        // Handle integers
+        if (is_int($data)) {
+            return intval($data);
+        }
+
+        // Handle floats
+        if (is_float($data)) {
+            return floatval($data);
+        }
+
+        // Handle booleans
+        if (is_bool($data)) {
+            return (bool) $data;
+        }
+
+        // Return null for anything else
+        return null;
     }
 
     /**
