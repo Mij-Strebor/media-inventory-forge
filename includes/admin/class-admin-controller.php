@@ -171,8 +171,12 @@ class MIF_Admin_Controller
             );
         }
 
+        // Clean the output buffer (closes ob_start)
+        ob_end_clean();
+
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="media-inventory-' . gmdate('Y-m-d-H-i-s') . '.csv"');
+
         header('Pragma: no-cache');
         header('Expires: 0');
 
