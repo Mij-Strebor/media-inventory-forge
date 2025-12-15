@@ -4,14 +4,14 @@
  * Plugin Name: Media Inventory Forge
  * Plugin URI: https://jimrforge.com/plugins/media-inventory-forge
  * Description: Professional media library scanner and analyzer for WordPress developers
- * Version: 5.0.1
+ * Version: 5.0.2
  * Author: Jim R Forge
  * Author URI: https://jimrforge.com
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: media-inventory-forge
  * Requires at least: 5.0
- * Tested up to: 6.7
+ * Tested up to: 6.9
  * Requires PHP: 7.4
  * Network: true
  */
@@ -54,7 +54,7 @@
  * @package    MediaInventoryForge
  * @subpackage Core
  * @since      1.0.0
- * @version    5.0.1
+ * @version    5.0.2
  * @author     Jim R Forge
  * @link       https://jimrforge.com/plugins/media-inventory-forge
  * @license    GPL-2.0-or-later
@@ -103,7 +103,7 @@ if (!defined('ABSPATH')) {
  * @var   string MIF_VERSION Current plugin version
  */
 if (!defined('MIF_VERSION')) {
-    define('MIF_VERSION', '5.0.1');
+    define('MIF_VERSION', '5.0.2');
 }
 
 /**
@@ -288,7 +288,7 @@ require_once MIF_PLUGIN_DIR . 'includes/admin/class-table-builder.php';
  *
  * Text domain: media-inventory-forge (matches plugin slug)
  *
- * @since 5.0.1
+ * @since 5.0.2
  */
 
 /* ==========================================================================
@@ -343,7 +343,7 @@ if (is_admin()) {
  * ✅ Uninstall hook - Handled via uninstall.php (WordPress best practice)
  *
  * @since 4.0.0
- * @version 5.0.1
+ * @version 5.0.2
  */
 
 /**
@@ -360,7 +360,8 @@ if (is_admin()) {
  * @since 4.0.0
  * @return void
  */
-function mif_activate_plugin() {
+function mif_activate_plugin()
+{
     // Create usage tracking table
     $usage_db = new MIF_Usage_Database();
     $usage_db->create_table();
@@ -388,7 +389,7 @@ register_activation_hook(MIF_PLUGIN_FILE, 'mif_activate_plugin');
  * cleanup on deactivation. All persistent data is removed via uninstall.php
  * when the plugin is deleted.
  *
- * @since 5.0.1
+ * @since 5.0.2
  * @note Deactivation != Deletion. Use uninstall.php for complete cleanup.
  */
 // Deactivation hook intentionally not registered
@@ -408,7 +409,7 @@ register_activation_hook(MIF_PLUGIN_FILE, 'mif_activate_plugin');
  * ✅ Flushes WordPress cache
  *
  * @since 4.0.0
- * @version 5.0.1
+ * @version 5.0.2
  * @see uninstall.php Complete uninstall implementation
  * @note Using uninstall.php instead of register_uninstall_hook() per WordPress guidelines
  */

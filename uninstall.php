@@ -15,7 +15,7 @@
  *
  * @package MediaInventoryForge
  * @since 2.1.1
- * @version 5.0.1
+ * @version 5.0.2
  */
 
 // If uninstall not called from WordPress, exit

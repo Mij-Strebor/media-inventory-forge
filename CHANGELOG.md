@@ -2,6 +2,29 @@
 ![Media Inventory Forge Banner](assets/images/changelog-1544x500.png)
 # Media Inventory Forge
 
+  ## [5.0.2] - 2025-12-15
+
+  ### 🔒 Security & Compliance Release (WordPress.org Review)
+
+  **Security Fixes**
+  - ✅ Fixed unsanitized JSON input in `ajax_save_scan_results()` - now properly decodes, sanitizes, and re-encodes data
+  - ✅ Fixed unsanitized JSON input in `ajax_export()` - applied same sanitization pattern
+  - ✅ Added recursive `mif_sanitize_scan_data()` method for type-safe array sanitization
+  - ✅ Fixed unclosed `ob_start()` in CSV export handler - added `ob_end_clean()`
+
+  **Code Quality**
+  - ✅ Comprehensive security audit of all `$_POST`, `$_GET`, `$_REQUEST` usage
+  - ✅ Verified all inputs use appropriate WordPress sanitization functions
+  - ✅ Confirmed all prefixes meet WordPress.org 4+ character requirement
+
+  **Compliance**
+  - ✅ Addresses WordPress.org automated review requirements
+  - ✅ Follows WordPress coding standards and security best practices
+  - ✅ All user input properly validated and sanitized
+
+  **Related**
+  - WordPress.org review: AUTOPREREVIEW media-inventory-forge/mijstrebor/14Dec25/T1
+
 ## [5.0.1] - 2025-12-04
 
 ### 🔧 Maintenance Release
