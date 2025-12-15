@@ -132,11 +132,21 @@ class MIF_Admin_Controller
             wp_die('Permission denied');
         }
 
-        $inventory_data = isset($_POST['inventory_data']) ? json_decode(stripslashes(sanitize_textarea_field(wp_unslash($_POST['inventory_data']))), true) : null;
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized after JSON decode
+        $inventory_data_raw = isset($_POST['inventory_data']) ? wp_unslash($_POST['inventory_data']) : '';
 
-        if (empty($inventory_data)) {
+        if (empty($inventory_data_raw)) {
             wp_die('No data to export');
         }
+
+        // Decode and validate JSON format
+        $inventory_data = json_decode($inventory_data_raw, true);
+        if (json_last_error() !== JSON_ERROR_NONE || empty($inventory_data)) {
+            wp_die('Invalid export data format');
+        }
+
+        // Recursively sanitize all array values
+        $inventory_data = $this->mif_sanitize_scan_data($inventory_data);
 
         // Suppress fclose warning by using alternative CSV approach
         ob_start();
