@@ -1,9 +1,8 @@
 # Media Inventory Forge - WordPress Plugin
-![Logo](./docs/screenshots/JimRWeb-logo-black.svg)
 
 **Professional responsive design tools for WordPress developers**
 
-![Media Inventory Forge Banner](./docs/screenshots/banner.jpg)
+![Media Inventory Forge Banner](./docs/screenshots/banner-1544x500.png)
 
 [![WordPress Plugin](https://img.shields.io/badge/WordPress-Plugin-blue.svg)](https://wordpress.org/)
 [![Version](https://img.shields.io/badge/version-5.0.2-blue.svg)](https://github.com/Mij-Strebor/media-inventory-forge/releases)
