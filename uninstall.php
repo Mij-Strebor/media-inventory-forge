@@ -20,7 +20,7 @@
 
 // If uninstall not called from WordPress, exit
 if (!defined('WP_UNINSTALL_PLUGIN')) {
-    exit;
+   exit;
 }
 
 // Access WordPress database
@@ -35,8 +35,8 @@ global $wpdb;
  *
  * Drops the custom wp_mif_usage table that stores media usage location data.
  */
-$table_name = $wpdb->prefix . 'mif_usage';
-// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Uninstall cleanup, table name is safe
+$table_name = esc_sql($wpdb->prefix . 'mif_usage');
+// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uninstall cleanup, table name is escaped
 $wpdb->query("DROP TABLE IF EXISTS {$table_name}");
 
 /* ==========================================================================
@@ -64,7 +64,7 @@ delete_option('mif_last_usage_scan');
  */
 $users = get_users(array('fields' => 'ID'));
 foreach ($users as $user_id) {
-    delete_transient('mif_scan_results_' . $user_id);
+   delete_transient('mif_scan_results_' . $user_id);
 }
 
 /* ==========================================================================
