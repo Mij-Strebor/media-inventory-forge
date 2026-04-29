@@ -143,15 +143,12 @@
          * @returns {void}
          */
         showCardView: function () {
-            var $cardView = $('#mif-card-view');
-
-            $cardView.show();
             $('#mif-table-view').hide();
+            $('#mif-card-view').show();
 
-            // If the card was never rendered for this scan (e.g. scan ran while table
-            // was active), render it now. minvf_cardRendered is set by admin.js.
-            if (!window.minvf_cardRendered
-                && window.inventoryData
+            // Always re-render from inventoryData so the card reflects the current
+            // scan even when it was populated while the card container was hidden.
+            if (window.inventoryData
                 && window.inventoryData.length > 0
                 && typeof window.minvf_renderCardView === 'function') {
                 window.minvf_renderCardView();

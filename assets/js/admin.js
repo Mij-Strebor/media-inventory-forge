@@ -50,8 +50,6 @@ jQuery(document).ready(function ($) {
   window.inventoryData = window.inventoryData || [];
   let inventoryData = window.inventoryData;
 
-  window.minvf_cardRendered = false;
-
   /**
    * Scanning state flag
    * @type {boolean}
@@ -372,7 +370,6 @@ jQuery(document).ready(function ($) {
     isScanning = true;
     inventoryData = [];
     window.inventoryData = inventoryData;
-    window.minvf_cardRendered = false; // card must be re-rendered after this scan
 
     $("#start-scan").prop("disabled", true).text("scanning...").hide();
     $("#stop-scan").show();
@@ -717,8 +714,6 @@ jQuery(document).ready(function ($) {
     $("#results-container").html(html);
     updateSummaryDisplay(categories, totals);
     updatePieChart(categories, totals);
-
-    window.minvf_cardRendered = true;
 
     // Restore collapse states after rendering categories
     setTimeout(restoreCollapseStates, 50);
