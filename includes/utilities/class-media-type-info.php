@@ -23,7 +23,7 @@ if (!defined('ABSPATH')) {
  *
  * @since 4.0.0
  */
-class MIF_Media_Type_Info {
+class MINVF_Media_Type_Info {
 
     /**
      * Get information for a specific media type
@@ -269,11 +269,18 @@ class MIF_Media_Type_Info {
         $info['count'] = $count;
         $info['stats'] = $stats;
 
-        // Extract variables for template
-        extract($info);
+        // Assign template variables explicitly (extract() is prohibited by WPCS)
+        $type         = $info['type']         ?? 'unknown';
+        $title        = $info['title']        ?? '';
+        $icon         = $info['icon']         ?? '';
+        $can_detect   = $info['can_detect']   ?? [];
+        $might_miss   = $info['might_miss']   ?? [];
+        $special_note = $info['special_note'] ?? '';
+        $count        = $info['count']        ?? 0;
+        $stats        = $info['stats']        ?? [];
 
         // Load template
-        $template_path = MIF_PLUGIN_DIR . 'templates/admin/partials/media-type-explanation.php';
+        $template_path = MINVF_PLUGIN_DIR . 'templates/admin/partials/media-type-explanation.php';
 
         if (file_exists($template_path)) {
             include $template_path;

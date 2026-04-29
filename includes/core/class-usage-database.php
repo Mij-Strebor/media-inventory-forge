@@ -31,7 +31,7 @@ if (!defined('ABSPATH')) {
  *
  * @since 4.0.0
  */
-class MIF_Usage_Database
+class MINVF_Usage_Database
 {
 
     /**
@@ -39,7 +39,7 @@ class MIF_Usage_Database
      *
      * @var string
      */
-    private $table_name = 'mif_usage';
+    private $table_name = 'minvf_usage';
 
     /**
      * Full table name (with prefix)
@@ -325,7 +325,7 @@ class MIF_Usage_Database
         $table = esc_sql($this->full_table_name);
 
         // Total attachments
-        $total_attachments = wp_count_posts('attachment')->inherit;
+        $total_attachments = wp_count_posts('attachment')->inherit ?? 0;
 
         // Used attachments
         $query = "SELECT COUNT(DISTINCT attachment_id) FROM $table";
@@ -348,7 +348,7 @@ class MIF_Usage_Database
             'used_count' => $used_count,
             'unused_count' => $unused_count,
             'usage_by_type' => $usage_by_type,
-            'last_scan' => get_option('mif_last_usage_scan', 'Never')
+            'last_scan' => get_option('minvf_last_usage_scan', 'Never')
         );
     }
 

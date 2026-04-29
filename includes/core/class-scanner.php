@@ -9,7 +9,7 @@
  * 
  * This class orchestrates the scanning process by:
  * - Managing batch iterations through the media library
- * - Coordinating with MIF_File_Processor for individual file analysis
+ * - Coordinating with MINVF_File_Processor for individual file analysis
  * - Tracking progress and collecting errors
  * - Optimizing WordPress queries for performance
  * - Managing memory limits for large-scale operations
@@ -30,13 +30,13 @@
 defined('ABSPATH') || exit;
 
 /**
- * MIF_Scanner Class
+ * MINVF_Scanner Class
  * 
  * Core scanning engine for Media Inventory Forge. Handles batch processing
  * of WordPress media attachments with progressive scanning, error tracking,
  * and memory-conscious operations.
  */
-class MIF_Scanner
+class MINVF_Scanner
 {
     /* ==========================================================================
        PROPERTIES
@@ -73,7 +73,7 @@ class MIF_Scanner
     /**
      * File processor instance for individual attachment handling
      *
-     * @var MIF_File_Processor
+     * @var MINVF_File_Processor
      */
     private $file_processor;
 
@@ -141,7 +141,7 @@ class MIF_Scanner
     {
         $this->batch_size = max(1, min(50, intval($batch_size)));
         $this->upload_dir = wp_upload_dir();
-        $this->file_processor = new MIF_File_Processor();
+        $this->file_processor = new MINVF_File_Processor();
     }
 
     /**
@@ -386,21 +386,14 @@ class MIF_Scanner
      */
     private function scan_theme_files()
     {
-        $themes_dir = get_theme_root();
-        if (!is_dir($themes_dir)) {
+        // Scan only the active theme — glob($themes_dir.'/*') would scan every
+        // installed theme, including inactive ones.
+        $theme_dir = get_stylesheet_directory();
+        if (!is_dir($theme_dir)) {
             return;
         }
 
-        // Get all theme directories
-        $theme_dirs = glob($themes_dir . '/*', GLOB_ONLYDIR);
-        if (empty($theme_dirs)) {
-            return;
-        }
-
-        foreach ($theme_dirs as $theme_dir) {
-            $theme_name = basename($theme_dir);
-            $this->scan_theme_directory($theme_dir, $theme_name);
-        }
+        $this->scan_theme_directory($theme_dir, get_stylesheet());
     }
 
     /**
@@ -489,8 +482,7 @@ class MIF_Scanner
         }
 
         // Get category using existing utility
-        $category = MIF_File_Utils::get_category($mime_type);
-        $extension = strtolower(pathinfo($file_path, PATHINFO_EXTENSION));
+        $category = MINVF_File_Utils::get_category($mime_type);
         $filename = basename($file_path);
         $file_size = filesize($file_path);
 
@@ -529,7 +521,7 @@ class MIF_Scanner
 
         // Get font family for fonts
         if ($category === 'Fonts') {
-            $item_data['font_family'] = MIF_File_Utils::get_font_family($filename, $file_path);
+            $item_data['font_family'] = MINVF_File_Utils::get_font_family($filename, $file_path);
         }
 
         $this->theme_files[] = $item_data;
@@ -597,6 +589,6 @@ class MIF_Scanner
     }
 
     /* ==========================================================================
-       END OF MIF_SCANNER CLASS
+       END OF MINVF_SCANNER CLASS
        ========================================================================== */
 }

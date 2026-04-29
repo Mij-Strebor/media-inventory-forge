@@ -13,11 +13,11 @@
 defined('ABSPATH') || exit;
 
 /**
- * Class MIF_Table_Builder
+ * Class MINVF_Table_Builder
  *
  * Generates HTML tables organized by category with expandable row details
  */
-class MIF_Table_Builder
+class MINVF_Table_Builder
 {
     /**
      * Build complete table view HTML
@@ -33,7 +33,7 @@ class MIF_Table_Builder
     {
         // Try to get saved scan results from transient
         $user_id = get_current_user_id();
-        $saved_results = get_transient('mif_scan_results_' . $user_id);
+        $saved_results = get_transient('minvf_scan_results_' . $user_id);
 
         if (!empty($saved_results)) {
             // Use saved results instead of re-scanning
@@ -140,7 +140,7 @@ class MIF_Table_Builder
     {
         $item_count = count($items);
         $total_size = array_sum(array_column($items, 'total_size'));
-        $formatted_size = MIF_File_Utils::format_bytes($total_size);
+        $formatted_size = MINVF_File_Utils::format_bytes($total_size);
 
         $section_id = 'mif-category-' . sanitize_title($category_name);
 
@@ -229,23 +229,23 @@ class MIF_Table_Builder
             }
             $html .= '</td>';
             $html .= '<td>' . implode(', ', $variants) . '</td>';
-            $html .= '<td data-sort-value="' . $total_files . '">' . $total_files . '</td>';
-            $html .= '<td data-sort-value="' . $total_size . '">' . MIF_File_Utils::format_bytes($total_size) . '</td>';
+            $html .= '<td data-sort-value="' . intval($total_files) . '">' . intval($total_files) . '</td>';
+            $html .= '<td data-sort-value="' . intval($total_size) . '">' . MINVF_File_Utils::format_bytes($total_size) . '</td>';
             $html .= '</tr>';
 
             // Expanded details row
             $html .= '<tr class="mif-expanded-details" id="' . $row_id . '" style="display: none;">';
             $html .= '<td colspan="6">';
-            $html .= '<div style="padding: 12px; background: #f9f9f9;">';
+            $html .= '<div style="padding: 12px; background: var(--clr-table-details-bg);">';
             $html .= '<table class="mif-details-table" style="width: 100%; border-collapse: collapse;">';
-            $html .= '<tr style="background: #e0e0e0; font-weight: 600;"><td>File</td><td>Type</td><td>Size</td></tr>';
+            $html .= '<tr style="background: var(--clr-table-header-bg); font-weight: 600;"><td>File</td><td>Type</td><td>Size</td></tr>';
 
             foreach ($family_items as $font_item) {
                 foreach ($font_item['files'] as $file) {
                     $html .= '<tr>';
                     $html .= '<td>' . esc_html($font_item['title']) . '</td>';
                     $html .= '<td>' . esc_html($file['type']) . '</td>';
-                    $html .= '<td>' . MIF_File_Utils::format_bytes($file['size']) . '</td>';
+                    $html .= '<td>' . MINVF_File_Utils::format_bytes($file['size']) . '</td>';
                     $html .= '</tr>';
                 }
             }
@@ -295,7 +295,7 @@ class MIF_Table_Builder
             if (!empty($item['thumbnail_url'])) {
                 $html .= '<img src="' . esc_url($item['thumbnail_url']) . '" alt="' . esc_attr($item['title']) . '" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;" />';
             } else {
-                $html .= '<div style="width: 60px; height: 60px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border-radius: 4px;">📷</div>';
+                $html .= '<div style="width: 60px; height: 60px; background: var(--clr-placeholder-bg); display: flex; align-items: center; justify-content: center; border-radius: var(--jimr-border-radius-sm);">📷</div>';
             }
             $html .= '</td>';
 
@@ -309,24 +309,24 @@ class MIF_Table_Builder
             }
             $html .= '</td>';
 
-            $html .= '<td data-sort-value="' . $item['file_count'] . '">' . $item['file_count'] . '</td>';
-            $html .= '<td data-sort-value="' . $item['total_size'] . '">' . MIF_File_Utils::format_bytes($item['total_size']) . '</td>';
+            $html .= '<td data-sort-value="' . intval($item['file_count']) . '">' . intval($item['file_count']) . '</td>';
+            $html .= '<td data-sort-value="' . intval($item['total_size']) . '">' . MINVF_File_Utils::format_bytes($item['total_size']) . '</td>';
             $html .= '<td>' . esc_html($item['dimensions'] ?? 'N/A') . '</td>';
             $html .= '</tr>';
 
             // Expanded details row
             $html .= '<tr class="mif-expanded-details" id="' . $row_id . '" style="display: none;">';
             $html .= '<td colspan="7">';
-            $html .= '<div style="padding: 12px; background: #f9f9f9;">';
+            $html .= '<div style="padding: 12px; background: var(--clr-table-details-bg);">';
             $html .= '<table class="mif-details-table" style="width: 100%; border-collapse: collapse;">';
-            $html .= '<tr style="background: #e0e0e0; font-weight: 600;"><td>File</td><td>Type</td><td>Dimensions</td><td>Size</td></tr>';
+            $html .= '<tr style="background: var(--clr-table-header-bg); font-weight: 600;"><td>File</td><td>Type</td><td>Dimensions</td><td>Size</td></tr>';
 
             foreach ($item['files'] as $file) {
                 $html .= '<tr>';
                 $html .= '<td>' . esc_html($file['filename'] ?? 'Unknown') . '</td>';
                 $html .= '<td>' . esc_html($file['type']) . '</td>';
                 $html .= '<td>' . esc_html($file['dimensions'] ?? 'N/A') . '</td>';
-                $html .= '<td>' . MIF_File_Utils::format_bytes($file['size']) . '</td>';
+                $html .= '<td>' . MINVF_File_Utils::format_bytes($file['size']) . '</td>';
                 $html .= '</tr>';
             }
 
@@ -379,22 +379,22 @@ class MIF_Table_Builder
             $html .= '</td>';
 
             $html .= '<td>' . strtoupper(esc_html($item['extension'])) . '</td>';
-            $html .= '<td data-sort-value="' . $item['file_count'] . '">' . $item['file_count'] . '</td>';
-            $html .= '<td data-sort-value="' . $item['total_size'] . '">' . MIF_File_Utils::format_bytes($item['total_size']) . '</td>';
+            $html .= '<td data-sort-value="' . intval($item['file_count']) . '">' . intval($item['file_count']) . '</td>';
+            $html .= '<td data-sort-value="' . intval($item['total_size']) . '">' . MINVF_File_Utils::format_bytes($item['total_size']) . '</td>';
             $html .= '</tr>';
 
             // Expanded details row
             $html .= '<tr class="mif-expanded-details" id="' . $row_id . '" style="display: none;">';
             $html .= '<td colspan="6">';
-            $html .= '<div style="padding: 12px; background: #f9f9f9;">';
+            $html .= '<div style="padding: 12px; background: var(--clr-table-details-bg);">';
             $html .= '<table class="mif-details-table" style="width: 100%; border-collapse: collapse;">';
-            $html .= '<tr style="background: #e0e0e0; font-weight: 600;"><td>File</td><td>Type</td><td>Size</td></tr>';
+            $html .= '<tr style="background: var(--clr-table-header-bg); font-weight: 600;"><td>File</td><td>Type</td><td>Size</td></tr>';
 
             foreach ($item['files'] as $file) {
                 $html .= '<tr>';
                 $html .= '<td>' . esc_html($file['filename'] ?? $item['title']) . '</td>';
                 $html .= '<td>' . esc_html($file['type']) . '</td>';
-                $html .= '<td>' . MIF_File_Utils::format_bytes($file['size']) . '</td>';
+                $html .= '<td>' . MINVF_File_Utils::format_bytes($file['size']) . '</td>';
                 $html .= '</tr>';
             }
 

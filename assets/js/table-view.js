@@ -111,7 +111,7 @@
             });
 
             // Apply view when scan completes
-            $(document).on('mif_scan_complete', function () {
+            $(document).on('minvf_scan_complete', function () {
                 self.applyCurrentView();
             });
         },
@@ -229,8 +229,8 @@
             );
 
             var ajaxData = {
-                action: 'mif_get_table_view',
-                nonce: mifData.nonce,
+                action: 'minvf_get_table_view',
+                nonce: minvfData.nonce,
                 page: params.page || 1,
                 orderby: params.orderby || 'title',
                 order: params.order || 'asc',
@@ -238,7 +238,7 @@
             };
 
             $.ajax({
-                url: ajaxurl,
+                url: minvfData.ajaxUrl,
                 type: 'POST',
                 data: ajaxData,
                 success: function (response) {
@@ -413,9 +413,9 @@
          * @returns {void}
          */
         saveViewPreference: function (view) {
-            $.post(ajaxurl, {
-                action: 'mif_save_view_preference',
-                nonce: mifData.nonce,
+            $.post(minvfData.ajaxUrl, {
+                action: 'minvf_save_view_preference',
+                nonce: minvfData.nonce,
                 view: view
             });
         },
@@ -430,7 +430,7 @@
          * @returns {void}
          */
         loadUserPreference: function () {
-            var savedView = mifData.viewPreference || 'card';
+            var savedView = minvfData.viewPreference || 'card';
 
             if (savedView === 'table') {
                 $('#mif-display-table').prop('checked', true);

@@ -29,12 +29,12 @@ if (!defined('ABSPATH')) {
  *
  * @since 4.0.0
  */
-class MIF_Usage_Scanner {
+class MINVF_Usage_Scanner {
 
     /**
      * Usage database instance
      *
-     * @var MIF_Usage_Database
+     * @var MINVF_Usage_Database
      */
     private $usage_db;
 
@@ -58,7 +58,24 @@ class MIF_Usage_Scanner {
      * @since 4.0.0
      */
     public function __construct() {
-        $this->usage_db = new MIF_Usage_Database();
+        $this->usage_db = new MINVF_Usage_Database();
+    }
+
+    /**
+     * Read a local file via WP_Filesystem (required by WP Coding Standards).
+     *
+     * @param string $path Absolute file path.
+     * @return string|false File contents, or false on failure.
+     */
+    private function read_file($path) {
+        global $wp_filesystem;
+
+        if (empty($wp_filesystem)) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+            WP_Filesystem();
+        }
+
+        return $wp_filesystem->get_contents($path);
     }
 
     /**
@@ -104,7 +121,7 @@ class MIF_Usage_Scanner {
         $this->scan_page_builders();
 
         // Update last scan time
-        update_option('mif_last_usage_scan', current_time('mysql'));
+        update_option('minvf_last_usage_scan', current_time('mysql'));
 
         $this->progress['completed_at'] = current_time('mysql');
 
@@ -677,9 +694,11 @@ class MIF_Usage_Scanner {
 
         foreach ($css_files as $css_file) {
             if (is_readable($css_file)) {
-                $css_content = file_get_contents($css_file);
-                $this->scan_css_content($css_content, basename($css_file));
-                $files_scanned++;
+                $css_content = $this->read_file($css_file);
+                if ($css_content !== false) {
+                    $this->scan_css_content($css_content, basename($css_file));
+                    $files_scanned++;
+                }
             }
         }
 
@@ -711,9 +730,11 @@ class MIF_Usage_Scanner {
             $css_path = $this->url_to_path($css_url);
 
             if ($css_path && is_readable($css_path)) {
-                $css_content = file_get_contents($css_path);
-                $this->scan_css_content($css_content, $handle);
-                $files_scanned++;
+                $css_content = $this->read_file($css_path);
+                if ($css_content !== false) {
+                    $this->scan_css_content($css_content, $handle);
+                    $files_scanned++;
+                }
             }
         }
 

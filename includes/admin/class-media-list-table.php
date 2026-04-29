@@ -19,22 +19,8 @@ if (!class_exists('WP_List_Table')) {
     require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 
-class MIF_Media_List_Table extends WP_List_Table
+class MINVF_Media_List_Table extends WP_List_Table
 {
-
-    /**
-     * Scanner instance for data retrieval
-     *
-     * @var MIF_Scanner
-     */
-    private $scanner;
-
-    /**
-     * Raw scan data before processing
-     *
-     * @var array
-     */
-    private $scan_data;
 
     /**
      * Constructor
@@ -48,8 +34,6 @@ class MIF_Media_List_Table extends WP_List_Table
             'plural'   => 'media_items',
             'ajax'     => true
         ]);
-
-        $this->scanner = new MIF_Scanner();
     }
 
     /**
@@ -98,9 +82,9 @@ class MIF_Media_List_Table extends WP_List_Table
      */
     public function prepare_items()
     {
-        // Get scan data
-        $scan_results = $this->scanner->scan_batch(0);
-        $all_items = $scan_results['data'] ?? [];
+        // Read from transient set by ajax_save_scan_results — avoids re-scanning on every render.
+        $saved = get_transient('minvf_scan_results_' . get_current_user_id());
+        $all_items = (!empty($saved)) ? (json_decode($saved, true) ?: []) : [];
 
         // Apply sorting with sanitization
         $valid_orderby = ['title', 'type', 'source', 'files', 'size'];
@@ -115,7 +99,7 @@ class MIF_Media_List_Table extends WP_List_Table
         $all_items = $this->sort_items($all_items, $orderby, $order);
 
         // Setup pagination
-        $per_page = $this->get_items_per_page('mif_items_per_page', 50);
+        $per_page = $this->get_items_per_page('minvf_items_per_page', 50);
         $current_page = $this->get_pagenum();
         $total_items = count($all_items);
 
@@ -199,7 +183,7 @@ class MIF_Media_List_Table extends WP_List_Table
         if (isset($item['id']) && $item['id'] > 0) {
             return sprintf(
                 '<input type="checkbox" name="media[]" value="%s" />',
-                $item['id']
+                esc_attr(intval($item['id']))
             );
         }
         return '';
@@ -216,13 +200,13 @@ class MIF_Media_List_Table extends WP_List_Table
     {
         if (!empty($item['thumbnail_url'])) {
             return sprintf(
-                '<img src="%s" alt="%s" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">',
+                '<img src="%s" alt="%s" style="width: 60px; height: 60px; object-fit: cover; border-radius: var(--jimr-border-radius-sm);">',
                 esc_url($item['thumbnail_url']),
                 esc_attr($item['title'])
             );
         }
 
-        return '<div style="width: 60px; height: 60px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 20px;">📷</div>';
+        return '<div style="width: 60px; height: 60px; background: var(--clr-placeholder-bg); display: flex; align-items: center; justify-content: center; border-radius: var(--jimr-border-radius-sm); font-size: 20px;">📷</div>';
     }
 
     /**
@@ -290,7 +274,7 @@ class MIF_Media_List_Table extends WP_List_Table
     public function column_size($item)
     {
         $bytes = intval($item['total_size'] ?? 0);
-        return MIF_File_Utils::format_bytes($bytes);
+        return MINVF_File_Utils::format_bytes($bytes);
     }
 
     /**
