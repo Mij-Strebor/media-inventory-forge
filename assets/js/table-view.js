@@ -144,26 +144,19 @@
          */
         showCardView: function () {
             var $cardView = $('#mif-card-view');
-            var $resultsContainer = $('#results-container');
 
-            // Show card view, hide table view
             $cardView.show();
             $('#mif-table-view').hide();
 
-            // Ensure results container and its content are visible
-            if ($resultsContainer.children().length > 0) {
-                $resultsContainer.show();
-
-                // Ensure all category sections within card view are visible
-                $resultsContainer.find('.mif-info-toggle-section').each(function() {
-                    var $section = $(this);
-                    if ($section.css('display') === 'none') {
-                        $section.show();
-                    }
-                });
+            // If the card was never rendered for this scan (e.g. scan ran while table
+            // was active), render it now. minvf_cardRendered is set by admin.js.
+            if (!window.minvf_cardRendered
+                && window.inventoryData
+                && window.inventoryData.length > 0
+                && typeof window.minvf_renderCardView === 'function') {
+                window.minvf_renderCardView();
             }
 
-            // Trigger custom event for any additional handling
             $(document).trigger('mif_card_view_shown');
         },
 
@@ -175,14 +168,13 @@
          * @since 4.0.0
          * @returns {void}
          */
-        showTableView: function () {
+        showTableView: function (forceReload) {
             $('#mif-card-view').hide();
             $('#mif-table-view').show();
 
-            var $tableView = $('#mif-table-view');
-            var hasTable = $tableView.find('table').length > 0;
+            var hasTable = $('#mif-table-view').find('table').length > 0;
 
-            if (!hasTable) {
+            if (!hasTable || forceReload) {
                 this.loadTableData();
             }
         },
@@ -195,7 +187,13 @@
          */
         applyCurrentView: function () {
             var selectedView = $('input[name="mif-display-mode"]:checked').val() || 'card';
-            this.handleViewChange(selectedView);
+            if (selectedView === 'table') {
+                // Show table and always reload — scan just completed, data is fresh.
+                this.showTableView(true);
+            } else {
+                this.showCardView();
+            }
+            this.saveViewPreference(selectedView);
         },
 
         /**
@@ -434,9 +432,10 @@
 
             if (savedView === 'table') {
                 $('#mif-display-table').prop('checked', true);
-            } else {
-                $('#mif-display-card').prop('checked', true);
+                // Apply the view — just setting the radio doesn't trigger the change handler.
+                this.showTableView();
             }
+            // card is the template default; no action needed for card preference.
         }
     };
 
