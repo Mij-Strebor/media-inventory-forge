@@ -81,7 +81,7 @@ class MINVF_Admin_Controller
         }
 
         $offset = isset($_POST['offset']) ? intval($_POST['offset']) : 0;
-        $batch_size = isset($_POST['batch_size']) ? intval($_POST['batch_size']) : 10;
+        $batch_size = isset($_POST['batch_size']) ? intval($_POST['batch_size']) : 30;
 
         // Get source filters
         $sources = isset($_POST['sources']) && is_array($_POST['sources'])
