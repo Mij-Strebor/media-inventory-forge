@@ -2,6 +2,26 @@
 ![Media Inventory Forge Banner](assets/images/changelog-1544x500.png)
 # Media Inventory Forge
 
+## [5.1.0] — 2026-04-30
+
+### Added
+- **Dev Infrastructure** — Added `.distignore`, `tests/` PHPUnit scaffold, and `CLAUDE.md`; distribution packages exclude dev files.
+
+### Changed
+- **Processor Factory** — Scanner now resolves file processors by MIME type via `MINVF_Processor_Factory`, replacing the hardcoded single-processor approach.
+- **Category Order** — `MINVF_Table_Builder::$category_order` is now the single source of truth, passed to JavaScript via `wp_localize_script` instead of being duplicated.
+- **Scan Sources** — Removed four unimplemented stub source-filter checkboxes (parent-theme, plugins, wordpress-core, uploads).
+- **WordPress Standards** — Completed all 34 code review items; full Plugin Check compliance covering SQL preparation, escaping, and output sanitization.
+- **PHP Requirement** — Raised minimum from 7.4 to 8.2.
+- **Version** — Bumped to 5.1.0.
+
+### Fixed
+- **Batch Size** — Default corrected to 30 in both scanner constructor and AJAX controller fallback (was 10 in the controller).
+- **Card View** — No longer blank after a scan performed while in table mode; table view no longer shows stale data after a re-scan.
+- **Plugin Check** — All errors resolved including SQL preparation warnings and `UnescapedDBParameter` false positives.
+
+---
+
   ## [5.0.2] - 2025-12-15
 
   ### 🔒 Security & Compliance Release (WordPress.org Review)

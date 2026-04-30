@@ -5,10 +5,10 @@
 ![Media Inventory Forge Banner](./docs/screenshots/banner-1544x500.png)
 
 [![WordPress Plugin](https://img.shields.io/badge/WordPress-Plugin-blue.svg)](https://wordpress.org/)
-[![Version](https://img.shields.io/badge/version-5.0.2-blue.svg)](https://github.com/Mij-Strebor/media-inventory-forge/releases)
+[![Version](https://img.shields.io/badge/version-5.1.0-blue.svg)](https://github.com/Mij-Strebor/media-inventory-forge/releases)
 [![WordPress](https://img.shields.io/badge/WordPress-5.0%2B-blue.svg)](https://wordpress.org/)
 [![License](https://img.shields.io/badge/license-GPL%20v2%2B-green.svg)](LICENSE)
-[![PHP](https://img.shields.io/badge/PHP-7.4%2B-purple.svg)](https://php.net/)
+[![PHP](https://img.shields.io/badge/PHP-8.2%2B-purple.svg)](https://php.net/)
 
 > **Professional WordPress Media Library Analysis Plugin**
 > 
@@ -233,7 +233,16 @@ Potential Optimization Opportunities:
 
 ## Version History
 
-### Version 4.0.1 (Latest)
+### Version 5.1.0 (Latest)
+**WordPress Standards Pass & Architecture Improvements**
+- **WP Standards Pass**: All 34 code review items resolved; full WordPress Plugin Check compliance
+- **Processor Factory**: Scanner now resolves file processors by MIME type via `MINVF_Processor_Factory`
+- **Category Order**: Single source of truth in `MINVF_Table_Builder::$category_order`, shared with JavaScript
+- **Batch Size Fix**: Default corrected to 30 in both scanner constructor and AJAX controller (was 10)
+- **Card/Table View Fix**: Card view no longer blank after scan in table mode; table no longer stale after re-scan
+- **PHP Requirement**: Raised minimum PHP from 7.4 to 8.2
+
+### Version 4.0.1
 **Bug Fix & Community Release**
 - **Race Condition Fix**: Resolved Table View "no media available" issue on fresh installs
 - **Table View Reliability**: Proper session-based scan requirement (no auto-cache loading)

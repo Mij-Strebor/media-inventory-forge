@@ -4,7 +4,7 @@
  * Plugin Name: Media Inventory Forge
  * Plugin URI: https://github.com/Mij-Strebor/media-inventory-forge
  * Description: Professional media library scanner and analyzer for WordPress developers
- * Version: 5.0.2
+ * Version: 5.1.0
  * Author: Jim R Forge
  * Author URI: https://jimrforge.com
  * License: GPL v2 or later
@@ -12,7 +12,7 @@
  * Text Domain: media-inventory-forge
  * Requires at least: 5.0
  * Tested up to: 6.9
- * Requires PHP: 7.4
+ * Requires PHP: 8.2
  * Network: true
  */
 
@@ -22,7 +22,7 @@ defined('ABSPATH') || exit;
    PLUGIN CONSTANTS
    ========================================================================== */
 
-define('MINVF_VERSION',     '5.0.2');
+define('MINVF_VERSION',     '5.1.0');
 define('MINVF_PLUGIN_FILE', __FILE__);
 define('MINVF_PLUGIN_DIR',  plugin_dir_path(__FILE__));
 define('MINVF_PLUGIN_URL',  plugin_dir_url(__FILE__));

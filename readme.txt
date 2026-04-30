@@ -4,8 +4,8 @@ Donate link: https://buymeacoffee.com/jimrweb
 Tags: media, inventory, scanner, analysis, optimization
 Requires at least: 5.0
 Tested up to: 6.9
-Requires PHP: 7.4
-Stable tag: 5.0.2
+Requires PHP: 8.2
+Stable tag: 5.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -107,6 +107,17 @@ Yes! Click any column header in Table View to sort by that column. Click again t
 4. Table View mode with sortable columns and advanced filtering options
 
 == Changelog ==
+
+= 5.1.0 =
+* WordPress standards pass — all 34 code review items resolved; full Plugin Check compliance.
+* Processor factory — scanner resolves file processors by MIME type via MINVF_Processor_Factory.
+* Category order — single source of truth in MINVF_Table_Builder::$category_order, shared with JavaScript.
+* Scan sources — removed four unimplemented stub source filter checkboxes.
+* Dev infrastructure — added .distignore, tests/ scaffold, and CLAUDE.md.
+* Fix: batch size default corrected to 30 in both scanner constructor and AJAX controller (was 10).
+* Fix: card view no longer blank after scan in table mode; table no longer stale after re-scan.
+* Fix: all WordPress Plugin Check errors and warnings resolved.
+* Raised minimum PHP version from 7.4 to 8.2.
 
 = 4.0.1 =
 * Fix: Resolved race condition causing "no media available" message on first scan in Table View

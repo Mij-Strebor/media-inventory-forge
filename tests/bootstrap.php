@@ -8,7 +8,7 @@ require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 // Prevent `defined('ABSPATH') || exit` guards in plugin files from firing
 define('MINVF_PLUGIN_DIR', dirname(__DIR__) . '/');
-define('MINVF_VERSION', '5.0.2');
+define('MINVF_VERSION', '5.1.0');
 // phpcs:ignore PluginCheck.CodeAnalysis.Localhost.Found -- Test-only constant, not shipped to production
 define('MINVF_PLUGIN_URL', 'http://localhost/');
 
