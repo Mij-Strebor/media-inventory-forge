@@ -31,6 +31,7 @@ yarn.lock
 # Testing
 phpunit.xml
 .phpunit.result.cache
+.phpunit.cache/
 tests/_output/
 tests/_support/_generated/
 

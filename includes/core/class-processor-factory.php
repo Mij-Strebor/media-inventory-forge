@@ -10,7 +10,7 @@
 
 defined('ABSPATH') || exit;
 
-class MIF_Processor_Factory
+class MINVF_Processor_Factory
 {
     /**
      * Create appropriate processor for the given MIME type
@@ -19,19 +19,19 @@ class MIF_Processor_Factory
     public static function create_processor($mime_type = null)
     {
         if ($mime_type) {
-            $category = MIF_File_Utils::get_category($mime_type);
+            $category = MINVF_File_Utils::get_category($mime_type);
 
             switch ($category) {
                 case 'Images':
-                    return new MIF_Image_Processor();
+                    return new MINVF_Image_Processor();
                 case 'Fonts':
-                    return new MIF_Font_Processor();
+                    return new MINVF_Font_Processor();
                 default:
-                    return new MIF_File_Processor();
+                    return new MINVF_File_Processor();
             }
         }
 
-        return new MIF_File_Processor();
+        return new MINVF_File_Processor();
     }
     /**
      * Get processor type for given MIME type
@@ -39,7 +39,9 @@ class MIF_Processor_Factory
     public static function get_available_processors()
     {
         return [
-            'default' => 'MIF_File_Processor'
+            'default' => 'MINVF_File_Processor',
+            'image'   => 'MINVF_Image_Processor',
+            'font'    => 'MINVF_Font_Processor',
         ];
     }
 

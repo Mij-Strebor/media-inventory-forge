@@ -9,7 +9,7 @@
  * 
  * This class orchestrates the scanning process by:
  * - Managing batch iterations through the media library
- * - Coordinating with MIF_File_Processor for individual file analysis
+ * - Coordinating with MINVF_File_Processor for individual file analysis
  * - Tracking progress and collecting errors
  * - Optimizing WordPress queries for performance
  * - Managing memory limits for large-scale operations
@@ -30,13 +30,13 @@
 defined('ABSPATH') || exit;
 
 /**
- * MIF_Scanner Class
+ * MINVF_Scanner Class
  * 
  * Core scanning engine for Media Inventory Forge. Handles batch processing
  * of WordPress media attachments with progressive scanning, error tracking,
  * and memory-conscious operations.
  */
-class MIF_Scanner
+class MINVF_Scanner
 {
     /* ==========================================================================
        PROPERTIES
@@ -69,13 +69,6 @@ class MIF_Scanner
      * @var array
      */
     private $errors = [];
-
-    /**
-     * File processor instance for individual attachment handling
-     *
-     * @var MIF_File_Processor
-     */
-    private $file_processor;
 
     /**
      * Whether theme files have been scanned yet
@@ -133,15 +126,14 @@ class MIF_Scanner
      * Initializes scanner with batch size configuration and sets up
      * file processor. Validates and constrains batch size to safe limits.
      * 
-     * @param int $batch_size Number of attachments per batch (default: 10, max: 50)
+     * @param int $batch_size Number of attachments per batch (default: 30, max: 50)
      * 
      * @since 2.0.0
      */
-    public function __construct($batch_size = 10)
+    public function __construct($batch_size = 30)
     {
         $this->batch_size = max(1, min(50, intval($batch_size)));
         $this->upload_dir = wp_upload_dir();
-        $this->file_processor = new MIF_File_Processor();
     }
 
     /**
@@ -332,15 +324,15 @@ class MIF_Scanner
         $mime_type = get_post_mime_type($attachment_id);
         $title = get_the_title($attachment_id);
 
-        // Validate attachment data
-        if (!$this->file_processor->validate_attachment_data($attachment_id, $file_path, $mime_type)) {
+        $processor = MINVF_Processor_Factory::create_processor($mime_type);
+
+        if (!$processor->validate_attachment_data($attachment_id, $file_path, $mime_type)) {
             $this->log_error($attachment_id, "Invalid attachment data: missing file path or MIME type");
             return null;
         }
 
-        // Process the file
         try {
-            return $this->file_processor->process_file($attachment_id, $file_path, $mime_type, $title);
+            return $processor->process_file($attachment_id, $file_path, $mime_type, $title);
         } catch (Exception $e) {
             $this->log_error($attachment_id, "File processing failed: " . $e->getMessage());
             return null;
@@ -386,21 +378,14 @@ class MIF_Scanner
      */
     private function scan_theme_files()
     {
-        $themes_dir = get_theme_root();
-        if (!is_dir($themes_dir)) {
+        // Scan only the active theme — glob($themes_dir.'/*') would scan every
+        // installed theme, including inactive ones.
+        $theme_dir = get_stylesheet_directory();
+        if (!is_dir($theme_dir)) {
             return;
         }
 
-        // Get all theme directories
-        $theme_dirs = glob($themes_dir . '/*', GLOB_ONLYDIR);
-        if (empty($theme_dirs)) {
-            return;
-        }
-
-        foreach ($theme_dirs as $theme_dir) {
-            $theme_name = basename($theme_dir);
-            $this->scan_theme_directory($theme_dir, $theme_name);
-        }
+        $this->scan_theme_directory($theme_dir, get_stylesheet());
     }
 
     /**
@@ -417,21 +402,7 @@ class MIF_Scanner
      */
     private function scan_theme_directory($directory, $theme_name)
     {
-        // Media file extensions to look for (WordPress-registered media types only)
-        $media_extensions = [
-            // Images
-            'jpg', 'jpeg', 'png', 'gif', 'svg', 'webp', 'ico', 'bmp',
-            // Fonts
-            'ttf', 'otf', 'woff', 'woff2', 'eot',
-            // Documents
-            'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
-            // Archives
-            'zip', 'rar', 'tar', 'gz', '7z', 'bz2',
-            // Audio
-            'mp3', 'wav', 'ogg', 'm4a', 'flac',
-            // Video
-            'mp4', 'mov', 'avi', 'wmv', 'mkv', 'webm'
-        ];
+        $media_extensions = array_keys($this->get_mime_map());
 
         try {
             $iterator = new RecursiveIteratorIterator(
@@ -489,8 +460,7 @@ class MIF_Scanner
         }
 
         // Get category using existing utility
-        $category = MIF_File_Utils::get_category($mime_type);
-        $extension = strtolower(pathinfo($file_path, PATHINFO_EXTENSION));
+        $category = MINVF_File_Utils::get_category($mime_type);
         $filename = basename($file_path);
         $file_size = filesize($file_path);
 
@@ -529,7 +499,7 @@ class MIF_Scanner
 
         // Get font family for fonts
         if ($category === 'Fonts') {
-            $item_data['font_family'] = MIF_File_Utils::get_font_family($filename, $file_path);
+            $item_data['font_family'] = MINVF_File_Utils::get_font_family($filename, $file_path);
         }
 
         $this->theme_files[] = $item_data;
@@ -545,9 +515,9 @@ class MIF_Scanner
      *
      * @since 4.0.0
      */
-    private function get_mime_type_from_extension($extension)
+    private function get_mime_map()
     {
-        $mime_types = [
+        return [
             // Images
             'jpg' => 'image/jpeg',
             'jpeg' => 'image/jpeg',
@@ -590,13 +560,17 @@ class MIF_Scanner
             'avi' => 'video/x-msvideo',
             'wmv' => 'video/x-ms-wmv',
             'mkv' => 'video/x-matroska',
-            'webm' => 'video/webm'
+            'webm' => 'video/webm',
         ];
+    }
 
-        return isset($mime_types[$extension]) ? $mime_types[$extension] : 'application/octet-stream';
+    private function get_mime_type_from_extension($extension)
+    {
+        $map = $this->get_mime_map();
+        return $map[$extension] ?? 'application/octet-stream';
     }
 
     /* ==========================================================================
-       END OF MIF_SCANNER CLASS
+       END OF MINVF_SCANNER CLASS
        ========================================================================== */
 }

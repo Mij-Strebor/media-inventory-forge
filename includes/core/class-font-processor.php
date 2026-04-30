@@ -10,7 +10,7 @@
 
 defined('ABSPATH') || exit;
 
-class MIF_Font_Processor implements MIF_File_Processor_Interface
+class MINVF_Font_Processor implements MINVF_File_Processor_Interface
 {
     private $upload_basedir;
 
@@ -34,7 +34,7 @@ class MIF_Font_Processor implements MIF_File_Processor_Interface
             'file_count' => 0,
             'total_size' => 0,
             'dimensions' => '',
-            'font_family' => MIF_File_Utils::get_font_family($title, $file_path)
+            'font_family' => MINVF_File_Utils::get_font_family($title, $file_path)
         ];
 
         $this->process_main_file($item_data, $file_path);
@@ -52,11 +52,11 @@ class MIF_Font_Processor implements MIF_File_Processor_Interface
             return false;
         }
 
-        if (!MIF_File_Utils::is_valid_upload_path($file_path)) {
+        if (!MINVF_File_Utils::is_valid_upload_path($file_path)) {
             return false;
         }
 
-        if (!MIF_File_Utils::is_file_accessible($file_path)) {
+        if (!MINVF_File_Utils::is_file_accessible($file_path)) {
             return false;
         }
 
@@ -65,13 +65,13 @@ class MIF_Font_Processor implements MIF_File_Processor_Interface
 
     private function process_main_file(&$item_data, $file_path)
     {
-        if (!MIF_File_Utils::is_file_accessible($file_path)) {
+        if (!MINVF_File_Utils::is_file_accessible($file_path)) {
             return;
         }
 
-        $file_size = MIF_File_Utils::get_safe_file_size($file_path);
+        $file_size = MINVF_File_Utils::get_safe_file_size($file_path);
         $file_info = [
-            'path' => MIF_File_Utils::sanitize_file_path($file_path, $this->upload_basedir),
+            'path' => MINVF_File_Utils::sanitize_file_path($file_path, $this->upload_basedir),
             'filename' => basename($file_path),
             'size' => $file_size,
             'type' => 'original',

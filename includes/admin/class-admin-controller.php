@@ -13,13 +13,18 @@
 defined('ABSPATH') || exit;
 
 /**
- * Class MIF_Admin_Controller
+ * Class MINVF_Admin_Controller
  * 
  * Handles admin menu, AJAX requests for scanning and exporting media inventory.
- * Relies on MIF_Scanner and MIF_File_Processor for core functionality.
+ * Relies on MINVF_Scanner and MINVF_File_Processor for core functionality.
  */
-class MIF_Admin_Controller
+class MINVF_Admin_Controller
 {
+    /**
+     * Nonce action string — single source of truth for all nonce creation and verification.
+     */
+    const NONCE_ACTION = 'media_inventory_nonce';
+
     /**
      * Constructor
      *
@@ -30,19 +35,16 @@ class MIF_Admin_Controller
     {
         // Use later priority to ensure other menu systems are ready
         add_action('admin_menu', [$this, 'add_admin_menu'], 15);
-        add_action('wp_ajax_media_inventory_scan', [$this, 'ajax_scan']);
-        add_action('wp_ajax_media_inventory_export', [$this, 'ajax_export']);
+        add_action('wp_ajax_minvf_run_scan', [$this, 'ajax_scan']);
+        add_action('wp_ajax_minvf_export_csv', [$this, 'ajax_export']);
 
-        // Usage tracking AJAX handlers (backend kept, UI removed for v4.0.0)
-        // Proper integration planned for v4.1.0
-        add_action('wp_ajax_media_inventory_scan_usage', [$this, 'ajax_scan_usage']);
-        add_action('wp_ajax_media_inventory_get_usage', [$this, 'ajax_get_usage']);
-        add_action('wp_ajax_media_inventory_create_table', [$this, 'ajax_create_table']);
+        // Usage tracking handlers intentionally not registered — UI removed in v4.0.0,
+        // planned for v4.1.0. Re-add add_action calls when the UI is implemented.
 
         // Table view AJAX handlers
-        add_action('wp_ajax_mif_get_table_view', [$this, 'ajax_get_table_view']);
-        add_action('wp_ajax_mif_save_view_preference', [$this, 'ajax_save_view_preference']);
-        add_action('wp_ajax_mif_save_scan_results', [$this, 'ajax_save_scan_results']);
+        add_action('wp_ajax_minvf_get_table_view', [$this, 'ajax_get_table_view']);
+        add_action('wp_ajax_minvf_save_view_preference', [$this, 'ajax_save_view_preference']);
+        add_action('wp_ajax_minvf_save_scan_results', [$this, 'ajax_save_scan_results']);
     }
 
     /**
@@ -71,7 +73,7 @@ class MIF_Admin_Controller
      */
     public function ajax_scan()
     {
-        check_ajax_referer('media_inventory_nonce', 'nonce');
+        check_ajax_referer(self::NONCE_ACTION, 'nonce');
 
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Permission denied');
@@ -79,7 +81,7 @@ class MIF_Admin_Controller
         }
 
         $offset = isset($_POST['offset']) ? intval($_POST['offset']) : 0;
-        $batch_size = isset($_POST['batch_size']) ? intval($_POST['batch_size']) : 10;
+        $batch_size = isset($_POST['batch_size']) ? intval($_POST['batch_size']) : 30;
 
         // Get source filters
         $sources = isset($_POST['sources']) && is_array($_POST['sources'])
@@ -98,9 +100,9 @@ class MIF_Admin_Controller
 
         try {
             // Store source filters for use by table view
-            update_user_meta(get_current_user_id(), 'mif_last_scan_sources', $sources);
+            update_user_meta(get_current_user_id(), 'minvf_last_scan_sources', $sources);
 
-            $scanner = new MIF_Scanner($batch_size);
+            $scanner = new MINVF_Scanner($batch_size);
             $scanner->set_source_filters($sources);
             $result = $scanner->scan_batch($offset);
 
@@ -126,27 +128,30 @@ class MIF_Admin_Controller
      */
     public function ajax_export()
     {
-        check_ajax_referer('media_inventory_nonce', 'nonce');
+        check_ajax_referer(self::NONCE_ACTION, 'nonce');
 
         if (!current_user_can('manage_options')) {
-            wp_die('Permission denied');
+            wp_send_json_error('Permission denied');
+            return;
         }
 
         // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized after JSON decode
         $inventory_data_raw = isset($_POST['inventory_data']) ? wp_unslash($_POST['inventory_data']) : '';
 
         if (empty($inventory_data_raw)) {
-            wp_die('No data to export');
+            wp_send_json_error('No data to export');
+            return;
         }
 
         // Decode and validate JSON format
         $inventory_data = json_decode($inventory_data_raw, true);
         if (json_last_error() !== JSON_ERROR_NONE || empty($inventory_data)) {
-            wp_die('Invalid export data format');
+            wp_send_json_error('Invalid export data format');
+            return;
         }
 
         // Recursively sanitize all array values
-        $inventory_data = $this->mif_sanitize_scan_data($inventory_data);
+        $inventory_data = $this->sanitize_scan_data($inventory_data);
 
         // Suppress fclose warning by using alternative CSV approach
         ob_start();
@@ -160,7 +165,7 @@ class MIF_Admin_Controller
                 if (!empty($file['dimensions'])) {
                     $details .= ' - ' . $file['dimensions'];
                 }
-                $details .= ' - ' . MIF_File_Utils::format_bytes($file['size']);
+                $details .= ' - ' . MINVF_File_Utils::format_bytes($file['size']);
                 $file_details[] = $details;
             }
 
@@ -176,7 +181,7 @@ class MIF_Admin_Controller
                 str_replace('"', '""', $item['font_family'] ?? ''),
                 str_replace('"', '""', $item['file_count']),
                 str_replace('"', '""', $item['total_size']),
-                str_replace('"', '""', MIF_File_Utils::format_bytes($item['total_size'])),
+                str_replace('"', '""', MINVF_File_Utils::format_bytes($item['total_size'])),
                 str_replace('"', '""', implode(' | ', $file_details))
             );
         }
@@ -211,7 +216,7 @@ class MIF_Admin_Controller
      */
     public function ajax_scan_usage()
     {
-        check_ajax_referer('media_inventory_nonce', 'nonce');
+        check_ajax_referer(self::NONCE_ACTION, 'nonce');
 
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Permission denied');
@@ -219,11 +224,11 @@ class MIF_Admin_Controller
         }
 
         try {
-            $scanner = new MIF_Usage_Scanner();
+            $scanner = new MINVF_Usage_Scanner();
             $result = $scanner->scan_all_usage();
 
             // Get usage statistics
-            $usage_db = new MIF_Usage_Database();
+            $usage_db = new MINVF_Usage_Database();
             $stats = $usage_db->get_usage_stats();
 
             wp_send_json_success([
@@ -245,7 +250,7 @@ class MIF_Admin_Controller
      */
     public function ajax_get_usage()
     {
-        check_ajax_referer('media_inventory_nonce', 'nonce');
+        check_ajax_referer(self::NONCE_ACTION, 'nonce');
 
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Permission denied');
@@ -254,7 +259,7 @@ class MIF_Admin_Controller
 
         try {
             global $wpdb;
-            $table_name = esc_sql($wpdb->prefix . 'mif_usage');
+            $table_name = esc_sql($wpdb->prefix . 'minvf_usage');
 
             // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Static query with escaped table name, admin-only debug view
             $results = $wpdb->get_results(
@@ -287,7 +292,7 @@ class MIF_Admin_Controller
      */
     public function ajax_create_table()
     {
-        check_ajax_referer('media_inventory_nonce', 'nonce');
+        check_ajax_referer(self::NONCE_ACTION, 'nonce');
 
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Permission denied');
@@ -295,7 +300,7 @@ class MIF_Admin_Controller
         }
 
         try {
-            $usage_db = new MIF_Usage_Database();
+            $usage_db = new MINVF_Usage_Database();
             $result = $usage_db->create_table();
 
             if ($result) {
@@ -320,7 +325,7 @@ class MIF_Admin_Controller
      */
     public function ajax_get_table_view()
     {
-        check_ajax_referer('media_inventory_nonce', 'nonce');
+        check_ajax_referer(self::NONCE_ACTION, 'nonce');
 
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Permission denied');
@@ -329,7 +334,7 @@ class MIF_Admin_Controller
 
         try {
             // Create table builder
-            $table_builder = new MIF_Table_Builder();
+            $table_builder = new MINVF_Table_Builder();
             $html = $table_builder->build_tables();
 
             wp_send_json_success(['html' => $html]);
@@ -347,7 +352,7 @@ class MIF_Admin_Controller
      */
     public function ajax_save_view_preference()
     {
-        check_ajax_referer('media_inventory_nonce', 'nonce');
+        check_ajax_referer(self::NONCE_ACTION, 'nonce');
 
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Permission denied');
@@ -361,7 +366,7 @@ class MIF_Admin_Controller
             return;
         }
 
-        update_user_meta(get_current_user_id(), 'mif_view_preference', $view);
+        update_user_meta(get_current_user_id(), 'minvf_view_preference', $view);
 
         wp_send_json_success(['message' => 'Preference saved']);
     }
@@ -375,7 +380,7 @@ class MIF_Admin_Controller
      */
     public function ajax_save_scan_results()
     {
-        check_ajax_referer('media_inventory_nonce', 'nonce');
+        check_ajax_referer(self::NONCE_ACTION, 'nonce');
 
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Permission denied');
@@ -398,14 +403,14 @@ class MIF_Admin_Controller
         }
 
         // Recursively sanitize all array values
-        $scan_data_sanitized = $this->mif_sanitize_scan_data($scan_data_decoded);
+        $scan_data_sanitized = $this->sanitize_scan_data($scan_data_decoded);
 
         // Re-encode sanitized data for storage
         $scan_data_clean = wp_json_encode($scan_data_sanitized);
 
         // Store sanitized scan results in transient (24 hour expiration)
         $user_id = get_current_user_id();
-        set_transient('mif_scan_results_' . $user_id, $scan_data_clean, DAY_IN_SECONDS);
+        set_transient('minvf_scan_results_' . $user_id, $scan_data_clean, DAY_IN_SECONDS);
 
         wp_send_json_success(['message' => 'Scan results saved', 'data_length' => strlen($scan_data_clean)]);
     }
@@ -420,39 +425,39 @@ class MIF_Admin_Controller
      * @param mixed $data Data to sanitize (array, string, int, etc.)
      * @return mixed Sanitized data
      */
-    private function mif_sanitize_scan_data($data)
+    private function sanitize_scan_data($data, $parent_key = '')
     {
-        // Handle arrays recursively
         if (is_array($data)) {
             $sanitized = [];
             foreach ($data as $key => $value) {
-                $sanitized_key = sanitize_key($key);
-                $sanitized[$sanitized_key] = $this->mif_sanitize_scan_data($value);
+                // Preserve original key names — sanitize_key() strips uppercase and breaks
+                // camelCase keys from our own scanner output (e.g. thumbnailUrl → thumbnailurl).
+                $clean_key = sanitize_text_field((string) $key);
+                $sanitized[$clean_key] = $this->sanitize_scan_data($value, $clean_key);
             }
             return $sanitized;
         }
 
-        // Handle strings - use text_field for most data
         if (is_string($data)) {
+            // URL-valued keys must preserve slashes and encoded characters.
+            if (substr($parent_key, -4) === '_url' || $parent_key === 'url') {
+                return esc_url_raw($data);
+            }
             return sanitize_text_field($data);
         }
 
-        // Handle integers
         if (is_int($data)) {
             return intval($data);
         }
 
-        // Handle floats
         if (is_float($data)) {
             return floatval($data);
         }
 
-        // Handle booleans
         if (is_bool($data)) {
             return (bool) $data;
         }
 
-        // Return null for anything else
         return null;
     }
 
@@ -464,6 +469,6 @@ class MIF_Admin_Controller
      */
     public function admin_page()
     {
-        include MIF_PLUGIN_DIR . 'templates/admin/main-page.php';
+        include MINVF_PLUGIN_DIR . 'templates/admin/main-page.php';
     }
 }

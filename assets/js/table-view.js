@@ -111,7 +111,7 @@
             });
 
             // Apply view when scan completes
-            $(document).on('mif_scan_complete', function () {
+            $(document).on('minvf_scan_complete', function () {
                 self.applyCurrentView();
             });
         },
@@ -143,27 +143,17 @@
          * @returns {void}
          */
         showCardView: function () {
-            var $cardView = $('#mif-card-view');
-            var $resultsContainer = $('#results-container');
-
-            // Show card view, hide table view
-            $cardView.show();
             $('#mif-table-view').hide();
+            $('#mif-card-view').show();
 
-            // Ensure results container and its content are visible
-            if ($resultsContainer.children().length > 0) {
-                $resultsContainer.show();
-
-                // Ensure all category sections within card view are visible
-                $resultsContainer.find('.mif-info-toggle-section').each(function() {
-                    var $section = $(this);
-                    if ($section.css('display') === 'none') {
-                        $section.show();
-                    }
-                });
+            // Always re-render from inventoryData so the card reflects the current
+            // scan even when it was populated while the card container was hidden.
+            if (window.inventoryData
+                && window.inventoryData.length > 0
+                && typeof window.minvf_renderCardView === 'function') {
+                window.minvf_renderCardView();
             }
 
-            // Trigger custom event for any additional handling
             $(document).trigger('mif_card_view_shown');
         },
 
@@ -175,14 +165,13 @@
          * @since 4.0.0
          * @returns {void}
          */
-        showTableView: function () {
+        showTableView: function (forceReload) {
             $('#mif-card-view').hide();
             $('#mif-table-view').show();
 
-            var $tableView = $('#mif-table-view');
-            var hasTable = $tableView.find('table').length > 0;
+            var hasTable = $('#mif-table-view').find('table').length > 0;
 
-            if (!hasTable) {
+            if (!hasTable || forceReload) {
                 this.loadTableData();
             }
         },
@@ -195,7 +184,13 @@
          */
         applyCurrentView: function () {
             var selectedView = $('input[name="mif-display-mode"]:checked').val() || 'card';
-            this.handleViewChange(selectedView);
+            if (selectedView === 'table') {
+                // Show table and always reload — scan just completed, data is fresh.
+                this.showTableView(true);
+            } else {
+                this.showCardView();
+            }
+            this.saveViewPreference(selectedView);
         },
 
         /**
@@ -229,8 +224,8 @@
             );
 
             var ajaxData = {
-                action: 'mif_get_table_view',
-                nonce: mifData.nonce,
+                action: 'minvf_get_table_view',
+                nonce: minvfData.nonce,
                 page: params.page || 1,
                 orderby: params.orderby || 'title',
                 order: params.order || 'asc',
@@ -238,7 +233,7 @@
             };
 
             $.ajax({
-                url: ajaxurl,
+                url: minvfData.ajaxUrl,
                 type: 'POST',
                 data: ajaxData,
                 success: function (response) {
@@ -413,9 +408,9 @@
          * @returns {void}
          */
         saveViewPreference: function (view) {
-            $.post(ajaxurl, {
-                action: 'mif_save_view_preference',
-                nonce: mifData.nonce,
+            $.post(minvfData.ajaxUrl, {
+                action: 'minvf_save_view_preference',
+                nonce: minvfData.nonce,
                 view: view
             });
         },
@@ -430,13 +425,14 @@
          * @returns {void}
          */
         loadUserPreference: function () {
-            var savedView = mifData.viewPreference || 'card';
+            var savedView = minvfData.viewPreference || 'card';
 
             if (savedView === 'table') {
                 $('#mif-display-table').prop('checked', true);
-            } else {
-                $('#mif-display-card').prop('checked', true);
+                // Apply the view — just setting the radio doesn't trigger the change handler.
+                this.showTableView();
             }
+            // card is the template default; no action needed for card preference.
         }
     };
 

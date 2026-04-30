@@ -14,12 +14,12 @@
 defined('ABSPATH') || exit;
 
 /**
- * Class MIF_Admin
+ * Class MINVF_Admin
  * 
  * Handles admin-specific functionality such as enqueuing scripts and styles,
  * localizing script data, and managing admin page interactions.
  */
-class MIF_Admin
+class MINVF_Admin
 {
 
     /**
@@ -42,51 +42,52 @@ class MIF_Admin
 
         // Enqueue admin CSS
         wp_enqueue_style(
-            'mif-admin-css',
-            MIF_PLUGIN_URL . 'assets/css/admin.css',
+            'minvf-admin-css',
+            MINVF_PLUGIN_URL . 'assets/css/admin.css',
             [],
-            MIF_VERSION
+            MINVF_VERSION
         );
 
         // Enqueue integrated forge header CSS
         wp_enqueue_style(
-            'mif-forge-header-css',
-            MIF_PLUGIN_URL . 'assets/css/forge-header.css',
-            ['mif-admin-css'],
-            MIF_VERSION
+            'minvf-forge-header-css',
+            MINVF_PLUGIN_URL . 'assets/css/forge-header.css',
+            ['minvf-admin-css'],
+            MINVF_VERSION
         );
 
         // Enqueue table view CSS
         wp_enqueue_style(
-            'mif-table-view-css',
-            MIF_PLUGIN_URL . 'assets/css/table-view.css',
-            ['mif-admin-css'],
-            MIF_VERSION
+            'minvf-table-view-css',
+            MINVF_PLUGIN_URL . 'assets/css/table-view.css',
+            ['minvf-admin-css'],
+            MINVF_VERSION
         );
 
         // Enqueue admin JavaScript
         wp_enqueue_script(
-            'mif-admin-js',
-            MIF_PLUGIN_URL . 'assets/js/admin.js',
+            'minvf-admin-js',
+            MINVF_PLUGIN_URL . 'assets/js/admin.js',
             ['jquery'], // Dependencies
-            MIF_VERSION,
+            MINVF_VERSION,
             true // Load in footer
         );
 
         // Enqueue table view JavaScript
         wp_enqueue_script(
-            'mif-table-view-js',
-            MIF_PLUGIN_URL . 'assets/js/table-view.js',
-            ['jquery', 'mif-admin-js'], // Dependencies
-            MIF_VERSION,
+            'minvf-table-view-js',
+            MINVF_PLUGIN_URL . 'assets/js/table-view.js',
+            ['jquery', 'minvf-admin-js'], // Dependencies
+            MINVF_VERSION,
             true // Load in footer
         );
 
         // Localize script data (pass PHP data to JavaScript)
-        wp_localize_script('mif-admin-js', 'mifData', [
+        wp_localize_script('minvf-admin-js', 'minvfData', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('media_inventory_nonce'),
-            'viewPreference' => get_user_meta(get_current_user_id(), 'mif_view_preference', true) ?: 'card',
+            'nonce' => wp_create_nonce(MINVF_Admin_Controller::NONCE_ACTION),
+            'viewPreference' => get_user_meta(get_current_user_id(), 'minvf_view_preference', true) ?: 'card',
+            'categoryOrder' => MINVF_Table_Builder::$category_order,
             'strings' => [
                 'scanComplete' => __('Scan completed successfully!', 'media-inventory-forge'),
                 'scanError' => __('An error occurred during scanning.', 'media-inventory-forge'),

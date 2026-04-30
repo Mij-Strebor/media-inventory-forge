@@ -31,7 +31,7 @@ if (!defined('ABSPATH')) {
  *
  * @since 4.0.0
  */
-class MIF_Usage_Database
+class MINVF_Usage_Database
 {
 
     /**
@@ -39,7 +39,7 @@ class MIF_Usage_Database
      *
      * @var string
      */
-    private $table_name = 'mif_usage';
+    private $table_name = 'minvf_usage';
 
     /**
      * Full table name (with prefix)
@@ -64,7 +64,7 @@ class MIF_Usage_Database
     {
         global $wpdb;
         $this->wpdb = $wpdb;
-        $this->full_table_name = $wpdb->prefix . $this->table_name;
+        $this->full_table_name = esc_sql($wpdb->prefix . $this->table_name);
     }
 
     /**
@@ -181,6 +181,7 @@ class MIF_Usage_Database
      */
     private function usage_exists($attachment_id, $usage_type, $usage_id, $usage_context)
     {
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
         $count = $this->wpdb->get_var(
             $this->wpdb->prepare(
                 "SELECT COUNT(*) FROM {$this->full_table_name}
@@ -194,6 +195,7 @@ class MIF_Usage_Database
                 $usage_context
             )
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 
         return $count > 0;
     }
@@ -205,13 +207,13 @@ class MIF_Usage_Database
      * @param int $attachment_id The attachment ID
      * @return array Array of usage records
      */
-    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive, $wpdb->prepare() is used, table name escaped with esc_sql()
     public function get_usage($attachment_id)
     {
         if (empty($attachment_id)) {
             return array();
         }
 
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
         $results = $this->wpdb->get_results(
             $this->wpdb->prepare(
                 "SELECT * FROM {$this->full_table_name}
@@ -221,6 +223,7 @@ class MIF_Usage_Database
             ),
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 
         if (!$results) {
             return array();
@@ -295,9 +298,9 @@ class MIF_Usage_Database
      * @param int $min_usage Minimum number of uses (default: 2)
      * @return array Array of attachment IDs and usage counts
      */
-    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive, $wpdb->prepare() is used
     public function get_frequently_used($min_usage = 2)
     {
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
         $results = $this->wpdb->get_results(
             $this->wpdb->prepare(
                 "SELECT attachment_id, COUNT(*) as usage_count
@@ -309,6 +312,7 @@ class MIF_Usage_Database
             ),
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 
         return $results ? $results : array();
     }
@@ -325,7 +329,7 @@ class MIF_Usage_Database
         $table = esc_sql($this->full_table_name);
 
         // Total attachments
-        $total_attachments = wp_count_posts('attachment')->inherit;
+        $total_attachments = wp_count_posts('attachment')->inherit ?? 0;
 
         // Used attachments
         $query = "SELECT COUNT(DISTINCT attachment_id) FROM $table";
@@ -348,7 +352,7 @@ class MIF_Usage_Database
             'used_count' => $used_count,
             'unused_count' => $unused_count,
             'usage_by_type' => $usage_by_type,
-            'last_scan' => get_option('mif_last_usage_scan', 'Never')
+            'last_scan' => get_option('minvf_last_usage_scan', 'Never')
         );
     }
 
@@ -410,9 +414,9 @@ class MIF_Usage_Database
      * @param int $attachment_id The attachment ID
      * @return array Usage count by type
      */
-    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive, $wpdb->prepare() is used, table name escaped with esc_sql()
     public function get_usage_by_type($attachment_id)
     {
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
         $results = $this->wpdb->get_results(
             $this->wpdb->prepare(
                 "SELECT usage_type, COUNT(*) as count
@@ -423,6 +427,7 @@ class MIF_Usage_Database
             ),
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 
         $counts = array();
         foreach ($results as $result) {

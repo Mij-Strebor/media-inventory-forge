@@ -271,6 +271,25 @@
     --sp-8: 32px;        /* New spacing value */
     --sp-9: 36px;        /* Panel padding */
     --sp-18: 72px;       /* Double panel padding for notices */
+
+    /**
+     * Border Radius Scale
+     *
+     * Styleguide 1.10
+     */
+    --jimr-border-radius-sm: 4px;   /* Thumbnails, small badges */
+
+    /**
+     * Table & Placeholder Colors
+     *
+     * Neutral grays used in expanded detail rows and thumbnail placeholders.
+     * These are structural neutrals, not brand colors.
+     *
+     * Styleguide 1.12
+     */
+    --clr-table-details-bg: #f9f9f9;   /* Expanded details panel background */
+    --clr-table-header-bg: #e0e0e0;    /* Detail table header row background */
+    --clr-placeholder-bg: #f0f0f0;     /* Thumbnail/media placeholder background */
 }
 
 /* ==========================================================================
@@ -1957,6 +1976,37 @@ button.mif-btn-danger:hover,
     /* Browser default indeterminate styling should apply */
     /* This ensures the dash/line is visible */
     opacity: 1;
+}
+
+/* ==========================================================================
+   UTILITY & COMPONENT STYLES (moved from inline)
+   ========================================================================== */
+
+/* Hidden initial state — jQuery .show()/.hide() overrides this via style.display */
+.mif-hidden {
+    display: none;
+}
+
+.mif-control-label {
+    display: block;
+}
+
+#progress-bar {
+    width: 0%;
+}
+
+.mif-progress-shimmer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+.mif-summary-stats {
+    margin-top: 20px;
 }
 
 /* ==========================================================================

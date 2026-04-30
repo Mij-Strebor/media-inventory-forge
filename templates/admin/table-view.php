@@ -14,13 +14,13 @@
 defined('ABSPATH') || exit;
 
 // Create and prepare table
-$list_table = new MIF_Media_List_Table();
-$list_table->prepare_items();
+$minvf_list_table = new MINVF_Media_List_Table();
+$minvf_list_table->prepare_items();
 ?>
 
 <div class="wrap mif-table-view-wrapper">
     <form id="mif-table-form" method="get">
         <input type="hidden" name="page" value="media-inventory-forge" />
-        <?php $list_table->display(); ?>
+        <?php $minvf_list_table->display(); ?>
     </form>
 </div>

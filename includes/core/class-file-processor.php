@@ -8,7 +8,7 @@
  * operations. Serves as the default processor for all media types while providing
  * specialized handling for images and fonts.
  * 
- * This class coordinates with MIF_File_Utils for file system operations and
+ * This class coordinates with MINVF_File_Utils for file system operations and
  * WordPress APIs for attachment metadata. It processes both original files and
  * WordPress-generated variations (thumbnails, intermediate sizes).
  * 
@@ -29,14 +29,14 @@
 defined('ABSPATH') || exit;
 
 /**
- * MIF_File_Processor Class
+ * MINVF_File_Processor Class
  * 
- * Default file processor implementing MIF_File_Processor_Interface.
+ * Default file processor implementing MINVF_File_Processor_Interface.
  * Handles general file processing with specialized branches for images
  * and fonts. Coordinates file system access, metadata extraction, and
  * WordPress API integration.
  */
-class MIF_File_Processor implements MIF_File_Processor_Interface
+class MINVF_File_Processor implements MINVF_File_Processor_Interface
 {
     /* ==========================================================================
        PROPERTIES
@@ -114,7 +114,7 @@ class MIF_File_Processor implements MIF_File_Processor_Interface
             return null;
         }
 
-        $category = MIF_File_Utils::get_category($mime_type);
+        $category = MINVF_File_Utils::get_category($mime_type);
         $extension = strtolower(pathinfo($file_path, PATHINFO_EXTENSION));
 
         $item_data = [
@@ -136,7 +136,7 @@ class MIF_File_Processor implements MIF_File_Processor_Interface
         // Handle category-specific processing
         switch ($category) {
             case 'Fonts':
-                $item_data['font_family'] = MIF_File_Utils::get_font_family($title, $file_path);
+                $item_data['font_family'] = MINVF_File_Utils::get_font_family($title, $file_path);
                 break;
             case 'Images':
                 $this->process_image_variations($item_data, $attachment_id, $file_path);
@@ -173,12 +173,12 @@ class MIF_File_Processor implements MIF_File_Processor_Interface
         }
 
         // Validate file path is in uploads directory
-        if (!MIF_File_Utils::is_valid_upload_path($file_path)) {
+        if (!MINVF_File_Utils::is_valid_upload_path($file_path)) {
             return false;
         }
 
         // Check if file is accessible
-        if (!MIF_File_Utils::is_file_accessible($file_path)) {
+        if (!MINVF_File_Utils::is_file_accessible($file_path)) {
             return false;
         }
 
@@ -205,13 +205,13 @@ class MIF_File_Processor implements MIF_File_Processor_Interface
      */
     private function process_main_file(&$item_data, $file_path, $mime_type)
     {
-        if (!MIF_File_Utils::is_file_accessible($file_path)) {
+        if (!MINVF_File_Utils::is_file_accessible($file_path)) {
             return;
         }
 
-        $file_size = MIF_File_Utils::get_safe_file_size($file_path);
+        $file_size = MINVF_File_Utils::get_safe_file_size($file_path);
         $file_info = [
-            'path' => MIF_File_Utils::sanitize_file_path($file_path, $this->upload_basedir),
+            'path' => MINVF_File_Utils::sanitize_file_path($file_path, $this->upload_basedir),
             'filename' => basename($file_path),
             'size' => $file_size,
             'type' => 'original',
@@ -301,10 +301,10 @@ class MIF_File_Processor implements MIF_File_Processor_Interface
             $size_file = $dirname . '/' . $size_data['file'];
             $size_file_key = basename($size_file); // Use basename as key to avoid duplicates
 
-            if (MIF_File_Utils::is_file_accessible($size_file) && !isset($processed_files[$size_file_key])) {
-                $file_size = MIF_File_Utils::get_safe_file_size($size_file);
+            if (MINVF_File_Utils::is_file_accessible($size_file) && !isset($processed_files[$size_file_key])) {
+                $file_size = MINVF_File_Utils::get_safe_file_size($size_file);
                 $file_info = [
-                    'path' => MIF_File_Utils::sanitize_file_path($size_file, $this->upload_basedir),
+                    'path' => MINVF_File_Utils::sanitize_file_path($size_file, $this->upload_basedir),
                     'filename' => basename($size_file),
                     'size' => $file_size,
                     'type' => 'size: ' . $size_name,
@@ -343,7 +343,7 @@ class MIF_File_Processor implements MIF_File_Processor_Interface
      */
     private function get_image_dimensions($file_path)
     {
-        if (!MIF_File_Utils::is_file_accessible($file_path)) {
+        if (!MINVF_File_Utils::is_file_accessible($file_path)) {
             return null;
         }
 
@@ -356,6 +356,6 @@ class MIF_File_Processor implements MIF_File_Processor_Interface
     }
 
     /* ==========================================================================
-       END OF MIF_FILE_PROCESSOR CLASS
+       END OF MINVF_FILE_PROCESSOR CLASS
        ========================================================================== */
 }
