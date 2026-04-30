@@ -181,7 +181,7 @@ class MINVF_Usage_Database
      */
     private function usage_exists($attachment_id, $usage_type, $usage_id, $usage_context)
     {
-        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
         $count = $this->wpdb->get_var(
             $this->wpdb->prepare(
                 "SELECT COUNT(*) FROM {$this->full_table_name}
@@ -195,7 +195,7 @@ class MINVF_Usage_Database
                 $usage_context
             )
         );
-        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 
         return $count > 0;
     }
@@ -213,7 +213,7 @@ class MINVF_Usage_Database
             return array();
         }
 
-        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
         $results = $this->wpdb->get_results(
             $this->wpdb->prepare(
                 "SELECT * FROM {$this->full_table_name}
@@ -223,7 +223,7 @@ class MINVF_Usage_Database
             ),
             ARRAY_A
         );
-        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 
         if (!$results) {
             return array();
@@ -300,7 +300,7 @@ class MINVF_Usage_Database
      */
     public function get_frequently_used($min_usage = 2)
     {
-        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
         $results = $this->wpdb->get_results(
             $this->wpdb->prepare(
                 "SELECT attachment_id, COUNT(*) as usage_count
@@ -312,7 +312,7 @@ class MINVF_Usage_Database
             ),
             ARRAY_A
         );
-        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 
         return $results ? $results : array();
     }
@@ -416,7 +416,7 @@ class MINVF_Usage_Database
      */
     public function get_usage_by_type($attachment_id)
     {
-        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
         $results = $this->wpdb->get_results(
             $this->wpdb->prepare(
                 "SELECT usage_type, COUNT(*) as count
@@ -427,7 +427,7 @@ class MINVF_Usage_Database
             ),
             ARRAY_A
         );
-        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 
         $counts = array();
         foreach ($results as $result) {

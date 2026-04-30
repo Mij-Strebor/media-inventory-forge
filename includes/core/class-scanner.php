@@ -126,11 +126,11 @@ class MINVF_Scanner
      * Initializes scanner with batch size configuration and sets up
      * file processor. Validates and constrains batch size to safe limits.
      * 
-     * @param int $batch_size Number of attachments per batch (default: 10, max: 50)
+     * @param int $batch_size Number of attachments per batch (default: 30, max: 50)
      * 
      * @since 2.0.0
      */
-    public function __construct($batch_size = 10)
+    public function __construct($batch_size = 30)
     {
         $this->batch_size = max(1, min(50, intval($batch_size)));
         $this->upload_dir = wp_upload_dir();
