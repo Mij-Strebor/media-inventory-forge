@@ -52,22 +52,6 @@ defined('ABSPATH') || exit;
                 <input type="checkbox" name="mif-source-filter" class="mif-source-filter" value="theme" />
                 Active Theme
             </label>
-            <label class="mif-source-option">
-                <input type="checkbox" name="mif-source-filter" class="mif-source-filter" value="parent-theme" />
-                Parent Theme
-            </label>
-            <label class="mif-source-option">
-                <input type="checkbox" name="mif-source-filter" class="mif-source-filter" value="plugins" />
-                Plugins
-            </label>
-            <label class="mif-source-option">
-                <input type="checkbox" name="mif-source-filter" class="mif-source-filter" value="wordpress-core" />
-                WordPress Core
-            </label>
-            <label class="mif-source-option">
-                <input type="checkbox" name="mif-source-filter" class="mif-source-filter" value="uploads" />
-                Uploads Directory
-            </label>
         </div>
     </div>
 

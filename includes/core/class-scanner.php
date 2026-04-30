@@ -71,13 +71,6 @@ class MINVF_Scanner
     private $errors = [];
 
     /**
-     * File processor instance for individual attachment handling
-     *
-     * @var MINVF_File_Processor
-     */
-    private $file_processor;
-
-    /**
      * Whether theme files have been scanned yet
      *
      * @var bool
@@ -141,7 +134,6 @@ class MINVF_Scanner
     {
         $this->batch_size = max(1, min(50, intval($batch_size)));
         $this->upload_dir = wp_upload_dir();
-        $this->file_processor = new MINVF_File_Processor();
     }
 
     /**
@@ -332,15 +324,15 @@ class MINVF_Scanner
         $mime_type = get_post_mime_type($attachment_id);
         $title = get_the_title($attachment_id);
 
-        // Validate attachment data
-        if (!$this->file_processor->validate_attachment_data($attachment_id, $file_path, $mime_type)) {
+        $processor = MINVF_Processor_Factory::create_processor($mime_type);
+
+        if (!$processor->validate_attachment_data($attachment_id, $file_path, $mime_type)) {
             $this->log_error($attachment_id, "Invalid attachment data: missing file path or MIME type");
             return null;
         }
 
-        // Process the file
         try {
-            return $this->file_processor->process_file($attachment_id, $file_path, $mime_type, $title);
+            return $processor->process_file($attachment_id, $file_path, $mime_type, $title);
         } catch (Exception $e) {
             $this->log_error($attachment_id, "File processing failed: " . $e->getMessage());
             return null;
