@@ -40,8 +40,8 @@ if (!defined('ABSPATH')) {
         <div class="mif-can-detect">
             <strong>✓ What we detect:</strong>
             <ul>
-                <?php foreach ($can_detect as $item): ?>
-                <li><?php echo esc_html($item); ?></li>
+                <?php foreach ($can_detect as $minvf_item): ?>
+                <li><?php echo esc_html($minvf_item); ?></li>
                 <?php endforeach; ?>
             </ul>
         </div>
@@ -51,8 +51,8 @@ if (!defined('ABSPATH')) {
         <div class="mif-might-miss">
             <strong>⚠️ What we might miss:</strong>
             <ul>
-                <?php foreach ($might_miss as $item): ?>
-                <li><?php echo esc_html($item); ?></li>
+                <?php foreach ($might_miss as $minvf_item): ?>
+                <li><?php echo esc_html($minvf_item); ?></li>
                 <?php endforeach; ?>
             </ul>
         </div>
@@ -68,24 +68,24 @@ if (!defined('ABSPATH')) {
     <?php if (!empty($stats)): ?>
     <div class="mif-type-stats">
         <?php
-        $used = isset($stats['used']) ? intval($stats['used']) : 0;
-        $unused = isset($stats['unused']) ? intval($stats['unused']) : 0;
-        $unknown = isset($stats['unknown']) ? intval($stats['unknown']) : 0;
+        $minvf_used = isset($stats['used']) ? intval($stats['used']) : 0;
+        $minvf_unused = isset($stats['unused']) ? intval($stats['unused']) : 0;
+        $minvf_unknown = isset($stats['unknown']) ? intval($stats['unknown']) : 0;
         ?>
         <span class="mif-stat-used" title="Used in content">
             <span class="mif-stat-label">Used:</span>
-            <span class="mif-stat-value"><?php echo esc_html($used); ?></span>
+            <span class="mif-stat-value"><?php echo esc_html($minvf_used); ?></span>
         </span>
         <span class="mif-stat-separator">•</span>
         <span class="mif-stat-unused" title="Not found in scanned content">
             <span class="mif-stat-label">Unused:</span>
-            <span class="mif-stat-value"><?php echo esc_html($unused); ?></span>
+            <span class="mif-stat-value"><?php echo esc_html($minvf_unused); ?></span>
         </span>
-        <?php if ($unknown > 0): ?>
+        <?php if ($minvf_unknown > 0): ?>
         <span class="mif-stat-separator">•</span>
         <span class="mif-stat-unknown" title="Unable to determine usage">
             <span class="mif-stat-label">Unknown:</span>
-            <span class="mif-stat-value"><?php echo esc_html($unknown); ?></span>
+            <span class="mif-stat-value"><?php echo esc_html($minvf_unknown); ?></span>
         </span>
         <?php endif; ?>
     </div>

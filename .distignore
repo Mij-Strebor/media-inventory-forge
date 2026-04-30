@@ -4,6 +4,7 @@
 .wordpress-org
 node_modules
 vendor
+tests
 
 # Files
 .gitignore
@@ -35,6 +36,9 @@ CHANGELOG.md
 CODE_OF_CONDUCT.md
 CONTRIBUTING.md
 LICENSE.md
+CLAUDE.md
+QUICK-START.md
+USERS-MANUAL.md
 
 # Build artifacts
 *.zip

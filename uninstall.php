@@ -35,9 +35,9 @@ global $wpdb;
  *
  * Drops the custom wp_minvf_usage table that stores media usage location data.
  */
-$table_name = esc_sql($wpdb->prefix . 'minvf_usage');
-// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uninstall cleanup, table name is escaped
-$wpdb->query("DROP TABLE IF EXISTS {$table_name}");
+$minvf_table_name = esc_sql($wpdb->prefix . 'minvf_usage');
+// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Uninstall cleanup, table name is escaped
+$wpdb->query("DROP TABLE IF EXISTS {$minvf_table_name}");
 
 /* ==========================================================================
    2. DELETE PLUGIN OPTIONS
@@ -62,9 +62,9 @@ delete_option('minvf_last_usage_scan');
  * Transients are stored with user-specific keys (minvf_scan_results_{user_id}).
  * We need to delete these for all users to prevent orphaned data.
  */
-$users = get_users(array('fields' => 'ID'));
-foreach ($users as $user_id) {
-   delete_transient('minvf_scan_results_' . $user_id);
+$minvf_users = get_users(array('fields' => 'ID'));
+foreach ($minvf_users as $minvf_user_id) {
+   delete_transient('minvf_scan_results_' . $minvf_user_id);
 }
 
 /* ==========================================================================
