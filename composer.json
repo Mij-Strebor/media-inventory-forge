@@ -1,0 +1,14 @@
+{
+    "name": "jimrforge/media-inventory-forge",
+    "description": "Media Inventory Forge — WordPress plugin",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "require-php": ">=7.4",
+    "require-dev": {
+        "phpunit/phpunit": "^10.5",
+        "10up/wp_mock": "^1.0"
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    }
+}
