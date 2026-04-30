@@ -382,7 +382,7 @@ jQuery(document).ready(function ($) {
     $("#progress-text").text("0 / 0 processed");
 
     $("#results-container").html(
-      '<div style="text-align: center; padding: 40px; color: var(--clr-txt); font-style: italic;">Scanning in progress...</div>'
+      '<div class="mif-empty-state">Scanning in progress...</div>'
     );
 
     scanBatch(0);
@@ -407,7 +407,7 @@ jQuery(document).ready(function ($) {
     $("#scan-progress").hide();
     $("#export-csv").show();
     $("#results-container").html(
-      '<div style="text-align: center; padding: 40px; color: var(--clr-txt); font-style: italic;">Scan stopped. Click "start scan" to continue.</div>'
+      '<div class="mif-empty-state">Scan stopped. Click "start scan" to continue.</div>'
     );
   });
 
@@ -642,7 +642,7 @@ jQuery(document).ready(function ($) {
   function displayResults() {
     if (inventoryData.length === 0) {
       $("#results-container").html(
-        '<div style="text-align: center; padding: 40px; color: var(--clr-txt); font-style: italic;">No media files found.</div>'
+        '<div class="mif-empty-state">No media files found.</div>'
       );
       return;
     }
@@ -734,19 +734,7 @@ jQuery(document).ready(function ($) {
    * @note Unknown categories appended alphabetically after predefined ones
    */
   function getOrderedCategories(categories) {
-    const categoryOrder = [
-      "Images",
-      "Fonts",
-      "SVG",
-      "Videos",
-      "Audio",
-      "PDFs",
-      "Documents",
-      "Text Files",
-      "Archives",
-      "Other Documents",
-      "Other",
-    ];
+    const categoryOrder = minvfData.categoryOrder;
     const orderedCategories = [];
 
     categoryOrder.forEach(function (catName) {
@@ -1320,11 +1308,11 @@ jQuery(document).ready(function ($) {
       html += '</tr>';
 
       // Expanded details row
-      html += '<tr class="mif-expanded-details" id="' + rowId + '" style="display: none;">';
+      html += '<tr class="mif-expanded-details" id="' + rowId + '">';
       html += '<td colspan="7">';
-      html += '<div style="padding: 12px; background: var(--clr-table-details-bg);">';
-      html += '<table class="mif-details-table" style="width: 100%; border-collapse: collapse;">';
-      html += '<tr style="background: var(--clr-table-header-bg); font-weight: 600;"><td>File</td><td>Type</td><td>Dimensions</td><td>Size</td></tr>';
+      html += '<div class="mif-details-container">';
+      html += '<table class="mif-details-table">';
+      html += '<tr class="mif-details-header-row"><td>File</td><td>Type</td><td>Dimensions</td><td>Size</td></tr>';
 
       item.files.forEach((file) => {
         html += '<tr>';
@@ -1360,111 +1348,32 @@ jQuery(document).ready(function ($) {
    * @note Uses round-robin distribution for balanced visual presentation
    */
   function displaySizeSummary(wpSizeCategories, sortedWpCategories) {
-    let summaryContent =
-      '<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">';
+    const columns = [[], [], []];
+    sortedWpCategories.forEach((cat, index) => columns[index % 3].push(cat));
 
-    // Split into three columns more evenly
-    const leftColumn = [];
-    const middleColumn = [];
-    const rightColumn = [];
+    function renderSummaryColumn(categoryNames) {
+      let html =
+        '<div style="background: white; border-radius: var(--jimr-border-radius); padding: 12px; box-shadow: var(--clr-shadow); border: 1px solid var(--jimr-gray-200);">';
+      categoryNames.forEach((categoryName) => {
+        const wpCategory = wpSizeCategories[categoryName];
+        const suffixList = Array.from(wpCategory.sizeSuffixes).join(", ");
+        html += '<div style="padding: 8px 0; border-bottom: 1px solid var(--jimr-gray-200);">';
+        html += '<div><strong style="color: var(--clr-secondary);">' + escapeHtml(categoryName) + "</strong><br>";
+        html += '<small style="color: var(--clr-txt);">Suffixes: ' + suffixList + "</small><br>";
+        html += '<small style="color: var(--clr-txt);">' + wpCategory.totalFiles + " files, " + formatBytes(wpCategory.totalSize) + "</small></div>";
+        html += "</div>";
+      });
+      html += "</div>";
+      return html;
+    }
 
-    sortedWpCategories.forEach((cat, index) => {
-      if (index % 3 === 0) {
-        leftColumn.push(cat);
-      } else if (index % 3 === 1) {
-        middleColumn.push(cat);
-      } else {
-        rightColumn.push(cat);
-      }
-    });
-
-    // Left column
-    summaryContent +=
-      '<div style="background: white; border-radius: var(--jimr-border-radius); padding: 12px; box-shadow: var(--clr-shadow); border: 1px solid var(--jimr-gray-200);">';
-    leftColumn.forEach((categoryName) => {
-      const wpCategory = wpSizeCategories[categoryName];
-      const leftSizeSuffixList = Array.from(wpCategory.sizeSuffixes).join(", ");
-
-      summaryContent +=
-        '<div style="padding: 8px 0; border-bottom: 1px solid var(--jimr-gray-200);">';
-      summaryContent +=
-        '<div><strong style="color: var(--clr-secondary);">' +
-        escapeHtml(categoryName) +
-        "</strong><br>";
-      summaryContent +=
-        '<small style="color: var(--clr-txt);">Suffixes: ' +
-        leftSizeSuffixList +
-        "</small><br>";
-      summaryContent +=
-        '<small style="color: var(--clr-txt);">' +
-        wpCategory.totalFiles +
-        " files, " +
-        formatBytes(wpCategory.totalSize) +
-        "</small></div>";
-      summaryContent += "</div>";
-    });
-    summaryContent += "</div>";
-
-    // Middle column
-    summaryContent +=
-      '<div style="background: white; border-radius: var(--jimr-border-radius); padding: 12px; box-shadow: var(--clr-shadow); border: 1px solid var(--jimr-gray-200);">';
-    middleColumn.forEach((categoryName) => {
-      const wpCategory = wpSizeCategories[categoryName];
-      const middleSizeSuffixList = Array.from(wpCategory.sizeSuffixes).join(
-        ", "
-      );
-
-      summaryContent +=
-        '<div style="padding: 8px 0; border-bottom: 1px solid var(--jimr-gray-200);">';
-      summaryContent +=
-        '<div><strong style="color: var(--clr-secondary);">' +
-        escapeHtml(categoryName) +
-        "</strong><br>";
-      summaryContent +=
-        '<small style="color: var(--clr-txt);">Suffixes: ' +
-        middleSizeSuffixList +
-        "</small><br>";
-      summaryContent +=
-        '<small style="color: var(--clr-txt);">' +
-        wpCategory.totalFiles +
-        " files, " +
-        formatBytes(wpCategory.totalSize) +
-        "</small></div>";
-      summaryContent += "</div>";
-    });
-    summaryContent += "</div>";
-
-    // Right column
-    summaryContent +=
-      '<div style="background: white; border-radius: var(--jimr-border-radius); padding: 12px; box-shadow: var(--clr-shadow); border: 1px solid var(--jimr-gray-200);">';
-    rightColumn.forEach((categoryName) => {
-      const wpCategory = wpSizeCategories[categoryName];
-      const rightSizeSuffixList = Array.from(wpCategory.sizeSuffixes).join(
-        ", "
-      );
-
-      summaryContent +=
-        '<div style="padding: 8px 0; border-bottom: 1px solid var(--jimr-gray-200);">';
-      summaryContent +=
-        '<div><strong style="color: var(--clr-secondary);">' +
-        escapeHtml(categoryName) +
-        "</strong><br>";
-      summaryContent +=
-        '<small style="color: var(--clr-txt);">Suffixes: ' +
-        rightSizeSuffixList +
-        "</small><br>";
-      summaryContent +=
-        '<small style="color: var(--clr-txt);">' +
-        wpCategory.totalFiles +
-        " files, " +
-        formatBytes(wpCategory.totalSize) +
-        "</small></div>";
-      summaryContent += "</div>";
-    });
-    summaryContent += "</div>";
-
-    summaryContent += "</div>";
-    return summaryContent;
+    return (
+      '<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">' +
+      renderSummaryColumn(columns[0]) +
+      renderSummaryColumn(columns[1]) +
+      renderSummaryColumn(columns[2]) +
+      "</div>"
+    );
   }
 
   /**

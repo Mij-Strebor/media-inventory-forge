@@ -410,21 +410,7 @@ class MINVF_Scanner
      */
     private function scan_theme_directory($directory, $theme_name)
     {
-        // Media file extensions to look for (WordPress-registered media types only)
-        $media_extensions = [
-            // Images
-            'jpg', 'jpeg', 'png', 'gif', 'svg', 'webp', 'ico', 'bmp',
-            // Fonts
-            'ttf', 'otf', 'woff', 'woff2', 'eot',
-            // Documents
-            'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
-            // Archives
-            'zip', 'rar', 'tar', 'gz', '7z', 'bz2',
-            // Audio
-            'mp3', 'wav', 'ogg', 'm4a', 'flac',
-            // Video
-            'mp4', 'mov', 'avi', 'wmv', 'mkv', 'webm'
-        ];
+        $media_extensions = array_keys($this->get_mime_map());
 
         try {
             $iterator = new RecursiveIteratorIterator(
@@ -537,9 +523,9 @@ class MINVF_Scanner
      *
      * @since 4.0.0
      */
-    private function get_mime_type_from_extension($extension)
+    private function get_mime_map()
     {
-        $mime_types = [
+        return [
             // Images
             'jpg' => 'image/jpeg',
             'jpeg' => 'image/jpeg',
@@ -582,10 +568,14 @@ class MINVF_Scanner
             'avi' => 'video/x-msvideo',
             'wmv' => 'video/x-ms-wmv',
             'mkv' => 'video/x-matroska',
-            'webm' => 'video/webm'
+            'webm' => 'video/webm',
         ];
+    }
 
-        return isset($mime_types[$extension]) ? $mime_types[$extension] : 'application/octet-stream';
+    private function get_mime_type_from_extension($extension)
+    {
+        $map = $this->get_mime_map();
+        return $map[$extension] ?? 'application/octet-stream';
     }
 
     /* ==========================================================================

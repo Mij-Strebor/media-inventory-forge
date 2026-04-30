@@ -57,7 +57,8 @@ class MINVF_Usage_Scanner {
      *
      * @since 4.0.0
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->usage_db = new MINVF_Usage_Database();
     }
 
@@ -67,7 +68,8 @@ class MINVF_Usage_Scanner {
      * @param string $path Absolute file path.
      * @return string|false File contents, or false on failure.
      */
-    private function read_file($path) {
+    private function read_file($path)
+    {
         global $wp_filesystem;
 
         if (empty($wp_filesystem)) {
@@ -88,7 +90,8 @@ class MINVF_Usage_Scanner {
      * @param array $options Scanning options
      * @return array Scan results
      */
-    public function scan_all_usage($options = array()) {
+    public function scan_all_usage($options = array())
+    {
         $defaults = array(
             'clear_existing' => true,
             'batch_size' => $this->batch_size
@@ -137,7 +140,8 @@ class MINVF_Usage_Scanner {
      * @since 4.0.0
      * @return int Number of posts scanned
      */
-    private function scan_posts_and_pages() {
+    private function scan_posts_and_pages()
+    {
         $args = array(
             'post_type' => 'any',
             'post_status' => 'publish',
@@ -188,7 +192,8 @@ class MINVF_Usage_Scanner {
      * @param string $content_type Type of content (post, page, widget, etc.)
      * @return int Number of media items found
      */
-    private function scan_content_for_media($content_id, $content, $content_type = 'post') {
+    private function scan_content_for_media($content_id, $content, $content_type = 'post')
+    {
         $found_count = 0;
 
         // 1. Scan for <img> tags with attachment IDs or URLs
@@ -221,7 +226,8 @@ class MINVF_Usage_Scanner {
      * @param string $content_type
      * @return int
      */
-    private function scan_img_tags($content_id, $content, $content_type) {
+    private function scan_img_tags($content_id, $content, $content_type)
+    {
         $found_count = 0;
 
         // Match all <img> tags
@@ -272,7 +278,8 @@ class MINVF_Usage_Scanner {
      * @param string $content_type
      * @return int
      */
-    private function scan_gutenberg_blocks($content_id, $content, $content_type) {
+    private function scan_gutenberg_blocks($content_id, $content, $content_type)
+    {
         $found_count = 0;
 
         // Match Gutenberg block comments
@@ -353,7 +360,8 @@ class MINVF_Usage_Scanner {
      * @param string $content_type
      * @return int
      */
-    private function scan_gallery_shortcodes($content_id, $content, $content_type) {
+    private function scan_gallery_shortcodes($content_id, $content, $content_type)
+    {
         $found_count = 0;
 
         // Match [gallery] shortcodes
@@ -392,7 +400,8 @@ class MINVF_Usage_Scanner {
      * @param string $content_type
      * @return int
      */
-    private function scan_media_links($content_id, $content, $content_type) {
+    private function scan_media_links($content_id, $content, $content_type)
+    {
         $found_count = 0;
 
         // Match <a> tags with href to uploads directory
@@ -427,7 +436,8 @@ class MINVF_Usage_Scanner {
      * @param string $content_type
      * @return int
      */
-    private function scan_av_shortcodes($content_id, $content, $content_type) {
+    private function scan_av_shortcodes($content_id, $content, $content_type)
+    {
         $found_count = 0;
 
         // Match [audio] and [video] shortcodes with src or mp3/mp4 attributes
@@ -463,7 +473,8 @@ class MINVF_Usage_Scanner {
      * @since 4.0.0
      * @return int Number of featured images found
      */
-    private function scan_featured_images() {
+    private function scan_featured_images()
+    {
         global $wpdb;
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Read-only query for featured image detection, no caching needed for scan operation
 
@@ -501,7 +512,8 @@ class MINVF_Usage_Scanner {
      * @since 4.0.0
      * @return int Number of widgets scanned
      */
-    private function scan_widgets() {
+    private function scan_widgets()
+    {
         global $wpdb;
 
         $widget_count = 0;
@@ -546,7 +558,8 @@ class MINVF_Usage_Scanner {
      * @param array  $widget_data
      * @return int
      */
-    private function scan_widget_data($widget_type, $widget_id, $widget_data) {
+    private function scan_widget_data($widget_type, $widget_id, $widget_data)
+    {
         $found_count = 0;
         $widget_identifier = $widget_type . '_' . $widget_id;
 
@@ -594,7 +607,8 @@ class MINVF_Usage_Scanner {
      * @since 4.0.0
      * @return int Number of customizer images found
      */
-    private function scan_theme_customizer() {
+    private function scan_theme_customizer()
+    {
         $found_count = 0;
 
         $theme_slug = get_option('stylesheet');
@@ -658,7 +672,8 @@ class MINVF_Usage_Scanner {
      * @since 4.0.0
      * @return int Number of CSS files scanned
      */
-    private function scan_css_files() {
+    private function scan_css_files()
+    {
         $files_scanned = 0;
 
         // 1. Scan theme CSS files
@@ -681,7 +696,8 @@ class MINVF_Usage_Scanner {
      * @since 4.0.0
      * @return int
      */
-    private function scan_theme_css() {
+    private function scan_theme_css()
+    {
         $theme_root = get_stylesheet_directory();
         $css_files = glob($theme_root . '/*.css');
 
@@ -711,7 +727,8 @@ class MINVF_Usage_Scanner {
      * @since 4.0.0
      * @return int
      */
-    private function scan_enqueued_css() {
+    private function scan_enqueued_css()
+    {
         global $wp_styles;
 
         if (!$wp_styles || !is_object($wp_styles)) {
@@ -747,7 +764,8 @@ class MINVF_Usage_Scanner {
      * @since 4.0.0
      * @return int
      */
-    private function scan_custom_css() {
+    private function scan_custom_css()
+    {
         $custom_css = wp_get_custom_css();
 
         if (!empty($custom_css)) {
@@ -768,7 +786,8 @@ class MINVF_Usage_Scanner {
      * @param string $source_file
      * @return int
      */
-    private function scan_css_content($css_content, $source_file) {
+    private function scan_css_content($css_content, $source_file)
+    {
         $found_count = 0;
 
         // Match url() declarations
@@ -818,7 +837,8 @@ class MINVF_Usage_Scanner {
      * @since 4.0.0
      * @return int Number of builder pages scanned
      */
-    private function scan_page_builders() {
+    private function scan_page_builders()
+    {
         $builders_scanned = 0;
 
         // Detect which builders are active
@@ -840,7 +860,8 @@ class MINVF_Usage_Scanner {
      * @since 4.0.0
      * @return array List of active builder slugs
      */
-    private function detect_active_builders() {
+    private function detect_active_builders()
+    {
         $active_builders = array();
 
         // Check Elementor
@@ -880,7 +901,8 @@ class MINVF_Usage_Scanner {
      * @since 4.0.0
      * @return int Number of Elementor pages scanned
      */
-    private function scan_elementor_data() {
+    private function scan_elementor_data()
+    {
         global $wpdb;
 
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Read-only query for page builder meta detection, no caching needed for scan operation
@@ -949,7 +971,8 @@ class MINVF_Usage_Scanner {
      * @param int   $post_id  Post ID
      * @return int Number of media items found
      */
-    private function scan_elementor_elements($elements, $post_id) {
+    private function scan_elementor_elements($elements, $post_id)
+    {
         $found_count = 0;
 
         if (!is_array($elements)) {
@@ -990,7 +1013,8 @@ class MINVF_Usage_Scanner {
      * @param int   $post_id Post ID
      * @return int Number of media items found
      */
-    private function scan_elementor_widget($widget, $post_id) {
+    private function scan_elementor_widget($widget, $post_id)
+    {
         $found_count = 0;
         $widget_type = isset($widget['widgetType']) ? $widget['widgetType'] : '';
         $settings = isset($widget['settings']) ? $widget['settings'] : array();
@@ -1126,7 +1150,8 @@ class MINVF_Usage_Scanner {
      * @param array  $extra_data    Additional data specific to the usage type
      * @return array Enhanced metadata array
      */
-    private function build_usage_metadata($usage_type, $usage_id, $usage_context, $extra_data = array()) {
+    private function build_usage_metadata($usage_type, $usage_id, $usage_context, $extra_data = array())
+    {
         $metadata = array(
             'title' => '',
             'view_url' => '',
@@ -1259,7 +1284,8 @@ class MINVF_Usage_Scanner {
      * @param string $url Media URL
      * @return int|false Attachment ID or false if not found
      */
-    private function url_to_attachment_id($url) {
+    private function url_to_attachment_id($url)
+    {
         // Clean up URL
         $url = trim($url);
 
@@ -1290,7 +1316,8 @@ class MINVF_Usage_Scanner {
      * @param string $url
      * @return string|false
      */
-    private function url_to_path($url) {
+    private function url_to_path($url)
+    {
         // Remove protocol and domain
         $path = wp_parse_url($url, PHP_URL_PATH);
 
@@ -1323,7 +1350,8 @@ class MINVF_Usage_Scanner {
      * @since 4.0.0
      * @return array Current scan progress
      */
-    public function get_progress() {
+    public function get_progress()
+    {
         return $this->progress;
     }
 }

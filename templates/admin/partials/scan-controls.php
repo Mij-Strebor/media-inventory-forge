@@ -19,7 +19,7 @@ defined('ABSPATH') || exit;
 
     <!-- Image Display Mode Selection -->
     <div class="mif-control-group">
-        <label class="mif-control-label" style="display: block;">
+        <label class="mif-control-label">
             <span class="mif-control-label-text">Image Display Mode:</span>
         </label>
         <div class="mif-display-mode-group">
@@ -73,23 +73,23 @@ defined('ABSPATH') || exit;
 
     <div class="mif-button-group">
         <button id="start-scan" class="mif-btn">start scan</button>
-        <button id="stop-scan" class="mif-btn mif-btn-danger" style="display: none;">stop scan</button>
-        <button id="export-csv" class="mif-btn" style="display: none;">export csv</button>
+        <button id="stop-scan" class="mif-btn mif-btn-danger mif-hidden">stop scan</button>
+        <button id="export-csv" class="mif-btn mif-hidden">export csv</button>
     </div>
 
-    <div id="scan-progress" style="display: none;">
+    <div id="scan-progress" class="mif-hidden">
         <div class="mif-progress-wrapper">
             <strong class="mif-progress-label">Scanning Progress:</strong>
         </div>
         <div class="mif-progress-bar-container">
-            <div id="progress-bar" class="mif-progress-bar" style="width: 0%;">
-                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); animation: shimmer 2s infinite;"></div>
+            <div id="progress-bar" class="mif-progress-bar">
+                <div class="mif-progress-shimmer"></div>
             </div>
         </div>
         <p id="progress-text" class="mif-progress-status">0 / 0 processed</p>
     </div>
 
-    <div id="summary-stats" style="margin-top: 20px; display: none;">
+    <div id="summary-stats" class="mif-hidden mif-summary-stats">
         <h3 class="mif-section-heading">Summary</h3>
         <div id="summary-content" class="mif-control-group"></div>
     </div>

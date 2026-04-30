@@ -8,10 +8,10 @@
  * and compliance with WordPress.org guidelines.
  *
  * Cleanup includes:
- * - Custom database table (wp_mif_usage)
- * - Plugin options (mif_activated_at, mif_version, mif_last_usage_scan)
- * - User transients (mif_scan_results_{user_id})
- * - User meta (mif_view_preference, mif_last_scan_sources)
+ * - Custom database table (wp_minvf_usage)
+ * - Plugin options (minvf_activated_at, minvf_version, minvf_last_usage_scan)
+ * - User transients (minvf_scan_results_{user_id})
+ * - User meta (minvf_view_preference, minvf_last_scan_sources)
  *
  * @package MediaInventoryForge
  * @since 2.1.1
@@ -33,9 +33,9 @@ global $wpdb;
 /**
  * Remove usage tracking table
  *
- * Drops the custom wp_mif_usage table that stores media usage location data.
+ * Drops the custom wp_minvf_usage table that stores media usage location data.
  */
-$table_name = esc_sql($wpdb->prefix . 'mif_usage');
+$table_name = esc_sql($wpdb->prefix . 'minvf_usage');
 // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uninstall cleanup, table name is escaped
 $wpdb->query("DROP TABLE IF EXISTS {$table_name}");
 
@@ -48,9 +48,9 @@ $wpdb->query("DROP TABLE IF EXISTS {$table_name}");
  *
  * Cleans up activation timestamp, version tracking, and last scan time.
  */
-delete_option('mif_activated_at');
-delete_option('mif_version');
-delete_option('mif_last_usage_scan');
+delete_option('minvf_activated_at');
+delete_option('minvf_version');
+delete_option('minvf_last_usage_scan');
 
 /* ==========================================================================
    3. DELETE USER TRANSIENTS
@@ -59,12 +59,12 @@ delete_option('mif_last_usage_scan');
 /**
  * Remove scan result transients for all users
  *
- * Transients are stored with user-specific keys (mif_scan_results_{user_id}).
+ * Transients are stored with user-specific keys (minvf_scan_results_{user_id}).
  * We need to delete these for all users to prevent orphaned data.
  */
 $users = get_users(array('fields' => 'ID'));
 foreach ($users as $user_id) {
-   delete_transient('mif_scan_results_' . $user_id);
+   delete_transient('minvf_scan_results_' . $user_id);
 }
 
 /* ==========================================================================
@@ -77,9 +77,9 @@ foreach ($users as $user_id) {
  * Deletes view preferences and scan source filters for all users.
  */
 // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uninstall cleanup, most efficient method
-$wpdb->query("DELETE FROM {$wpdb->usermeta} WHERE meta_key = 'mif_view_preference'");
+$wpdb->query("DELETE FROM {$wpdb->usermeta} WHERE meta_key = 'minvf_view_preference'");
 // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uninstall cleanup, most efficient method
-$wpdb->query("DELETE FROM {$wpdb->usermeta} WHERE meta_key = 'mif_last_scan_sources'");
+$wpdb->query("DELETE FROM {$wpdb->usermeta} WHERE meta_key = 'minvf_last_scan_sources'");
 
 /* ==========================================================================
    5. CLEAR ANY CACHED DATA

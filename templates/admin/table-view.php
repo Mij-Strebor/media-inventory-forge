@@ -14,7 +14,7 @@
 defined('ABSPATH') || exit;
 
 // Create and prepare table
-$list_table = new MIF_Media_List_Table();
+$list_table = new MINVF_Media_List_Table();
 $list_table->prepare_items();
 ?>
 

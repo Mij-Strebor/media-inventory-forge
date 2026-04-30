@@ -15,7 +15,7 @@
 // Prevent direct access
 defined('ABSPATH') || exit;
 
-class MIF_File_Utils
+class MINVF_File_Utils
 {
 
     /**

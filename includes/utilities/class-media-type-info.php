@@ -279,11 +279,14 @@ class MINVF_Media_Type_Info {
         $count        = $info['count']        ?? 0;
         $stats        = $info['stats']        ?? [];
 
-        // Load template
         $template_path = MINVF_PLUGIN_DIR . 'templates/admin/partials/media-type-explanation.php';
 
-        if (file_exists($template_path)) {
-            include $template_path;
+        if (!file_exists($template_path)) {
+            return '';
         }
+
+        ob_start();
+        include $template_path;
+        return ob_get_clean();
     }
 }

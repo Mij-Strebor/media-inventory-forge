@@ -19,6 +19,8 @@ defined('ABSPATH') || exit;
  */
 class MINVF_Table_Builder
 {
+    /** Canonical display order for media categories — single source of truth for PHP and JS. */
+    public static $category_order = ['Images', 'Fonts', 'SVG', 'Videos', 'Audio', 'PDFs', 'Documents', 'Text Files', 'Archives', 'Other Documents', 'Other'];
     /**
      * Build complete table view HTML
      *
@@ -43,11 +45,11 @@ class MINVF_Table_Builder
                 // Successfully loaded saved results
             } else {
                 // Invalid saved data
-                return '<div style="text-align: center; padding: 40px; color: var(--clr-txt); font-style: italic;">No scan results available. Click "start scan" to begin inventory scanning.</div>';
+                return '<div class="mif-empty-state">No scan results available. Click "start scan" to begin inventory scanning.</div>';
             }
         } else {
             // No saved results - user needs to scan first
-            return '<div style="text-align: center; padding: 40px; color: var(--clr-txt); font-style: italic;">No scan results available. Click "start scan" to begin inventory scanning.</div>';
+            return '<div class="mif-empty-state">No scan results available. Click "start scan" to begin inventory scanning.</div>';
         }
 
         // Group by category
@@ -105,7 +107,7 @@ class MINVF_Table_Builder
      */
     private function get_ordered_categories($category_names)
     {
-        $order = ['Images', 'Fonts', 'SVG', 'Videos', 'Audio', 'PDFs', 'Documents', 'Text Files', 'Archives', 'Other Documents', 'Other'];
+        $order = self::$category_order;
         $ordered = [];
 
         foreach ($order as $cat) {
@@ -144,7 +146,7 @@ class MINVF_Table_Builder
 
         $section_id = 'mif-category-' . sanitize_title($category_name);
 
-        $html = '<div class="mif-category-table-section" style="margin-bottom: 20px;">';
+        $html = '<div class="mif-category-table-section">';
 
         // Collapsible header
         $html .= '<h3 class="mif-category-header" data-target="' . $section_id . '">';
@@ -153,7 +155,7 @@ class MINVF_Table_Builder
         $html .= '</h3>';
 
         // Collapsible content
-        $html .= '<div id="' . $section_id . '" class="mif-category-content" style="display: block;">';
+        $html .= '<div id="' . $section_id . '" class="mif-category-content">';
 
         // Build category-specific table
         if ($category_name === 'Fonts') {
@@ -197,12 +199,12 @@ class MINVF_Table_Builder
 
         $html = '<table class="mif-expandable-table widefat mif-sortable-table">';
         $html .= '<thead><tr>';
-        $html .= '<th style="width: 40px;"></th>';
+        $html .= '<th class="mif-col-icon"></th>';
         $html .= '<th class="mif-sortable" data-column="title"><span class="mif-sort-label">Font Family</span><span class="mif-sort-indicator"></span></th>';
         $html .= '<th>Source</th>';
-        $html .= '<th style="width: 100px;">Variants</th>';
-        $html .= '<th class="mif-sortable" data-column="files" style="width: 100px;"><span class="mif-sort-label">Files</span><span class="mif-sort-indicator"></span></th>';
-        $html .= '<th class="mif-sortable" data-column="size" style="width: 120px;"><span class="mif-sort-label">Total Size</span><span class="mif-sort-indicator"></span></th>';
+        $html .= '<th class="mif-col-variants">Variants</th>';
+        $html .= '<th class="mif-sortable mif-col-files" data-column="files"><span class="mif-sort-label">Files</span><span class="mif-sort-indicator"></span></th>';
+        $html .= '<th class="mif-sortable mif-col-size" data-column="size"><span class="mif-sort-label">Total Size</span><span class="mif-sort-indicator"></span></th>';
         $html .= '</tr></thead>';
         $html .= '<tbody>';
 
@@ -234,11 +236,11 @@ class MINVF_Table_Builder
             $html .= '</tr>';
 
             // Expanded details row
-            $html .= '<tr class="mif-expanded-details" id="' . $row_id . '" style="display: none;">';
+            $html .= '<tr class="mif-expanded-details" id="' . $row_id . '">';
             $html .= '<td colspan="6">';
-            $html .= '<div style="padding: 12px; background: var(--clr-table-details-bg);">';
-            $html .= '<table class="mif-details-table" style="width: 100%; border-collapse: collapse;">';
-            $html .= '<tr style="background: var(--clr-table-header-bg); font-weight: 600;"><td>File</td><td>Type</td><td>Size</td></tr>';
+            $html .= '<div class="mif-details-container">';
+            $html .= '<table class="mif-details-table">';
+            $html .= '<tr class="mif-details-header-row"><td>File</td><td>Type</td><td>Size</td></tr>';
 
             foreach ($family_items as $font_item) {
                 foreach ($font_item['files'] as $file) {
@@ -273,13 +275,13 @@ class MINVF_Table_Builder
     {
         $html = '<table class="mif-expandable-table widefat mif-sortable-table">';
         $html .= '<thead><tr>';
-        $html .= '<th style="width: 40px;"></th>';
-        $html .= '<th style="width: 80px;">Thumbnail</th>';
+        $html .= '<th class="mif-col-icon"></th>';
+        $html .= '<th class="mif-col-thumb">Thumbnail</th>';
         $html .= '<th class="mif-sortable" data-column="title"><span class="mif-sort-label">Title</span><span class="mif-sort-indicator"></span></th>';
         $html .= '<th>Source</th>';
-        $html .= '<th class="mif-sortable" data-column="files" style="width: 100px;"><span class="mif-sort-label">Files</span><span class="mif-sort-indicator"></span></th>';
-        $html .= '<th class="mif-sortable" data-column="size" style="width: 120px;"><span class="mif-sort-label">Total Size</span><span class="mif-sort-indicator"></span></th>';
-        $html .= '<th style="width: 140px;">Dimensions</th>';
+        $html .= '<th class="mif-sortable mif-col-files" data-column="files"><span class="mif-sort-label">Files</span><span class="mif-sort-indicator"></span></th>';
+        $html .= '<th class="mif-sortable mif-col-size" data-column="size"><span class="mif-sort-label">Total Size</span><span class="mif-sort-indicator"></span></th>';
+        $html .= '<th class="mif-col-dims">Dimensions</th>';
         $html .= '</tr></thead>';
         $html .= '<tbody>';
 
@@ -293,9 +295,9 @@ class MINVF_Table_Builder
             // Thumbnail
             $html .= '<td>';
             if (!empty($item['thumbnail_url'])) {
-                $html .= '<img src="' . esc_url($item['thumbnail_url']) . '" alt="' . esc_attr($item['title']) . '" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;" />';
+                $html .= '<img src="' . esc_url($item['thumbnail_url']) . '" alt="' . esc_attr($item['title']) . '" class="mif-thumb-img" />';
             } else {
-                $html .= '<div style="width: 60px; height: 60px; background: var(--clr-placeholder-bg); display: flex; align-items: center; justify-content: center; border-radius: var(--jimr-border-radius-sm);">📷</div>';
+                $html .= '<div class="mif-thumb-placeholder">📷</div>';
             }
             $html .= '</td>';
 
@@ -315,11 +317,11 @@ class MINVF_Table_Builder
             $html .= '</tr>';
 
             // Expanded details row
-            $html .= '<tr class="mif-expanded-details" id="' . $row_id . '" style="display: none;">';
+            $html .= '<tr class="mif-expanded-details" id="' . $row_id . '">';
             $html .= '<td colspan="7">';
-            $html .= '<div style="padding: 12px; background: var(--clr-table-details-bg);">';
-            $html .= '<table class="mif-details-table" style="width: 100%; border-collapse: collapse;">';
-            $html .= '<tr style="background: var(--clr-table-header-bg); font-weight: 600;"><td>File</td><td>Type</td><td>Dimensions</td><td>Size</td></tr>';
+            $html .= '<div class="mif-details-container">';
+            $html .= '<table class="mif-details-table">';
+            $html .= '<tr class="mif-details-header-row"><td>File</td><td>Type</td><td>Dimensions</td><td>Size</td></tr>';
 
             foreach ($item['files'] as $file) {
                 $html .= '<tr>';
@@ -353,12 +355,12 @@ class MINVF_Table_Builder
     {
         $html = '<table class="mif-expandable-table widefat mif-sortable-table">';
         $html .= '<thead><tr>';
-        $html .= '<th style="width: 40px;"></th>';
+        $html .= '<th class="mif-col-icon"></th>';
         $html .= '<th class="mif-sortable" data-column="title"><span class="mif-sort-label">Title</span><span class="mif-sort-indicator"></span></th>';
         $html .= '<th>Source</th>';
-        $html .= '<th style="width: 120px;">Type</th>';
-        $html .= '<th class="mif-sortable" data-column="files" style="width: 100px;"><span class="mif-sort-label">Files</span><span class="mif-sort-indicator"></span></th>';
-        $html .= '<th class="mif-sortable" data-column="size" style="width: 120px;"><span class="mif-sort-label">Size</span><span class="mif-sort-indicator"></span></th>';
+        $html .= '<th class="mif-col-type">Type</th>';
+        $html .= '<th class="mif-sortable mif-col-files" data-column="files"><span class="mif-sort-label">Files</span><span class="mif-sort-indicator"></span></th>';
+        $html .= '<th class="mif-sortable mif-col-size" data-column="size"><span class="mif-sort-label">Size</span><span class="mif-sort-indicator"></span></th>';
         $html .= '</tr></thead>';
         $html .= '<tbody>';
 
@@ -384,11 +386,11 @@ class MINVF_Table_Builder
             $html .= '</tr>';
 
             // Expanded details row
-            $html .= '<tr class="mif-expanded-details" id="' . $row_id . '" style="display: none;">';
+            $html .= '<tr class="mif-expanded-details" id="' . $row_id . '">';
             $html .= '<td colspan="6">';
-            $html .= '<div style="padding: 12px; background: var(--clr-table-details-bg);">';
-            $html .= '<table class="mif-details-table" style="width: 100%; border-collapse: collapse;">';
-            $html .= '<tr style="background: var(--clr-table-header-bg); font-weight: 600;"><td>File</td><td>Type</td><td>Size</td></tr>';
+            $html .= '<div class="mif-details-container">';
+            $html .= '<table class="mif-details-table">';
+            $html .= '<tr class="mif-details-header-row"><td>File</td><td>Type</td><td>Size</td></tr>';
 
             foreach ($item['files'] as $file) {
                 $html .= '<tr>';

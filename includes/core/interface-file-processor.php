@@ -10,7 +10,7 @@
 
 defined('ABSPATH') || exit;
 
-interface MIF_File_Processor_Interface
+interface MINVF_File_Processor_Interface
 {
     /**
      * Process a file and return metadata
