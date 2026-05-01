@@ -153,9 +153,6 @@ class MINVF_Admin_Controller
         // Recursively sanitize all array values
         $inventory_data = $this->sanitize_scan_data($inventory_data);
 
-        // Suppress fclose warning by using alternative CSV approach
-        ob_start();
-
         $csv_content = "ID,Title,Category,Extension,MIME Type,Dimensions,Thumbnail URL,Font Family,File Count,Total Size,Total Size (Formatted),File Details\n";
 
         foreach ($inventory_data as $item) {
@@ -185,9 +182,6 @@ class MINVF_Admin_Controller
                 str_replace('"', '""', implode(' | ', $file_details))
             );
         }
-
-        // Clean the output buffer (closes ob_start)
-        ob_end_clean();
 
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="media-inventory-' . gmdate('Y-m-d-H-i-s') . '.csv"');
@@ -286,7 +280,7 @@ class MINVF_Admin_Controller
     /**
      * AJAX handler for creating usage table
      *
-     * Creates the wp_mif_usage table if it doesn't exist.
+     * Creates the wp_minvf_usage table if it doesn't exist.
      *
      * @since 4.0.0
      */

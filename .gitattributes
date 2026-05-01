@@ -1,0 +1,16 @@
+# Files excluded from git archive / distribution packages
+.claude/         export-ignore
+.wordpress-org/  export-ignore
+tests/           export-ignore
+doc/             export-ignore
+docs/            export-ignore
+.gitignore       export-ignore
+.gitattributes   export-ignore
+.distignore      export-ignore
+README.md        export-ignore
+CHANGELOG.md     export-ignore
+CLAUDE.md        export-ignore
+QUICK-START.md   export-ignore
+USER-MANUAL.md   export-ignore
+USERS-MANUAL.md  export-ignore
+RECOVERY-LOG.md  export-ignore
