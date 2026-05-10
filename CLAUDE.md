@@ -12,7 +12,7 @@
 
 - **Plugin name:** Media Inventory Forge
 - **Acronym / folder:** `mif` → `E:\projects\plugins\mif`
-- **Version:** v5.0.2
+- **Version:** v5.1.0
 - **GitHub:** https://github.com/Mij-Strebor/media-inventory-forge
 - **Text domain:** `media-inventory-forge`
 - **Admin page slug:** `media-inventory-forge`

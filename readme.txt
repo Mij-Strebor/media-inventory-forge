@@ -1,5 +1,5 @@
 === Media Inventory Forge ===
-Contributors: MijStrebor
+Contributors: mijstrebor
 Donate link: https://buymeacoffee.com/jimrweb
 Tags: media, inventory, scanner, analysis, optimization
 Requires at least: 5.0
@@ -164,18 +164,11 @@ Yes! Click any column header in Table View to sort by that column. Click again t
 * Basic media scanning functionality
 * Simple file categorization
 * WordPress admin integration
-== Changelog ==
-
-= 2.1.0 =
-* Enhanced scanning performance with improved batch processing
-…
-* Fixed various minor bugs and performance improvements
-“`
-
-**After the entire Changelog section, add**:
-“`
 
 == Upgrade Notice ==
+
+= 5.1.0 =
+WordPress standards compliance release. All Plugin Check items resolved. Raised minimum PHP to 8.2. Safe update from 4.x.
 
 = 4.0.1 =
 Bug fix release improving Table View reliability on fresh installs. Adds Community & Tools panel. Safe update from 4.0.0.
@@ -189,4 +182,4 @@ Media Inventory Forge does not collect, store, or transmit any personal data or 
 
 == Support ==
 
-For support, bug reports, or feature requests, please visit our GitHub repository or contact us through our website at https://jimrweb.com.
+For support, bug reports, or feature requests, please visit our GitHub repository or contact us through our website at https://jimrforge.com.

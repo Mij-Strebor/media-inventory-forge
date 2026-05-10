@@ -33,12 +33,16 @@ Gruntfile.js
 # Documentation
 README.md
 CHANGELOG.md
+ROADMAP.md
 CODE_OF_CONDUCT.md
 CONTRIBUTING.md
 LICENSE.md
 CLAUDE.md
 QUICK-START.md
 USERS-MANUAL.md
+
+# Dev-only directories
+docs
 
 # Build artifacts
 *.zip
