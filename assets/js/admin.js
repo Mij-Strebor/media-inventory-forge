@@ -1498,7 +1498,7 @@ jQuery(document).ready(function ($) {
    * @param {Array} category.items - Array of image items
    * @returns {string} HTML with cards in a flex-wrap row
    *
-   * @note Cards are flex items (.image-item: flex-basis 320px) in a
+   * @note Cards are flex items (.image-item: flex-basis 280px) in a
    *   wrapping flex container - naturally about 3 per row on desktop,
    *   fewer as the admin column narrows, one per row on mobile. No
    *   explicit column count or breakpoint needed.

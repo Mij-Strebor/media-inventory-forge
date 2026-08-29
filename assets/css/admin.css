@@ -1292,7 +1292,7 @@ button.mif-btn-danger:hover,
  * Styleguide 7.2.2
  */
 .image-item {
-    flex: 1 1 320px;
+    flex: 1 1 280px;
     min-width: 0;
     margin-bottom: 20px;
     border: 2px solid var(--clr-secondary);
