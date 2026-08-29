@@ -34,6 +34,7 @@ define('MINVF_PLUGIN_URL',  plugin_dir_url(__FILE__));
 require_once MINVF_PLUGIN_DIR . 'includes/utilities/class-file-utils.php';
 require_once MINVF_PLUGIN_DIR . 'includes/utilities/class-media-type-info.php';
 require_once MINVF_PLUGIN_DIR . 'includes/core/interface-file-processor.php';
+require_once MINVF_PLUGIN_DIR . 'includes/core/class-abstract-file-processor.php';
 require_once MINVF_PLUGIN_DIR . 'includes/core/class-file-processor.php';
 require_once MINVF_PLUGIN_DIR . 'includes/core/class-image-processor.php';
 require_once MINVF_PLUGIN_DIR . 'includes/core/class-font-processor.php';
@@ -44,7 +45,6 @@ require_once MINVF_PLUGIN_DIR . 'includes/core/class-usage-scanner.php';
 require_once MINVF_PLUGIN_DIR . 'includes/admin/class-admin.php';
 require_once MINVF_PLUGIN_DIR . 'includes/admin/class-admin-controller.php';
 require_once MINVF_PLUGIN_DIR . 'includes/admin/class-table-builder.php';
-require_once MINVF_PLUGIN_DIR . 'includes/admin/class-media-list-table.php';
 
 /* ==========================================================================
    PLUGIN INITIALIZATION
