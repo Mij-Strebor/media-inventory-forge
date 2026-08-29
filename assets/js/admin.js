@@ -1347,24 +1347,26 @@ jQuery(document).ready(function ($) {
    * @function displaySizeSummary
    * @param {Object} wpSizeCategories - WordPress size category data
    * @param {Array<string>} sortedWpCategories - Ordered category names
-   * @returns {string} HTML with one stacked row per size category
+   * @returns {string} HTML with one card per size category, in a
+   *   flex-wrap row
    *
-   * @note Each category is its own full-width row - stacked, not
-   *   side-by-side, so long suffix lists and file details never get
-   *   clipped by a narrow admin content column
+   * @note Each category is its own flex item (flex-basis 220px) in a
+   *   wrapping flex container - naturally about 3 per row on desktop,
+   *   fewer as the admin column narrows, one per row on mobile. No
+   *   explicit column count or breakpoint needed.
    * @note Shows category name, suffixes list, file count, and total size
    */
   function displaySizeSummary(wpSizeCategories, sortedWpCategories) {
-    let html =
-      '<div style="background: white; border-radius: var(--jimr-border-radius); padding: 12px; box-shadow: var(--clr-shadow); border: 1px solid var(--jimr-gray-200);">';
+    let html = '<div style="display: flex; flex-wrap: wrap; gap: 10px;">';
 
     sortedWpCategories.forEach((categoryName) => {
       const wpCategory = wpSizeCategories[categoryName];
       const suffixList = Array.from(wpCategory.sizeSuffixes).join(", ");
-      html += '<div style="padding: 8px 0; border-bottom: 1px solid var(--jimr-gray-200);">';
-      html += '<div><strong style="color: var(--clr-secondary);">' + escapeHtml(categoryName) + "</strong><br>";
+      html +=
+        '<div style="flex: 1 1 220px; min-width: 0; background: white; border-radius: var(--jimr-border-radius); padding: 12px; box-shadow: var(--clr-shadow); border: 1px solid var(--jimr-gray-200);">';
+      html += '<strong style="color: var(--clr-secondary);">' + escapeHtml(categoryName) + "</strong><br>";
       html += '<small style="color: var(--clr-txt);">Suffixes: ' + suffixList + "</small><br>";
-      html += '<small style="color: var(--clr-txt);">' + wpCategory.totalFiles + " files, " + formatBytes(wpCategory.totalSize) + "</small></div>";
+      html += '<small style="color: var(--clr-txt);">' + wpCategory.totalFiles + " files, " + formatBytes(wpCategory.totalSize) + "</small>";
       html += "</div>";
     });
 
@@ -1381,19 +1383,19 @@ jQuery(document).ready(function ($) {
    * @function displayImageCards
    * @param {Object} category - Image category object
    * @param {Array} category.items - Array of image items
-   * @returns {string} HTML with one card per row
+   * @returns {string} HTML with cards in a flex-wrap row
    *
-   * @note One card per row (not a multi-column grid) - each card's file
-   *   list and usage badges need the full content width, and a narrow
-   *   admin column has no room to spare for 3 side-by-side cards anyway
+   * @note Cards are flex items (.image-item: flex-basis 320px) in a
+   *   wrapping flex container - naturally about 3 per row on desktop,
+   *   fewer as the admin column narrows, one per row on mobile. No
+   *   explicit column count or breakpoint needed.
    * @note Each card shows thumbnail, title, file count, size, dimensions
    * @note Includes error handling for missing thumbnails
    * @note Images use lazy loading for performance
    * @note Lists all associated files with type, dimensions, and size
    */
   function displayImageCards(category) {
-    let cardsContent =
-      '<div style="display: grid; grid-template-columns: 1fr; gap: 16px;">';
+    let cardsContent = '<div style="display: flex; flex-wrap: wrap; gap: 16px;">';
 
     category.items.forEach((item) => {
       cardsContent += '<div class="image-item">';
