@@ -43,6 +43,21 @@
  */
 jQuery(document).ready(function ($) {
   /**
+   * Always land on the hero image, not wherever the browser last left this
+   * URL scrolled to. Confirmed (via Jim) this only happens on a return
+   * visit after having scrolled down before - the browser's own scroll-
+   * position memory for this URL, not something the page's own code did -
+   * so the fix is to explicitly override it rather than track down a
+   * layout-shift bug that isn't there. history.scrollRestoration stops the
+   * browser from trying to restore a position at all on future loads;
+   * scrollTo forces the correct result for this load regardless.
+   */
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+  }
+  window.scrollTo(0, 0);
+
+  /**
    * Global inventory data storage
    * Exposed to window for table-view.js access
    * @type {Array<Object>}
@@ -1365,14 +1380,11 @@ jQuery(document).ready(function ($) {
     });
 
     // Create Individual Image Cards sub-panel
+    // "Where used" is rendered directly on each card (see displayImageCards())
+    // rather than as its own sub-panel, so the location info sits with the
+    // image it describes instead of requiring a scroll to a separate section.
     const cardsContent = displayImageCards(category);
     html += createSubPanel("Individual Image Cards", cardsContent, {
-      margin: "0 16px 8px 16px",
-    });
-
-    // Create Where Each Image Is Used sub-panel
-    const locationsContent = displayUsageLocationsPanel(category);
-    html += createSubPanel("Where Each Image Is Used", locationsContent, {
       margin: "0 16px 8px 16px",
     });
 
@@ -1600,6 +1612,17 @@ jQuery(document).ready(function ($) {
         cardsContent += "</div>";
       });
       cardsContent += "</div>";
+
+      // Where used - combined onto the card itself rather than a separate
+      // sub-panel below the whole grid, so this sits right with the image
+      // it describes.
+      if (typeof item.usage_count !== "undefined") {
+        cardsContent += '<div class="usage-location-item" style="border-top: 1px solid var(--jimr-gray-200); margin: 0; padding: 12px 16px;">';
+        cardsContent += "<strong>Where Used</strong>";
+        cardsContent += buildUsageLocationsListHtml(item);
+        cardsContent += "</div>";
+      }
+
       cardsContent += "</div>";
     });
 
@@ -1622,9 +1645,11 @@ jQuery(document).ready(function ($) {
    * @returns {string} HTML <ul> of linked locations, or the
    *   "candidate for removal" message if there are none
    *
-   * @note Shared by displayUsageLocationsPanel() (card view) and
-   *   displayImagesTable()'s row-expansion (list/table view), so both
-   *   views show the same "where used" information.
+   * @note Shared by displayImageCards() (Images card view, inline per
+   *   card), displayImagesTable()'s row-expansion (Images list/table
+   *   view), and displayUsageLocationsPanel() (SVG's own sub-panel - SVG
+   *   has no card view to attach this to inline), so every view shows the
+   *   same "where used" information.
    */
   function buildUsageLocationsListHtml(item) {
     if (item.usage_locations && item.usage_locations.length > 0) {
