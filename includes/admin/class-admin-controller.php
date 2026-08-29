@@ -237,12 +237,14 @@ class MINVF_Admin_Controller
     }
 
     /**
-     * AJAX handler for getting per-attachment usage counts
+     * AJAX handler for getting per-attachment usage counts and locations
      *
-     * Returns a map of attachment_id => usage_count for every attachment
-     * with at least one usage record, so the card/table views can annotate
-     * each item without a query per item. An attachment absent from the map
-     * has zero usage - a candidate for removal.
+     * Returns a map of attachment_id => usage_count, plus a map of
+     * attachment_id => [{title, url}, ...] for every attachment with at
+     * least one usage record, so the card/table views can annotate each
+     * item - and list exactly where it's used - without a query per item.
+     * An attachment absent from the counts map has zero usage - a
+     * candidate for removal.
      *
      * @since 5.2.0
      */
@@ -258,7 +260,8 @@ class MINVF_Admin_Controller
         try {
             $usage_db = new MINVF_Usage_Database();
             wp_send_json_success([
-                'counts' => $usage_db->get_usage_counts()
+                'counts' => $usage_db->get_usage_counts(),
+                'locations' => $usage_db->get_usage_locations()
             ]);
         } catch (Exception $e) {
             wp_send_json_error('Failed to get usage counts: ' . $e->getMessage());

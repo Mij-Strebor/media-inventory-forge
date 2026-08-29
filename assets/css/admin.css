@@ -1419,6 +1419,46 @@ button.mif-btn-danger:hover,
     border: 1px solid rgba(211, 47, 47, 0.3);
 }
 
+.usage-locations-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+}
+
+.usage-location-item {
+    background: white;
+    border-radius: var(--jimr-border-radius);
+    padding: 10px 12px;
+    box-shadow: var(--clr-shadow);
+    border: 1px solid var(--jimr-gray-200);
+    font-size: var(--fs-sm);
+}
+
+.usage-location-list {
+    margin: 6px 0 0 0;
+    padding-left: 18px;
+    list-style: disc;
+}
+
+.usage-location-list li {
+    margin-bottom: 2px;
+}
+
+.usage-location-list a {
+    color: var(--clr-link, var(--clr-secondary));
+    text-decoration: none;
+}
+
+.usage-location-list a:hover {
+    text-decoration: underline;
+}
+
+.usage-location-empty {
+    margin: 6px 0 0 0;
+    color: #C62828;
+    font-style: italic;
+}
+
 /**
  * Image Information Display
  *

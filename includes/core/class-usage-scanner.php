@@ -612,7 +612,12 @@ class MINVF_Usage_Scanner {
     /**
      * Scan theme customizer settings
      *
-     * Scans theme mods for custom logo, header image, background image, etc.
+     * Scans theme mods for custom logo, header image, background image, etc.,
+     * plus the site icon (favicon) - stored as its own top-level option, not
+     * inside theme_mods, so it's checked independently of whether theme_mods
+     * exists at all. A site can have a favicon with no other customizer
+     * settings; missing this meant a real, actively-used favicon was
+     * reported as unused.
      *
      * @since 4.0.0
      * @return int Number of customizer images found
@@ -621,11 +626,19 @@ class MINVF_Usage_Scanner {
     {
         $found_count = 0;
 
+        $site_icon = intval(get_option('site_icon'));
+        if ($site_icon > 0) {
+            $metadata = $this->build_usage_metadata('customizer', 0, 'site_icon');
+            $this->usage_db->store_usage($site_icon, 'customizer', 0, 'site_icon', $metadata);
+            $found_count++;
+            $this->progress['usage_found']++;
+        }
+
         $theme_slug = get_option('stylesheet');
         $theme_mods = get_option('theme_mods_' . $theme_slug);
 
         if (!is_array($theme_mods)) {
-            return 0;
+            return $found_count;
         }
 
         // Custom logo
@@ -1233,6 +1246,10 @@ class MINVF_Usage_Scanner {
                 } elseif ($usage_context === 'background_image') {
                     $metadata['title'] = 'Background Image';
                     $metadata['notes'] = 'Site-wide background image';
+                } elseif ($usage_context === 'site_icon') {
+                    $metadata['title'] = 'Site Favicon';
+                    $metadata['notes'] = 'Browser tab icon (favicon), site-wide';
+                    $metadata['edit_url'] = admin_url('options-general.php');
                 }
                 break;
 

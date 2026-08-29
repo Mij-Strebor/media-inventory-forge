@@ -660,8 +660,10 @@ jQuery(document).ready(function ($) {
       .done(function (response) {
         if (response.success) {
           const counts = response.data.counts || {};
+          const locations = response.data.locations || {};
           inventoryData.forEach(function (item) {
             item.usage_count = counts[item.id] !== undefined ? counts[item.id] : 0;
+            item.usage_locations = locations[item.id] || [];
           });
           window.inventoryData = inventoryData;
         }
@@ -1014,7 +1016,7 @@ jQuery(document).ready(function ($) {
     if (categoryName === "Fonts") {
       return displayFonts(category);
     } else if (categoryName === "SVG") {
-      return displaySVG(category);
+      return displaySVGCategory(category);
     } else if (categoryName === "Images") {
       // Check view mode - only Images respects the toggle
       const viewMode = $('input[name="mif-display-mode"]:checked').val() || 'card';
@@ -1149,6 +1151,7 @@ jQuery(document).ready(function ($) {
         const sourceClass = item.source === 'Media Library' ? 'source-media-library' : 'source-theme';
         titleHtml += '<br><span class="source-badge ' + sourceClass + '">' + escapeHtml(item.source) + '</span>';
       }
+      titleHtml += buildUsageBadge(item);
 
       html += "<tr>";
       html += "<td>" + titleHtml + "</td>";
@@ -1161,6 +1164,36 @@ jQuery(document).ready(function ($) {
     });
 
     html += "</tbody></table>";
+    return html;
+  }
+
+  /**
+   * SVG Category Master Display Function
+   *
+   * Wraps the SVG inventory table and a "where used" panel in the same
+   * sub-panel structure Images uses, since SVGs get the same usage-location
+   * treatment (fonts don't - font usage is already shown per-variant in
+   * displayFonts()'s Details column, and a font's "location" is a page's
+   * typography settings, not a single embeddable reference).
+   *
+   * @function displaySVGCategory
+   * @param {Object} category - SVG category object
+   * @param {Array} category.items - Array of SVG items
+   * @returns {string} HTML with SVG table and usage locations sub-panels
+   */
+  function displaySVGCategory(category) {
+    let html = "";
+
+    const tableContent = displaySVG(category);
+    html += createSubPanel("SVG Files", tableContent, {
+      margin: "16px 16px 8px 16px",
+    });
+
+    const locationsContent = displayUsageLocationsPanel(category);
+    html += createSubPanel("Where Each SVG Is Used", locationsContent, {
+      margin: "0 16px 8px 16px",
+    });
+
     return html;
   }
 
@@ -1314,6 +1347,12 @@ jQuery(document).ready(function ($) {
     // Create Individual Image Cards sub-panel
     const cardsContent = displayImageCards(category);
     html += createSubPanel("Individual Image Cards", cardsContent, {
+      margin: "0 16px 8px 16px",
+    });
+
+    // Create Where Each Image Is Used sub-panel
+    const locationsContent = displayUsageLocationsPanel(category);
+    html += createSubPanel("Where Each Image Is Used", locationsContent, {
       margin: "0 16px 8px 16px",
     });
 
@@ -1541,6 +1580,62 @@ jQuery(document).ready(function ($) {
 
     cardsContent += "</div>";
     return cardsContent;
+  }
+
+  /**
+   * Usage Locations Panel Generator
+   *
+   * Lists, per item, exactly where it's used - the page/location title
+   * linked to its front-end URL - alongside the raw usage count already
+   * shown as a badge elsewhere. An item with no locations shows the same
+   * "candidate for removal" message as the unused badge, since it means
+   * the same thing: found nowhere.
+   *
+   * @function displayUsageLocationsPanel
+   * @param {Object} category - Category object (Images or SVG)
+   * @param {Array} category.items - Array of items, each optionally
+   *   carrying usage_locations: [{title, url}, ...]
+   * @returns {string} HTML list of items and their usage locations
+   *
+   * @note Items whose usage_count is still undefined (usage scan hasn't
+   *   completed) are skipped entirely rather than shown as unused.
+   */
+  function displayUsageLocationsPanel(category) {
+    let html = '<div class="usage-locations-panel">';
+
+    category.items.forEach((item) => {
+      if (typeof item.usage_count === "undefined") {
+        return;
+      }
+
+      html += '<div class="usage-location-item">';
+      html += "<strong>" + escapeHtml(item.title) + "</strong>";
+
+      if (item.usage_locations && item.usage_locations.length > 0) {
+        html += '<ul class="usage-location-list">';
+        item.usage_locations.forEach((loc) => {
+          if (loc.url) {
+            html +=
+              '<li><a href="' +
+              escapeHtml(loc.url) +
+              '" target="_blank" rel="noopener">' +
+              escapeHtml(loc.title || loc.url) +
+              "</a></li>";
+          } else {
+            html += "<li>" + escapeHtml(loc.title || "Unknown location") + "</li>";
+          }
+        });
+        html += "</ul>";
+      } else {
+        html +=
+          '<p class="usage-location-empty">Not found anywhere &mdash; candidate for removal.</p>';
+      }
+
+      html += "</div>";
+    });
+
+    html += "</div>";
+    return html;
   }
 
   /* ==========================================================================
