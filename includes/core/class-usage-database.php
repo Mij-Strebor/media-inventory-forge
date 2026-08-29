@@ -256,6 +256,84 @@ class MINVF_Usage_Database
     }
 
     /**
+     * Get usage counts for every attachment that has at least one usage
+     * record, in a single query. Used to annotate the media inventory
+     * display (card/table views) without a per-item query.
+     *
+     * @since 5.2.0
+     * @return array Map of attachment_id => usage_count
+     */
+    public function get_usage_counts()
+    {
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Static query with escaped table name, no user input
+        $results = $this->wpdb->get_results(
+            "SELECT attachment_id, COUNT(*) as usage_count
+               FROM {$this->full_table_name}
+               GROUP BY attachment_id",
+            ARRAY_A
+        );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+        $counts = array();
+        foreach ($results as $row) {
+            $counts[intval($row['attachment_id'])] = intval($row['usage_count']);
+        }
+
+        return $counts;
+    }
+
+    /**
+     * Get, for every attachment with usage, the distinct locations (title +
+     * view URL) it's used at, in a single query. Powers a "where is this
+     * used" list alongside the raw usage count from get_usage_counts().
+     *
+     * @since 5.2.0
+     * @return array Map of attachment_id => array of {title, url}
+     */
+    public function get_usage_locations()
+    {
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Static query with escaped table name, no user input
+        $results = $this->wpdb->get_results(
+            "SELECT attachment_id, usage_data FROM {$this->full_table_name} ORDER BY attachment_id",
+            ARRAY_A
+        );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+        $locations = array();
+
+        foreach ($results as $row) {
+            $attachment_id = intval($row['attachment_id']);
+            $data = maybe_unserialize($row['usage_data']);
+
+            $title = (is_array($data) && !empty($data['title'])) ? $data['title'] : '';
+            $url = (is_array($data) && !empty($data['view_url'])) ? $data['view_url'] : '';
+
+            if ('' === $title && '' === $url) {
+                continue;
+            }
+
+            if (!isset($locations[$attachment_id])) {
+                $locations[$attachment_id] = array();
+            }
+
+            // Dedupe identical (title, url) pairs - the same page can be
+            // matched via more than one path (e.g. content + settings), and
+            // shouldn't be listed twice just because of that.
+            $key = $title . '|' . $url;
+            $locations[$attachment_id][$key] = array(
+                'title' => $title,
+                'url' => $url
+            );
+        }
+
+        foreach ($locations as $attachment_id => $entries) {
+            $locations[$attachment_id] = array_values($entries);
+        }
+
+        return $locations;
+    }
+
+    /**
      * Get all attachments that have no usage records
      *
      * @since 4.0.0
