@@ -1138,7 +1138,7 @@ jQuery(document).ready(function ($) {
   function displaySVG(category) {
     let html = '<table class="inventory-table">';
     html +=
-      "<thead><tr><th>Title</th><th>Extension</th><th>Dimensions</th><th>Files</th><th>Size</th><th>File Details</th></tr></thead>";
+      "<thead><tr><th>Preview</th><th>Title</th><th>Extension</th><th>Dimensions</th><th>Files</th><th>Size</th><th>File Details</th></tr></thead>";
     html += "<tbody>";
 
     category.items.forEach((item) => {
@@ -1160,7 +1160,20 @@ jQuery(document).ready(function ($) {
       }
       titleHtml += buildUsageBadge(item);
 
+      let previewHtml;
+      if (item.thumbnail_url) {
+        previewHtml =
+          '<img src="' +
+          escapeHtml(item.thumbnail_url) +
+          '" alt="' +
+          escapeHtml(item.title) +
+          '" loading="lazy" style="width: 48px; height: 48px; object-fit: contain; background: #f0f0f0; border-radius: 4px;" />';
+      } else {
+        previewHtml = '<div style="width: 48px; height: 48px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border-radius: 4px;">🖼️</div>';
+      }
+
       html += "<tr>";
+      html += "<td>" + previewHtml + "</td>";
       html += "<td>" + titleHtml + "</td>";
       html += "<td>" + item.extension.toUpperCase() + "</td>";
       html += "<td>" + (item.dimensions || "Unknown") + "</td>";
@@ -1443,7 +1456,19 @@ jQuery(document).ready(function ($) {
         html += '</tr>';
       });
 
-      html += '</table></div></td></tr>';
+      html += '</table>';
+
+      // Where used - same information the card view's "Where Each Image
+      // Is Used" sub-panel shows, so expanding a row in list/table view
+      // gives the same answer, not just the file breakdown.
+      if (typeof item.usage_count !== 'undefined') {
+        html += '<div class="usage-location-item" style="margin-top: 12px;">';
+        html += '<strong>Where Used</strong>';
+        html += buildUsageLocationsListHtml(item);
+        html += '</div>';
+      }
+
+      html += '</div></td></tr>';
     });
 
     html += '</tbody></table>';
@@ -1591,6 +1616,39 @@ jQuery(document).ready(function ($) {
    * "candidate for removal" message as the unused badge, since it means
    * the same thing: found nowhere.
    *
+   * @function buildUsageLocationsListHtml
+   * @param {Object} item - Inventory item, optionally carrying
+   *   usage_locations: [{title, url}, ...]
+   * @returns {string} HTML <ul> of linked locations, or the
+   *   "candidate for removal" message if there are none
+   *
+   * @note Shared by displayUsageLocationsPanel() (card view) and
+   *   displayImagesTable()'s row-expansion (list/table view), so both
+   *   views show the same "where used" information.
+   */
+  function buildUsageLocationsListHtml(item) {
+    if (item.usage_locations && item.usage_locations.length > 0) {
+      let html = '<ul class="usage-location-list">';
+      item.usage_locations.forEach((loc) => {
+        if (loc.url) {
+          html +=
+            '<li><a href="' +
+            escapeHtml(loc.url) +
+            '" target="_blank" rel="noopener">' +
+            escapeHtml(loc.title || loc.url) +
+            "</a></li>";
+        } else {
+          html += "<li>" + escapeHtml(loc.title || "Unknown location") + "</li>";
+        }
+      });
+      html += "</ul>";
+      return html;
+    }
+
+    return '<p class="usage-location-empty">Not found anywhere &mdash; candidate for removal.</p>';
+  }
+
+  /**
    * @function displayUsageLocationsPanel
    * @param {Object} category - Category object (Images or SVG)
    * @param {Array} category.items - Array of items, each optionally
@@ -1610,27 +1668,7 @@ jQuery(document).ready(function ($) {
 
       html += '<div class="usage-location-item">';
       html += "<strong>" + escapeHtml(item.title) + "</strong>";
-
-      if (item.usage_locations && item.usage_locations.length > 0) {
-        html += '<ul class="usage-location-list">';
-        item.usage_locations.forEach((loc) => {
-          if (loc.url) {
-            html +=
-              '<li><a href="' +
-              escapeHtml(loc.url) +
-              '" target="_blank" rel="noopener">' +
-              escapeHtml(loc.title || loc.url) +
-              "</a></li>";
-          } else {
-            html += "<li>" + escapeHtml(loc.title || "Unknown location") + "</li>";
-          }
-        });
-        html += "</ul>";
-      } else {
-        html +=
-          '<p class="usage-location-empty">Not found anywhere &mdash; candidate for removal.</p>';
-      }
-
+      html += buildUsageLocationsListHtml(item);
       html += "</div>";
     });
 
@@ -1736,13 +1774,22 @@ jQuery(document).ready(function ($) {
    * @param {string} text - Text string to escape
    * @returns {string} Escaped HTML-safe string
    *
-   * @note Leverages browser's textContent and innerHTML properties
-   * @note Creates temporary DOM element for conversion
+   * @note Decodes any HTML entities already present in the input before
+   *   re-escaping it. Titles built server-side via get_the_title() are run
+   *   through WordPress's wptexturize filter, which silently turns a plain
+   *   " - " into the &#8211; (en dash) entity - without this decode step,
+   *   that entity's own "&" gets escaped a second time (to "&amp;"), so the
+   *   page displays the raw entity text ("&#8211;") instead of a dash.
+   * @note Creates temporary DOM elements for conversion
    * @note Handles all HTML special characters
    */
   function escapeHtml(text) {
+    const decodeEl = document.createElement("textarea");
+    decodeEl.innerHTML = text;
+    const decoded = decodeEl.value;
+
     const div = document.createElement("div");
-    div.textContent = text;
+    div.textContent = decoded;
     return div.innerHTML;
   }
 

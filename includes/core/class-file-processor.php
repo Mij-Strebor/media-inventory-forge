@@ -58,6 +58,13 @@ class MINVF_File_Processor extends MINVF_Abstract_File_Processor
 
         $this->process_main_file($item_data, $file_path, $mime_type);
 
+        // SVGs are vector, so - unlike raster images - they have no
+        // WordPress-generated size variants to pick a thumbnail from; the
+        // original file itself is always the right preview to show.
+        if ('SVG' === $category) {
+            $item_data['thumbnail_url'] = wp_get_attachment_url($attachment_id);
+        }
+
         return $item_data;
     }
 }
