@@ -256,6 +256,33 @@ class MINVF_Usage_Database
     }
 
     /**
+     * Get usage counts for every attachment that has at least one usage
+     * record, in a single query. Used to annotate the media inventory
+     * display (card/table views) without a per-item query.
+     *
+     * @since 5.2.0
+     * @return array Map of attachment_id => usage_count
+     */
+    public function get_usage_counts()
+    {
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Static query with escaped table name, no user input
+        $results = $this->wpdb->get_results(
+            "SELECT attachment_id, COUNT(*) as usage_count
+               FROM {$this->full_table_name}
+               GROUP BY attachment_id",
+            ARRAY_A
+        );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+        $counts = array();
+        foreach ($results as $row) {
+            $counts[intval($row['attachment_id'])] = intval($row['usage_count']);
+        }
+
+        return $counts;
+    }
+
+    /**
      * Get all attachments that have no usage records
      *
      * @since 4.0.0

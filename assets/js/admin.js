@@ -574,19 +574,7 @@ jQuery(document).ready(function ($) {
             $("#scan-progress").hide();
             $("#export-csv").show();
 
-            displayResults();
-
-            // Save scan results for table view, then trigger event
-            $.post(minvfData.ajaxUrl, {
-              action: 'minvf_save_scan_results',
-              nonce: minvfData.nonce,
-              scan_data: JSON.stringify(inventoryData)
-            })
-            .always(function() {
-              // Trigger event after save completes (or fails)
-              // This ensures transient is ready when table view tries to load
-              $(document).trigger('minvf_scan_complete');
-            });
+            scanUsageThenDisplay();
           } else {
             // Continue scanning
             setTimeout(function () {
@@ -618,6 +606,89 @@ jQuery(document).ready(function ($) {
         $("#stop-scan").hide();
         $("#scan-progress").hide();
       });
+  }
+
+  /**
+   * Usage Scan Chain
+   *
+   * Runs after the media inventory scan completes. Scans where each media
+   * item is actually used (Elementor content, fonts, widgets, etc.), fetches
+   * the resulting per-attachment usage counts, and merges them into
+   * inventoryData as item.usage_count before rendering - a count of 0 means
+   * the item was found nowhere and is a candidate for removal.
+   *
+   * Degrades gracefully: if the usage scan or the counts fetch fails, media
+   * results still render (without usage_count) rather than blocking on it.
+   *
+   * @function scanUsageThenDisplay
+   * @returns {void}
+   */
+  function scanUsageThenDisplay() {
+    $.post({
+      url: minvfData.ajaxUrl,
+      data: {
+        action: "minvf_scan_usage",
+        nonce: minvfData.nonce,
+      },
+      timeout: 30000,
+    })
+      .done(function () {
+        fetchUsageCountsAndDisplay();
+      })
+      .fail(function () {
+        displayResults();
+        saveScanResultsAndNotify();
+      });
+  }
+
+  /**
+   * Fetches per-attachment usage counts and merges them into inventoryData
+   * before rendering. Called by scanUsageThenDisplay() once the usage scan
+   * itself has completed.
+   *
+   * @function fetchUsageCountsAndDisplay
+   * @returns {void}
+   */
+  function fetchUsageCountsAndDisplay() {
+    $.post({
+      url: minvfData.ajaxUrl,
+      data: {
+        action: "minvf_get_usage_counts",
+        nonce: minvfData.nonce,
+      },
+    })
+      .done(function (response) {
+        if (response.success) {
+          const counts = response.data.counts || {};
+          inventoryData.forEach(function (item) {
+            item.usage_count = counts[item.id] !== undefined ? counts[item.id] : 0;
+          });
+          window.inventoryData = inventoryData;
+        }
+      })
+      .always(function () {
+        displayResults();
+        saveScanResultsAndNotify();
+      });
+  }
+
+  /**
+   * Saves the completed scan results (with usage_count, if the usage scan
+   * succeeded) for the table view, then notifies the rest of the page.
+   *
+   * @function saveScanResultsAndNotify
+   * @returns {void}
+   */
+  function saveScanResultsAndNotify() {
+    $.post(minvfData.ajaxUrl, {
+      action: "minvf_save_scan_results",
+      nonce: minvfData.nonce,
+      scan_data: JSON.stringify(inventoryData),
+    }).always(function () {
+      // Trigger event after save completes (or fails)
+      // This ensures transient is ready when table view tries to load
+      $(document).trigger("minvf_scan_complete");
+    });
   }
 
   /* ==========================================================================
@@ -1023,7 +1094,7 @@ jQuery(document).ready(function ($) {
 
         // Build details without source badges (since they're in the family name now)
         const details = family.items
-          .map((item) => escapeHtml(item.title) + " (" + formatBytes(item.total_size) + ")")
+          .map((item) => escapeHtml(item.title) + " (" + formatBytes(item.total_size) + ") " + buildUsageBadge(item))
           .join("<br>");
 
         html += "<tr>";
@@ -1128,6 +1199,7 @@ jQuery(document).ready(function ($) {
         const sourceClass = item.source === 'Media Library' ? 'source-media-library' : 'source-theme';
         titleHtml += '<br><span class="source-badge ' + sourceClass + '">' + escapeHtml(item.source) + '</span>';
       }
+      titleHtml += buildUsageBadge(item);
 
       html += "<tr>";
       html += "<td>" + titleHtml + "</td>";
@@ -1273,6 +1345,7 @@ jQuery(document).ready(function ($) {
     html += '<th class="mif-sortable" data-column="files" style="width: 100px;"><span class="mif-sort-label">Files</span><span class="mif-sort-indicator"></span></th>';
     html += '<th class="mif-sortable" data-column="size" style="width: 120px;"><span class="mif-sort-label">Total Size</span><span class="mif-sort-indicator"></span></th>';
     html += '<th style="width: 140px;">Dimensions</th>';
+    html += '<th class="mif-sortable" data-column="usage_count" style="width: 100px;"><span class="mif-sort-label">Uses</span><span class="mif-sort-indicator"></span></th>';
     html += '</tr></thead>';
     html += '<tbody>';
 
@@ -1305,11 +1378,12 @@ jQuery(document).ready(function ($) {
       html += '<td data-sort-value="' + item.file_count + '">' + item.file_count + '</td>';
       html += '<td data-sort-value="' + item.total_size + '">' + formatBytes(item.total_size) + '</td>';
       html += '<td>' + escapeHtml(item.dimensions || 'N/A') + '</td>';
+      html += '<td data-sort-value="' + (item.usage_count || 0) + '">' + buildUsageBadge(item) + '</td>';
       html += '</tr>';
 
       // Expanded details row
       html += '<tr class="mif-expanded-details" id="' + rowId + '">';
-      html += '<td colspan="7">';
+      html += '<td colspan="8">';
       html += '<div class="mif-details-container">';
       html += '<table class="mif-details-table">';
       html += '<tr class="mif-details-header-row"><td>File</td><td>Type</td><td>Dimensions</td><td>Size</td></tr>';
@@ -1441,6 +1515,7 @@ jQuery(document).ready(function ($) {
           item.dimensions +
           "</span>";
       }
+      cardsContent += "<br>" + buildUsageBadge(item);
       cardsContent += "</div>";
       cardsContent += "</div>";
 
@@ -1529,6 +1604,31 @@ jQuery(document).ready(function ($) {
     pow = Math.min(pow, units.length - 1);
     size /= Math.pow(1024, pow);
     return Math.round(size * 100) / 100 + " " + units[pow];
+  }
+
+  /**
+   * Usage Badge Builder
+   *
+   * Builds the "Uses: N" badge for a single item, styled to flag zero-usage
+   * items as removal candidates. Returns an empty string when usage_count
+   * is undefined (the usage scan hasn't run yet, or failed) so existing
+   * layouts don't show a stray badge before that data exists.
+   *
+   * @function buildUsageBadge
+   * @param {Object} item - Inventory item, expected to carry usage_count
+   * @returns {string} HTML for the badge, or "" if usage_count is unknown
+   */
+  function buildUsageBadge(item) {
+    if (typeof item.usage_count === "undefined") {
+      return "";
+    }
+
+    if (item.usage_count === 0) {
+      return '<span class="usage-badge unused" title="Not found anywhere - candidate for removal">Unused</span>';
+    }
+
+    const label = item.usage_count === 1 ? "1 use" : item.usage_count + " uses";
+    return '<span class="usage-badge">' + label + "</span>";
   }
 
   /**

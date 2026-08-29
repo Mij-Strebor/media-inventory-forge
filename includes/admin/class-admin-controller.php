@@ -38,8 +38,9 @@ class MINVF_Admin_Controller
         add_action('wp_ajax_minvf_run_scan', [$this, 'ajax_scan']);
         add_action('wp_ajax_minvf_export_csv', [$this, 'ajax_export']);
 
-        // Usage tracking handlers intentionally not registered — UI removed in v4.0.0,
-        // planned for v4.1.0. Re-add add_action calls when the UI is implemented.
+        // Usage tracking handlers
+        add_action('wp_ajax_minvf_scan_usage', [$this, 'ajax_scan_usage']);
+        add_action('wp_ajax_minvf_get_usage_counts', [$this, 'ajax_get_usage_counts']);
 
         // Table view AJAX handlers
         add_action('wp_ajax_minvf_get_table_view', [$this, 'ajax_get_table_view']);
@@ -232,6 +233,35 @@ class MINVF_Admin_Controller
             ]);
         } catch (Exception $e) {
             wp_send_json_error('Usage scan failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * AJAX handler for getting per-attachment usage counts
+     *
+     * Returns a map of attachment_id => usage_count for every attachment
+     * with at least one usage record, so the card/table views can annotate
+     * each item without a query per item. An attachment absent from the map
+     * has zero usage - a candidate for removal.
+     *
+     * @since 5.2.0
+     */
+    public function ajax_get_usage_counts()
+    {
+        check_ajax_referer(self::NONCE_ACTION, 'nonce');
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Permission denied');
+            return;
+        }
+
+        try {
+            $usage_db = new MINVF_Usage_Database();
+            wp_send_json_success([
+                'counts' => $usage_db->get_usage_counts()
+            ]);
+        } catch (Exception $e) {
+            wp_send_json_error('Failed to get usage counts: ' . $e->getMessage());
         }
     }
 

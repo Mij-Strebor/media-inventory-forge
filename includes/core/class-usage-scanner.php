@@ -1095,14 +1095,21 @@ class MINVF_Usage_Scanner {
                 continue;
             }
 
-            $is_applied = $this->is_font_family_applied((string) $font_family);
-            $context = $is_applied ? 'elementor_font_applied' : 'elementor_font_registered';
+            // One usage record per page that actually applies this font
+            // family - mirrors how images are counted, so a font's
+            // usage_count means the same thing an image's does: how many
+            // places it's really used. A font that's uploaded and
+            // registered but never applied anywhere correctly ends up with
+            // zero rows here, the same removal-candidate signal images get.
+            $applying_post_ids = $this->get_pages_applying_font_family((string) $font_family);
 
             foreach (array_keys($font_attachment_ids) as $attachment_id) {
-                $metadata = $this->build_usage_metadata('font_registry', 0, $context, array('font_family' => $font_family));
-                $this->usage_db->store_usage($attachment_id, 'font_registry', 0, $context, $metadata);
-                $found_count++;
-                $this->progress['usage_found']++;
+                foreach ($applying_post_ids as $post_id) {
+                    $metadata = $this->build_usage_metadata('font_registry', $post_id, 'elementor_font_applied', array('font_family' => $font_family));
+                    $this->usage_db->store_usage($attachment_id, 'font_registry', $post_id, 'elementor_font_applied', $metadata);
+                    $found_count++;
+                    $this->progress['usage_found']++;
+                }
             }
         }
 
@@ -1110,29 +1117,32 @@ class MINVF_Usage_Scanner {
     }
 
     /**
-     * Whether a font-family name appears applied anywhere in Elementor's
-     * stored settings - as opposed to merely being uploaded/registered in
-     * the font manager. A simple substring search across the same postmeta
-     * keys scan_elementor_data() already reads; a font family is a name, not
-     * an attachment ID, so it needs its own (string-based) check rather than
-     * collect_attachment_ids_from_value()'s numeric/URL matching.
+     * Which published posts/pages actually apply a font-family name in
+     * their Elementor settings - as opposed to the family merely being
+     * uploaded and registered in the font manager. A simple substring
+     * search across the same postmeta keys scan_elementor_data() already
+     * reads; a font family is a name, not an attachment ID, so it needs its
+     * own (string-based) check rather than
+     * collect_attachment_ids_from_value()'s numeric/URL matching. Returns
+     * post IDs so each one counts as a real usage location, the same way an
+     * image's usage is counted per page.
      *
      * @since 5.2.0
      * @param string $font_family
-     * @return bool
+     * @return int[] Post IDs
      */
-    private function is_font_family_applied($font_family)
+    private function get_pages_applying_font_family($font_family)
     {
         global $wpdb;
 
         if ('' === trim($font_family)) {
-            return false;
+            return array();
         }
 
         $like = '%' . $wpdb->esc_like($font_family) . '%';
         // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name is a WP core property, not user input; value is parameterized below
-        $count = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM {$wpdb->postmeta} pm
+        $post_ids = $wpdb->get_col($wpdb->prepare(
+            "SELECT DISTINCT pm.post_id FROM {$wpdb->postmeta} pm
              INNER JOIN {$wpdb->posts} p ON pm.post_id = p.ID
              WHERE pm.meta_key IN ('_elementor_page_settings', '_elementor_data')
              AND pm.meta_value LIKE %s
@@ -1141,7 +1151,7 @@ class MINVF_Usage_Scanner {
             $like
         ));
 
-        return intval($count) > 0;
+        return array_map('intval', $post_ids);
     }
 
     /**
@@ -1273,16 +1283,27 @@ class MINVF_Usage_Scanner {
                 break;
 
             case 'font_registry':
+                $family = isset($extra_data['font_family']) ? $extra_data['font_family'] : '';
+
+                if ($usage_id > 0) {
+                    $post = get_post($usage_id);
+                    if ($post) {
+                        $metadata['primary_action'] = 'view';
+                        $metadata['scope'] = 'single';
+                        $metadata['view_url'] = get_permalink($usage_id);
+                        $metadata['edit_url'] = admin_url('post.php?post=' . $usage_id . '&action=edit');
+                        $metadata['title'] = get_the_title($usage_id);
+                        $metadata['notes'] = $family ? 'Font: ' . $family : 'Applied font';
+                        break;
+                    }
+                }
+
                 $metadata['primary_action'] = 'view';
                 $metadata['scope'] = 'global';
                 $metadata['view_url'] = home_url('/');
                 $metadata['edit_url'] = '';
-
-                $family = isset($extra_data['font_family']) ? $extra_data['font_family'] : '';
                 $metadata['title'] = $family ? 'Font: ' . $family : 'Registered Font';
-                $metadata['notes'] = ($usage_context === 'elementor_font_applied')
-                    ? 'Applied to at least one element or global style'
-                    : 'Registered in Elementor Fonts, but not applied anywhere found';
+                $metadata['notes'] = 'Registered in Elementor Fonts';
                 break;
 
             default:
