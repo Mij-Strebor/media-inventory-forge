@@ -53,6 +53,16 @@ class MINVF_Usage_Scanner {
     private $progress = array();
 
     /**
+     * Set of valid attachment post IDs, keyed by ID, lazily built once per
+     * scan by get_valid_attachment_ids(). Used to guard numeric-match
+     * detection in postmeta so an unrelated number (a price, a count) is
+     * never mistaken for an attachment reference.
+     *
+     * @var array|null
+     */
+    private $attachment_ids_lookup = null;
+
+    /**
      * Constructor
      *
      * @since 4.0.0
@@ -666,8 +676,13 @@ class MINVF_Usage_Scanner {
     /**
      * Scan CSS files for media references
      *
-     * Scans theme stylesheets and enqueued CSS for background-image,
-     * list-style-image, and content: url() references.
+     * Scans theme stylesheets and customizer custom CSS for background-image,
+     * list-style-image, and content: url() references. Page-builder-generated
+     * CSS (Elementor's per-page/kit stylesheets and font registry) is handled
+     * separately by scan_page_builders() - it isn't reachable through either
+     * a real file on disk or WordPress's style registry in an admin-side scan
+     * context, so it needs its own postmeta/option-based detection instead of
+     * a file/URL read.
      *
      * @since 4.0.0
      * @return int Number of CSS files scanned
@@ -679,10 +694,7 @@ class MINVF_Usage_Scanner {
         // 1. Scan theme CSS files
         $files_scanned += $this->scan_theme_css();
 
-        // 2. Scan enqueued stylesheets
-        $files_scanned += $this->scan_enqueued_css();
-
-        // 3. Scan custom CSS from customizer
+        // 2. Scan custom CSS from customizer
         $this->scan_custom_css();
 
         $this->progress['css_files_scanned'] = $files_scanned;
@@ -713,43 +725,6 @@ class MINVF_Usage_Scanner {
                 $css_content = $this->read_file($css_file);
                 if ($css_content !== false) {
                     $this->scan_css_content($css_content, basename($css_file));
-                    $files_scanned++;
-                }
-            }
-        }
-
-        return $files_scanned;
-    }
-
-    /**
-     * Scan enqueued stylesheets
-     *
-     * @since 4.0.0
-     * @return int
-     */
-    private function scan_enqueued_css()
-    {
-        global $wp_styles;
-
-        if (!$wp_styles || !is_object($wp_styles)) {
-            return 0;
-        }
-
-        $files_scanned = 0;
-
-        foreach ($wp_styles->registered as $handle => $style) {
-            if (empty($style->src)) {
-                continue;
-            }
-
-            // Convert URL to file path
-            $css_url = $style->src;
-            $css_path = $this->url_to_path($css_url);
-
-            if ($css_path && is_readable($css_path)) {
-                $css_content = $this->read_file($css_path);
-                if ($css_content !== false) {
-                    $this->scan_css_content($css_content, $handle);
                     $files_scanned++;
                 }
             }
@@ -847,6 +822,7 @@ class MINVF_Usage_Scanner {
         // Scan each active builder
         if (in_array('elementor', $active_builders)) {
             $builders_scanned += $this->scan_elementor_data();
+            $builders_scanned += $this->scan_elementor_fonts_registry();
         }
 
         // Future: Add WPBakery, Divi, Bricks support here
@@ -888,110 +864,245 @@ class MINVF_Usage_Scanner {
     }
 
     /**
-     * Scan Elementor pages for media usage
+     * Scan Elementor postmeta for media usage
      *
-     * Elementor stores page data in postmeta as JSON. This method parses
-     * the Elementor data structure to find images in various widget types.
+     * Elementor stores page/kit data as postmeta: `_elementor_data` (raw
+     * JSON) for the element tree, `_elementor_page_settings` (PHP-serialized)
+     * for global/per-page/kit settings. The shape of that data is wildly
+     * different between Elementor versions - classic Elementor (v3) uses a
+     * flat `{"id": 123, "url": "..."}` per field; Elementor's newer "V4
+     * atomic" editor wraps every value in a `{"$$type":...,"value":...}`
+     * envelope with entirely different field names and `e-`-prefixed widget
+     * types. The version-specific matcher this replaced (hardcoded to v3's
+     * `widgetType === 'image'` + `settings['image']['id']` shape) never
+     * matched anything on a V4 atomic site as a result - confirmed live: 0
+     * hits despite real, rendered images and fonts throughout the site.
      *
-     * WHERE ELEMENTOR AFFECTS DATA COLLECTION:
-     * - Storage: wp_postmeta with key '_elementor_data'
-     * - Format: JSON array of elements/widgets
-     * - Bypasses normal post_content completely!
+     * Rather than hand-enumerate every widget type's field shape for every
+     * Elementor version (brittle, and breaks again the next time Elementor
+     * changes its schema), this walks the decoded structure generically -
+     * see collect_attachment_ids_from_value().
      *
-     * @since 4.0.0
-     * @return int Number of Elementor pages scanned
+     * @since 5.2.0
+     * @return int Number of Elementor postmeta rows scanned
      */
     private function scan_elementor_data()
     {
         global $wpdb;
 
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Read-only query for page builder meta detection, no caching needed for scan operation
-        // Query all posts that have Elementor data
         $results = $wpdb->get_results(
-            "SELECT post_id, meta_value
-             FROM {$wpdb->postmeta}
-             WHERE meta_key = '_elementor_data'
-             AND meta_value != ''"
+            "SELECT pm.post_id, pm.meta_key, pm.meta_value
+             FROM {$wpdb->postmeta} pm
+             INNER JOIN {$wpdb->posts} p ON pm.post_id = p.ID
+             WHERE pm.meta_key IN ('_elementor_data', '_elementor_page_settings')
+             AND pm.meta_value != ''
+             AND p.post_type != 'revision'
+             AND p.post_status NOT IN ('trash', 'auto-draft')"
         );
 
         if (empty($results)) {
             return 0;
         }
 
-        $pages_scanned = 0;
+        $rows_scanned = 0;
 
         foreach ($results as $row) {
             $post_id = intval($row->post_id);
 
-            // Parse Elementor JSON data
-            $elementor_data = json_decode($row->meta_value, true);
+            $data = ('_elementor_data' === $row->meta_key)
+                ? json_decode($row->meta_value, true)
+                : maybe_unserialize($row->meta_value);
 
-            if (!is_array($elementor_data)) {
+            if (!is_array($data)) {
                 continue;
             }
 
-            // Recursively scan Elementor elements for images
-            $this->scan_elementor_elements($elementor_data, $post_id);
+            $found = array();
+            $this->collect_attachment_ids_from_value($data, '', false, $found);
 
-            $pages_scanned++;
+            $context = ('_elementor_data' === $row->meta_key) ? 'elementor_content' : 'elementor_settings';
+
+            foreach (array_keys($found) as $attachment_id) {
+                $metadata = $this->build_usage_metadata('page_builder', $post_id, $context, array('builder' => 'elementor'));
+                $this->usage_db->store_usage($attachment_id, 'page_builder', $post_id, $context, $metadata);
+                $this->progress['usage_found']++;
+            }
+
+            $rows_scanned++;
         }
 
-        return $pages_scanned;
+        return $rows_scanned;
     }
 
     /**
-     * Recursively scan Elementor elements for media
+     * Recursively walk a decoded value (Elementor JSON, or any other nested
+     * postmeta structure) collecting attachment IDs it appears to reference.
      *
-     * Elementor uses a nested structure where elements can contain other elements.
-     * This method recursively traverses the structure looking for media references.
+     * A numeric value is only treated as an attachment reference if it also
+     * sits under a "media-like" key (see is_media_like_key()) or is an item
+     * in a plain sequential list - this guards against matching an unrelated
+     * number (a price, a count, a post ID) that happens to equal a real
+     * attachment ID. A string value is checked for an uploads-relative path
+     * and resolved via url_to_attachment_id().
      *
-     * ELEMENTOR STRUCTURE EXAMPLE:
-     * [
-     *   {
-     *     "elType": "section",
-     *     "elements": [
-     *       {
-     *         "elType": "column",
-     *         "elements": [
-     *           {
-     *             "elType": "widget",
-     *             "widgetType": "image",
-     *             "settings": {
-     *               "image": {"id": 123, "url": "..."}
-     *             }
-     *           }
-     *         ]
-     *       }
-     *     ]
-     *   }
-     * ]
-     *
-     * @since 4.0.0
-     * @param array $elements Elementor elements array
-     * @param int   $post_id  Post ID
-     * @return int Number of media items found
+     * @since 5.2.0
+     * @param mixed  $value                Current value being inspected
+     * @param string $parent_key           The key this value was found under
+     * @param bool   $parent_is_sequential Whether $value sits in a plain list
+     * @param array  &$found               Accumulator, keyed by attachment ID
+     * @return void
      */
-    private function scan_elementor_elements($elements, $post_id)
+    private function collect_attachment_ids_from_value($value, $parent_key, $parent_is_sequential, &$found)
     {
-        $found_count = 0;
+        if (is_numeric($value)) {
+            $id = intval($value);
+            $allow_direct_numeric = $parent_is_sequential || $this->is_media_like_key($parent_key);
+            $valid_ids = $this->get_valid_attachment_ids();
 
-        if (!is_array($elements)) {
+            if ($allow_direct_numeric && $id > 0 && isset($valid_ids[$id])) {
+                $found[$id] = true;
+            }
+            return;
+        }
+
+        if (is_string($value)) {
+            if (strpos($value, '/uploads/') !== false) {
+                $attachment_id = $this->url_to_attachment_id($value);
+                if ($attachment_id) {
+                    $found[$attachment_id] = true;
+                }
+            }
+            return;
+        }
+
+        if (!is_array($value)) {
+            return;
+        }
+
+        $is_sequential = (array_keys($value) === range(0, count($value) - 1));
+
+        // Elementor's "V4 atomic" editor wraps every value in a
+        // {"$$type": "...", "value": ...} envelope - e.g. an attachment ID
+        // is actually stored as {"$$type":"image-attachment-id","value":325}.
+        // The "value" key itself carries no semantic meaning (it's the same
+        // on every envelope regardless of what's inside), so is_media_like_key()
+        // would only ever see the literal string "value" and never match. The
+        // key that actually describes the content is whichever key held this
+        // envelope object one level up - so when recursing into "value", keep
+        // the parent key already in effect instead of overwriting it.
+        $is_atomic_envelope = array_key_exists('$$type', $value) && array_key_exists('value', $value);
+
+        foreach ($value as $key => $subvalue) {
+            $key_str = is_int($key) ? '' : (string) $key;
+
+            if ($is_atomic_envelope && 'value' === $key_str) {
+                $this->collect_attachment_ids_from_value($subvalue, $parent_key, $parent_is_sequential, $found);
+            } else {
+                $this->collect_attachment_ids_from_value($subvalue, $key_str, $is_sequential, $found);
+            }
+        }
+    }
+
+    /**
+     * Whether a postmeta array key name suggests it holds media - used to
+     * guard bare numeric-ID matching against false positives.
+     *
+     * @since 5.2.0
+     * @param string $key
+     * @return bool
+     */
+    private function is_media_like_key($key)
+    {
+        $key = strtolower((string) $key);
+        if ('' === $key) {
+            return false;
+        }
+
+        $needles = array('image', 'images', 'img', 'icon', 'icons', 'gallery', 'galleries', 'thumbnail', 'thumb', 'logo', 'avatar', 'file', 'files', 'media', 'poster', 'background', 'src', 'attachment', 'attachments');
+        foreach ($needles as $needle) {
+            if (false !== strpos($key, $needle)) {
+                return true;
+            }
+        }
+
+        return in_array($key, array('id', 'ids'), true);
+    }
+
+    /**
+     * Lazily build and cache the set of valid attachment post IDs for the
+     * current scan run, so numeric-match checks are a fast in-memory lookup
+     * instead of a query per candidate number.
+     *
+     * @since 5.2.0
+     * @return array Attachment IDs as array keys (value is always true)
+     */
+    private function get_valid_attachment_ids()
+    {
+        if (null === $this->attachment_ids_lookup) {
+            global $wpdb;
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Read-only query, cached in-memory for the scan's lifetime
+            $ids = $wpdb->get_col(
+                "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'attachment' AND post_status = 'inherit'"
+            );
+            $this->attachment_ids_lookup = array_fill_keys(array_map('intval', $ids), true);
+        }
+
+        return $this->attachment_ids_lookup;
+    }
+
+    /**
+     * Scan Elementor's font registry for uploaded/self-hosted fonts
+     *
+     * V4 atomic replaced the classic `elementor_font_face` custom post type
+     * with a single option, `elementor_fonts_manager_fonts`, mapping each
+     * registered font-family name to its @font-face CSS (which contains the
+     * real Media Library URLs) and a post ID. This resolves each font
+     * attachment via the same URL-matching already used for CSS, then checks
+     * whether the font-family name is actually applied anywhere (as opposed
+     * to merely uploaded/registered) via is_font_family_applied() - the
+     * soft/hard distinction that actually answers "is this font orphaned."
+     *
+     * @since 5.2.0
+     * @return int Number of font attachments found (registered and/or applied)
+     */
+    private function scan_elementor_fonts_registry()
+    {
+        $fonts = get_option('elementor_fonts_manager_fonts');
+
+        if (!is_array($fonts)) {
             return 0;
         }
 
-        foreach ($elements as $element) {
-            if (!is_array($element)) {
+        $found_count = 0;
+
+        foreach ($fonts as $font_family => $font_data) {
+            if (empty($font_data['font_face'])) {
                 continue;
             }
 
-            // Check if this is a widget with settings
-            if (isset($element['widgetType']) && isset($element['settings'])) {
-                $found_count += $this->scan_elementor_widget($element, $post_id);
+            $font_attachment_ids = array();
+            preg_match_all('/url\s*\(\s*[\'"]?([^\'"()]+)[\'"]?\s*\)/i', $font_data['font_face'], $urls);
+
+            foreach ($urls[1] as $url) {
+                $attachment_id = $this->url_to_attachment_id($url);
+                if ($attachment_id) {
+                    $font_attachment_ids[$attachment_id] = true;
+                }
             }
 
-            // Recursively scan child elements
-            if (isset($element['elements']) && is_array($element['elements'])) {
-                $found_count += $this->scan_elementor_elements($element['elements'], $post_id);
+            if (empty($font_attachment_ids)) {
+                continue;
+            }
+
+            $is_applied = $this->is_font_family_applied((string) $font_family);
+            $context = $is_applied ? 'elementor_font_applied' : 'elementor_font_registered';
+
+            foreach (array_keys($font_attachment_ids) as $attachment_id) {
+                $metadata = $this->build_usage_metadata('font_registry', 0, $context, array('font_family' => $font_family));
+                $this->usage_db->store_usage($attachment_id, 'font_registry', 0, $context, $metadata);
+                $found_count++;
+                $this->progress['usage_found']++;
             }
         }
 
@@ -999,142 +1110,38 @@ class MINVF_Usage_Scanner {
     }
 
     /**
-     * Scan an individual Elementor widget for media
+     * Whether a font-family name appears applied anywhere in Elementor's
+     * stored settings - as opposed to merely being uploaded/registered in
+     * the font manager. A simple substring search across the same postmeta
+     * keys scan_elementor_data() already reads; a font family is a name, not
+     * an attachment ID, so it needs its own (string-based) check rather than
+     * collect_attachment_ids_from_value()'s numeric/URL matching.
      *
-     * Different widget types store images differently:
-     * - image: settings.image.id
-     * - gallery: settings.gallery[].id
-     * - video: settings.poster.id (video thumbnail)
-     * - Background images: settings.background_image.id
-     * - And many more...
-     *
-     * @since 4.0.0
-     * @param array $widget  Widget data
-     * @param int   $post_id Post ID
-     * @return int Number of media items found
+     * @since 5.2.0
+     * @param string $font_family
+     * @return bool
      */
-    private function scan_elementor_widget($widget, $post_id)
+    private function is_font_family_applied($font_family)
     {
-        $found_count = 0;
-        $widget_type = isset($widget['widgetType']) ? $widget['widgetType'] : '';
-        $settings = isset($widget['settings']) ? $widget['settings'] : array();
+        global $wpdb;
 
-        if (empty($settings)) {
-            return 0;
+        if ('' === trim($font_family)) {
+            return false;
         }
 
-        // IMAGE WIDGET: Most common Elementor widget
-        if ($widget_type === 'image' && isset($settings['image']['id'])) {
-            $attachment_id = intval($settings['image']['id']);
-            if ($attachment_id > 0) {
-                $metadata = $this->build_usage_metadata('page_builder', $post_id, 'elementor_image', array('builder' => 'elementor'));
-                $this->usage_db->store_usage(
-                    $attachment_id,
-                    'page_builder',
-                    $post_id,
-                    'elementor_image',
-                    $metadata
-                );
-                $found_count++;
-                $this->progress['usage_found']++;
-            }
-        }
+        $like = '%' . $wpdb->esc_like($font_family) . '%';
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name is a WP core property, not user input; value is parameterized below
+        $count = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$wpdb->postmeta} pm
+             INNER JOIN {$wpdb->posts} p ON pm.post_id = p.ID
+             WHERE pm.meta_key IN ('_elementor_page_settings', '_elementor_data')
+             AND pm.meta_value LIKE %s
+             AND p.post_type != 'revision'
+             AND p.post_status NOT IN ('trash', 'auto-draft')",
+            $like
+        ));
 
-        // GALLERY WIDGET: Array of images
-        if ($widget_type === 'gallery' && isset($settings['gallery']) && is_array($settings['gallery'])) {
-            foreach ($settings['gallery'] as $gallery_item) {
-                if (isset($gallery_item['id'])) {
-                    $attachment_id = intval($gallery_item['id']);
-                    if ($attachment_id > 0) {
-                        $metadata = $this->build_usage_metadata('page_builder', $post_id, 'elementor_gallery', array('builder' => 'elementor'));
-                        $this->usage_db->store_usage(
-                            $attachment_id,
-                            'page_builder',
-                            $post_id,
-                            'elementor_gallery',
-                            $metadata
-                        );
-                        $found_count++;
-                        $this->progress['usage_found']++;
-                    }
-                }
-            }
-        }
-
-        // IMAGE CAROUSEL: Another gallery type
-        if ($widget_type === 'image-carousel' && isset($settings['carousel']) && is_array($settings['carousel'])) {
-            foreach ($settings['carousel'] as $carousel_item) {
-                if (isset($carousel_item['id'])) {
-                    $attachment_id = intval($carousel_item['id']);
-                    if ($attachment_id > 0) {
-                        $metadata = $this->build_usage_metadata('page_builder', $post_id, 'elementor_carousel', array('builder' => 'elementor'));
-                        $this->usage_db->store_usage(
-                            $attachment_id,
-                            'page_builder',
-                            $post_id,
-                            'elementor_carousel',
-                            $metadata
-                        );
-                        $found_count++;
-                        $this->progress['usage_found']++;
-                    }
-                }
-            }
-        }
-
-        // VIDEO WIDGET: Poster/thumbnail image
-        if ($widget_type === 'video' && isset($settings['poster']['id'])) {
-            $attachment_id = intval($settings['poster']['id']);
-            if ($attachment_id > 0) {
-                $metadata = $this->build_usage_metadata('page_builder', $post_id, 'elementor_video_poster', array('builder' => 'elementor'));
-                $this->usage_db->store_usage(
-                    $attachment_id,
-                    'page_builder',
-                    $post_id,
-                    'elementor_video_poster',
-                    $metadata
-                );
-                $found_count++;
-                $this->progress['usage_found']++;
-            }
-        }
-
-        // BACKGROUND IMAGES: Can be on ANY widget/section/column
-        // Check for background_image in settings
-        if (isset($settings['background_image']['id'])) {
-            $attachment_id = intval($settings['background_image']['id']);
-            if ($attachment_id > 0) {
-                $metadata = $this->build_usage_metadata('page_builder', $post_id, 'elementor_background', array('builder' => 'elementor'));
-                $this->usage_db->store_usage(
-                    $attachment_id,
-                    'page_builder',
-                    $post_id,
-                    'elementor_background',
-                    $metadata
-                );
-                $found_count++;
-                $this->progress['usage_found']++;
-            }
-        }
-
-        // BACKGROUND OVERLAY: Another background type
-        if (isset($settings['background_overlay_image']['id'])) {
-            $attachment_id = intval($settings['background_overlay_image']['id']);
-            if ($attachment_id > 0) {
-                $metadata = $this->build_usage_metadata('page_builder', $post_id, 'elementor_background_overlay', array('builder' => 'elementor'));
-                $this->usage_db->store_usage(
-                    $attachment_id,
-                    'page_builder',
-                    $post_id,
-                    'elementor_background_overlay',
-                    $metadata
-                );
-                $found_count++;
-                $this->progress['usage_found']++;
-            }
-        }
-
-        return $found_count;
+        return intval($count) > 0;
     }
 
     /**
@@ -1263,6 +1270,19 @@ class MINVF_Usage_Scanner {
                         }
                     }
                 }
+                break;
+
+            case 'font_registry':
+                $metadata['primary_action'] = 'view';
+                $metadata['scope'] = 'global';
+                $metadata['view_url'] = home_url('/');
+                $metadata['edit_url'] = '';
+
+                $family = isset($extra_data['font_family']) ? $extra_data['font_family'] : '';
+                $metadata['title'] = $family ? 'Font: ' . $family : 'Registered Font';
+                $metadata['notes'] = ($usage_context === 'elementor_font_applied')
+                    ? 'Applied to at least one element or global style'
+                    : 'Registered in Elementor Fonts, but not applied anywhere found';
                 break;
 
             default:
