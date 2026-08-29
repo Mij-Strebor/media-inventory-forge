@@ -14,9 +14,16 @@ defined('ABSPATH') || exit;
 
 class MINVF_Image_Processor extends MINVF_Abstract_File_Processor
 {
+    /**
+     * Delegates to MINVF_File_Utils::get_category() - the same check
+     * MINVF_Processor_Factory uses to decide this class gets instantiated -
+     * rather than keeping a second, independent MIME check that could drift
+     * out of sync with it. See MINVF_Font_Processor::matches_mime_type()
+     * for the real bug this pattern already caused once.
+     */
     protected function matches_mime_type($mime_type)
     {
-        return strpos($mime_type, 'image/') === 0;
+        return 'Images' === MINVF_File_Utils::get_category($mime_type);
     }
 
     public function process_file($attachment_id, $file_path, $mime_type, $title)

@@ -14,9 +14,23 @@ defined('ABSPATH') || exit;
 
 class MINVF_Font_Processor extends MINVF_Abstract_File_Processor
 {
+    /**
+     * Delegates to MINVF_File_Utils::get_category() - the same check
+     * MINVF_Processor_Factory uses to decide this class gets instantiated
+     * at all - rather than keeping a second, independent list of font MIME
+     * patterns. Duplicating it once already caused a real bug: this
+     * previously only recognized 'font/' and 'application/font', missing
+     * 'application/x-font' (application/x-font-ttf, used by real uploaded
+     * .ttf font files). The factory routed those to this class correctly,
+     * but this method then rejected them, so validate_attachment_data()
+     * failed and the scanner silently dropped every .ttf font from the
+     * inventory - confirmed live: Space Grotesk and Inter (8 .ttf files)
+     * were invisible in the Fonts category while JetBrains Mono (.woff2,
+     * matched by 'font/') was not.
+     */
     protected function matches_mime_type($mime_type)
     {
-        return strpos($mime_type, 'font/') === 0 || strpos($mime_type, 'application/font') === 0;
+        return 'Fonts' === MINVF_File_Utils::get_category($mime_type);
     }
 
     public function process_file($attachment_id, $file_path, $mime_type, $title)
