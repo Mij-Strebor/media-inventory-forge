@@ -5,6 +5,7 @@
 node_modules
 vendor
 tests
+dev-docs
 
 # Files
 .gitignore
@@ -33,13 +34,11 @@ Gruntfile.js
 # Documentation
 README.md
 CHANGELOG.md
-ROADMAP.md
 CODE_OF_CONDUCT.md
 CONTRIBUTING.md
 LICENSE.md
 CLAUDE.md
-QUICK-START.md
-USERS-MANUAL.md
+RECOVERY-LOG.md
 
 # Dev-only directories
 docs

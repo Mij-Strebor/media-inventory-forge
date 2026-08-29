@@ -70,7 +70,7 @@ Once a scan completes, click **export csv**. Your browser downloads a file named
 
 ## Next Steps
 
-For a full walkthrough of every panel and setting, see **USER-MANUAL.md**.
+For a full walkthrough of every panel and setting, see the **[User Manual](user-manual.md)**.
 
 ---
 

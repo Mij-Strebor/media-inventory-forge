@@ -63,6 +63,7 @@ MIF is a WordPress admin tool that scans and reports on the media library. It:
 ## MIF-Specific Rules
 
 - **No build process:** Pure PHP/JS/CSS. Hard-refresh (Ctrl+Shift+R) after JS/CSS edits.
+- **Automated tests exist here — the one exception to the plugins-level "no automated tests" rule.** `tests/Unit/FileUtilsTest.php` + `tests/bootstrap.php`. Run/extend these for `class-file-utils.php` changes rather than relying on manual admin testing alone.
 - **Performance:** Scans can be large. Paginate results; do not load all media into memory at once.
 - **Network activation:** MIF supports network-activated mode — any changes to admin menu registration must account for both single-site and multisite context.
 - **Nonce constant:** `NONCE_ACTION` — defined once in the main class; never duplicated as an inline string.

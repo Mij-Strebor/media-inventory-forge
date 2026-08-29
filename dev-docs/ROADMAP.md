@@ -29,19 +29,6 @@ Based on your current v4.1.0 achievements and reviewing the existing roadmap, he
 
 ### **TIER 2: Professional Workflow Tools (v6.0)**
 
-**4. Scheduled Automation** ⏰
-- **Auto-scan scheduling**: Daily/weekly/monthly scans
-- **Email reports**: Send summary to admin/client
-- **Threshold alerts**: "Storage exceeded 1GB", "100+ unused files detected"
-- **WP-CLI integration**: `wp mif scan --email-report`
-
-**5. Multi-Site Central Dashboard** 🌐
-- For WordPress multisite networks
-- Aggregate view across all subsites
-- Compare site-to-site storage usage
-- Network-wide duplicate detection
-- Central optimization recommendations
-
 **6. Media Archival System** 📦
 - Mark files as "archive candidates" (unused > 2 years)
 - Export to ZIP with manifest
