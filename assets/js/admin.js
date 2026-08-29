@@ -913,7 +913,14 @@ jQuery(document).ready(function ($) {
     html += `<span class="mif-toggle-icon" style="color: var(--clr-light-txt) !important;">▼</span>`;
     html += `</button>`;
     html += `<div class="mif-info-content ${expandedClass}" id="${sectionId}">`;
+    // .mif-info-content's overflow:hidden is required for the collapse/
+    // expand height animation, but it also silently clips anything wider
+    // than the container - this inner wrapper gives wide tables (Fonts,
+    // SVG, Default) their own horizontal scrollbar instead of having their
+    // right-hand columns chopped off with no way to reach them.
+    html += `<div class="mif-info-content-scroll">`;
     html += categoryContent;
+    html += `</div>`;
     html += `</div>`;
     html += `</div>`;
 
@@ -1340,54 +1347,45 @@ jQuery(document).ready(function ($) {
    * @function displaySizeSummary
    * @param {Object} wpSizeCategories - WordPress size category data
    * @param {Array<string>} sortedWpCategories - Ordered category names
-   * @returns {string} HTML with 3-column grid of size statistics
+   * @returns {string} HTML with one stacked row per size category
    *
-   * @note Distributes categories across columns using modulo operation (index % 3)
-   * @note Each column is styled card with white background and shadow
+   * @note Each category is its own full-width row - stacked, not
+   *   side-by-side, so long suffix lists and file details never get
+   *   clipped by a narrow admin content column
    * @note Shows category name, suffixes list, file count, and total size
-   * @note Uses round-robin distribution for balanced visual presentation
    */
   function displaySizeSummary(wpSizeCategories, sortedWpCategories) {
-    const columns = [[], [], []];
-    sortedWpCategories.forEach((cat, index) => columns[index % 3].push(cat));
+    let html =
+      '<div style="background: white; border-radius: var(--jimr-border-radius); padding: 12px; box-shadow: var(--clr-shadow); border: 1px solid var(--jimr-gray-200);">';
 
-    function renderSummaryColumn(categoryNames) {
-      let html =
-        '<div style="background: white; border-radius: var(--jimr-border-radius); padding: 12px; box-shadow: var(--clr-shadow); border: 1px solid var(--jimr-gray-200);">';
-      categoryNames.forEach((categoryName) => {
-        const wpCategory = wpSizeCategories[categoryName];
-        const suffixList = Array.from(wpCategory.sizeSuffixes).join(", ");
-        html += '<div style="padding: 8px 0; border-bottom: 1px solid var(--jimr-gray-200);">';
-        html += '<div><strong style="color: var(--clr-secondary);">' + escapeHtml(categoryName) + "</strong><br>";
-        html += '<small style="color: var(--clr-txt);">Suffixes: ' + suffixList + "</small><br>";
-        html += '<small style="color: var(--clr-txt);">' + wpCategory.totalFiles + " files, " + formatBytes(wpCategory.totalSize) + "</small></div>";
-        html += "</div>";
-      });
+    sortedWpCategories.forEach((categoryName) => {
+      const wpCategory = wpSizeCategories[categoryName];
+      const suffixList = Array.from(wpCategory.sizeSuffixes).join(", ");
+      html += '<div style="padding: 8px 0; border-bottom: 1px solid var(--jimr-gray-200);">';
+      html += '<div><strong style="color: var(--clr-secondary);">' + escapeHtml(categoryName) + "</strong><br>";
+      html += '<small style="color: var(--clr-txt);">Suffixes: ' + suffixList + "</small><br>";
+      html += '<small style="color: var(--clr-txt);">' + wpCategory.totalFiles + " files, " + formatBytes(wpCategory.totalSize) + "</small></div>";
       html += "</div>";
-      return html;
-    }
+    });
 
-    return (
-      '<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">' +
-      renderSummaryColumn(columns[0]) +
-      renderSummaryColumn(columns[1]) +
-      renderSummaryColumn(columns[2]) +
-      "</div>"
-    );
+    html += "</div>";
+    return html;
   }
 
   /**
    * Image Cards Display Generator
    *
-   * Generates 3-column grid of individual image cards showing thumbnails,
-   * metadata, and detailed file information for each image item.
+   * Generates a single stacked column of individual image cards showing
+   * thumbnails, metadata, and detailed file information for each image item.
    *
    * @function displayImageCards
    * @param {Object} category - Image category object
    * @param {Array} category.items - Array of image items
-   * @returns {string} HTML grid with image cards
+   * @returns {string} HTML with one card per row
    *
-   * @note Uses CSS grid with 3 equal columns and 16px gap
+   * @note One card per row (not a multi-column grid) - each card's file
+   *   list and usage badges need the full content width, and a narrow
+   *   admin column has no room to spare for 3 side-by-side cards anyway
    * @note Each card shows thumbnail, title, file count, size, dimensions
    * @note Includes error handling for missing thumbnails
    * @note Images use lazy loading for performance
@@ -1395,7 +1393,7 @@ jQuery(document).ready(function ($) {
    */
   function displayImageCards(category) {
     let cardsContent =
-      '<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">';
+      '<div style="display: grid; grid-template-columns: 1fr; gap: 16px;">';
 
     category.items.forEach((item) => {
       cardsContent += '<div class="image-item">';

@@ -63,13 +63,13 @@ if (!defined('ABSPATH')) {
             All Jim R Forge tools are free and open source. If you find them useful, please consider supporting development:
         </p>
         <div class="mif-community-buttons">
-            <a href="https://www.buymeacoffee.com/jimrweb" target="_blank" rel="noopener" class="button button-secondary">
+            <a href="https://www.buymeacoffee.com/jimrweb" target="_blank" rel="noopener" class="button button-secondary mif-community-link">
                 ☕ Buy Me a Coffee
             </a>
-            <a href="https://wordpress.org/support/plugin/media-inventory-forge/" target="_blank" rel="noopener" class="button button-secondary">
+            <a href="https://wordpress.org/support/plugin/media-inventory-forge/" target="_blank" rel="noopener" class="button button-secondary mif-community-link">
                 💬 Support
             </a>
-            <a href="https://wordpress.org/support/plugin/media-inventory-forge/reviews/#new-post" target="_blank" rel="noopener" class="button button-secondary">
+            <a href="https://wordpress.org/support/plugin/media-inventory-forge/reviews/#new-post" target="_blank" rel="noopener" class="button button-secondary mif-community-link">
                 ⭐ Rate
             </a>
         </div>
