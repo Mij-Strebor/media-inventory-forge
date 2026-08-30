@@ -515,7 +515,8 @@
 .mif-col-icon   { width: 40px; }
 .mif-col-thumb  { width: 80px; }
 .mif-col-variants { width: 100px; }
-.mif-col-files  { width: 100px; }
-.mif-col-size   { width: 120px; }
+.mif-col-files  { width: 70px; }
+.mif-col-size   { width: 90px; }
 .mif-col-type   { width: 120px; }
-.mif-col-dims   { width: 140px; }
+.mif-col-dims   { width: 100px; }
+.mif-col-usage  { width: 70px; }

@@ -127,7 +127,11 @@ class MINVF_File_Utils
         $name = !empty($title) ? $title : pathinfo($filename, PATHINFO_FILENAME);
         $name = preg_replace('/[-_\s]?(regular|bold|italic|light|medium|heavy|black|thin|extralight|semibold|extrabold)[-_\s]?/i', '', $name);
         $name = preg_replace('/\.(woff2?|ttf|otf|eot)$/i', '', $name);
-        $name = preg_replace('/[-_\s]*\d+[-_\s]*/', '', $name);
+        // Strips a digit run and, when present, a short trailing unit suffix
+        // (e.g. the "pt" in Google Fonts' "Inter_18pt" static-export naming
+        // for optical size) - without the [a-z]{0,3} part, "Inter_18pt"
+        // stripped only "_18", leaving the family name as "Interpt".
+        $name = preg_replace('/[-_\s]*\d+[a-z]{0,3}[-_\s]*/i', '', $name);
         $name = trim($name, '-_ ');
         $name = ucwords(str_replace(['-', '_'], ' ', $name));
         return !empty($name) ? $name : 'Unknown Font';

@@ -2,10 +2,10 @@
 
 **Professional responsive design tools for WordPress developers**
 
-![Media Inventory Forge Banner](./docs/screenshots/banner-1544x500.png)
+![Media Inventory Forge Banner](./docs/images/banner-1544x500.png)
 
 [![WordPress Plugin](https://img.shields.io/badge/WordPress-Plugin-blue.svg)](https://wordpress.org/)
-[![Version](https://img.shields.io/badge/version-5.1.0-blue.svg)](https://github.com/Mij-Strebor/media-inventory-forge/releases)
+[![Version](https://img.shields.io/badge/version-5.2.0-blue.svg)](https://github.com/Mij-Strebor/media-inventory-forge/releases)
 [![WordPress](https://img.shields.io/badge/WordPress-5.0%2B-blue.svg)](https://wordpress.org/)
 [![License](https://img.shields.io/badge/license-GPL%20v2%2B-green.svg)](LICENSE)
 [![PHP](https://img.shields.io/badge/PHP-8.2%2B-purple.svg)](https://php.net/)
@@ -14,7 +14,7 @@
 > 
 > Read-only media library scanner and analyzer for WordPress developers, agencies, and site administrators. Provides detailed inventory reports, storage breakdowns, and comprehensive data for planning optimization strategies.
 
-![Media Inventory Forge Banner](assets/images/screenshot-1.png)
+![Media Inventory Forge Banner](docs/images/screenshot-1.jpg)
 
 ---
 
@@ -39,12 +39,12 @@ Every WordPress site accumulates media files over time, but understanding what y
 Download from [Releases](https://github.com/Mij-Strebor/media-inventory-forge/releases)- Upload via WordPress Admin or extract to `/wp-content/plugins/`- Activate through WordPress admin
 
 ### 2. Access Plugin
-Navigate to: **Tools → Media Inventory** in your WordPress admin menu sidebar
+Navigate to: **Tools → Media Inventory Forge** in your WordPress admin menu sidebar
 
 ### 3. Run First Scan
 ```
 Default Settings:
-✅ Batch Size: 10 files per request
+✅ Batch Size: 30 files per request
 ✅ Timeout: 30 seconds per batch  
 ✅ Categories: All media types
 ✅ Progress: Real-time tracking
@@ -110,34 +110,45 @@ Example WordPress Image Size Distribution:
 ### Plugin Structure
 ```
 media-inventory-forge/
-├── media-inventory-forge.php      # Main plugin file
+├── media-inventory-forge.php        # Main plugin file
 ├── includes/
-│   ├── core/                      # Core business logic
-│   │   ├── class-scanner.php      # Batch processing engine
-│   │   └── class-file-processor.php # Individual file analysis
-│   ├── utilities/                 # Helper classes
-│   │   └── class-file-utils.php   # File system utilities
-│   └── admin/                     # Admin interface
-│       └── class-admin.php        # Asset management
-├── assets/                        # CSS/JS assets
-│   ├── css/admin.css              # Professional styling
-│   └── js/admin.js                # Interactive functionality
-└── templates/                     # Template system
-    └── admin/                     # Admin page templates
+│   ├── core/                        # Core business logic
+│   │   ├── class-scanner.php        # Batch processing engine
+│   │   ├── class-file-processor.php # Individual file analysis
+│   │   ├── class-image-processor.php  # Image-specific processing
+│   │   ├── class-font-processor.php   # Font-specific processing
+│   │   ├── class-processor-factory.php # Resolves processors by MIME type
+│   │   ├── class-usage-scanner.php    # Where-used detection
+│   │   └── class-usage-database.php   # Usage-tracking storage
+│   ├── utilities/                   # Helper classes
+│   │   ├── class-file-utils.php     # File system utilities
+│   │   └── class-media-type-info.php
+│   └── admin/                       # Admin interface
+│       ├── class-admin.php          # Asset management
+│       ├── class-admin-controller.php # AJAX handlers, menu registration
+│       └── class-table-builder.php  # Table View HTML rendering
+├── assets/                          # CSS/JS assets
+│   ├── css/admin.css                # Professional styling
+│   └── js/admin.js                  # Interactive functionality
+└── templates/                       # Template system
+    └── admin/                       # Admin page templates
 ```
 
 ### Core Classes
 
-- **`MIF_Scanner`**: Batch processing with memory management
-- **`MIF_File_Processor`**: Individual file analysis and WordPress integration  
-- **`MIF_File_Utils`**: File system utilities and security validation
-- **`MIF_Admin`**: Professional asset management and enqueueing
+- **`MINVF_Scanner`**: Batch processing with memory management
+- **`MINVF_Processor_Factory`**: Resolves the correct file processor by MIME type
+- **`MINVF_File_Processor`** (and `MINVF_Image_Processor` / `MINVF_Font_Processor`): Individual file analysis and WordPress integration
+- **`MINVF_Usage_Scanner`** / **`MINVF_Usage_Database`**: Where-used detection and storage
+- **`MINVF_File_Utils`**: File system utilities and security validation
+- **`MINVF_Admin`** / **`MINVF_Admin_Controller`**: Asset management, menu registration, and AJAX handlers
+- **`MINVF_Table_Builder`**: Renders the Table View HTML
 
 ---
 
 ## Performance Specifications
 
-- **Batch Size**: 10 files per request (configurable)
+- **Batch Size**: 30 files per request (sized automatically, not user-configurable)
 - **Memory Usage**: Optimized for shared hosting
 - **Timeout Handling**: 30-second limits with monitoring
 - **File Support**: All WordPress media types
@@ -149,7 +160,7 @@ media-inventory-forge/
 
 ### Requirements
 - **WordPress**: 5.0+
-- **PHP**: 7.4+
+- **PHP**: 8.2+
 - **Development Environment**: Local by Flywheel recommended
 
 ### Setup for Contributions
@@ -233,7 +244,16 @@ Potential Optimization Opportunities:
 
 ## Version History
 
-### Version 5.1.0 (Latest)
+### Version 5.2.0
+**Usage Tracking Goes Live & Table View Parity**
+- **Unused Media Detection**: Fully wired up — an automatic post-scan pass flags media used nowhere across post/page content, featured images, widgets, the theme customizer (logo, header, background, favicon), theme CSS, and Elementor (classic v3 and V4 atomic, including registered fonts)
+- **Usage Location Tracking**: Card View shows a Uses/Unused badge and Where Used location list per item; Table View adds a sortable Uses column with red zero-use highlighting, a Where Used row expansion, and a collapsible Unused Images panel
+- **SVG Thumbnails**: Real image previews in both view modes
+- **Community & Tools Panel**: Rewritten to match the Fluid Space Forge layout (Documentation section, Support Development buttons)
+- **Responsive Layout**: Flexbox side-by-side Scan Controls/File Distribution on desktop; image cards flow responsively; fixed Fonts/SVG table clipping
+- **Bug Fixes**: TTF font detection (Inter, Space Grotesk were being silently dropped), font-family name parsing, revision posts no longer inflating usage counts
+
+### Version 5.1.0
 **WordPress Standards Pass & Architecture Improvements**
 - **WP Standards Pass**: All 34 code review items resolved; full WordPress Plugin Check compliance
 - **Processor Factory**: Scanner now resolves file processors by MIME type via `MINVF_Processor_Factory`
@@ -334,7 +354,7 @@ We welcome contributions! Here's how:
 
 ## Acknowledgments
 
-- **[Jim R.](https://jimrweb.com)** - Original concept, development, and JimRWeb design system
+- **[Jim R.](https://jimrforge.com)** - Original concept, development, and Jim R Forge design system
 - **[Claude AI](https://anthropic.com)** - Development assistance and architecture guidance
 - **WordPress Community** - Inspiration, best practices, and coding standards
 - **Contributors** - Everyone who helps improve this plugin
@@ -348,7 +368,7 @@ We welcome contributions! Here's how:
 - **GitHub Discussions**: Community Q&A and general discussion
 
 ### Professional Services
-For custom WordPress development, consulting, or plugin customization services, visit [JimRWeb.com](https://jimrweb.com)
+For custom WordPress development, consulting, or plugin customization services, visit [JimRForge.com](https://jimrforge.com)
 
 ---
 
@@ -364,6 +384,6 @@ For custom WordPress development, consulting, or plugin customization services, 
 
 [⭐ Star this repository](https://github.com/Mij-Strebor/media-inventory-forge) • [🐛 Report Issues](https://github.com/Mij-Strebor/media-inventory-forge/issues) • [💬 Join Discussion](https://github.com/Mij-Strebor/media-inventory-forge/discussions)
 
-**Professional WordPress Plugin Development** | **[JimRWeb.com](https://jimrweb.com)**
+**Professional WordPress Plugin Development** | **[JimRForge.com](https://jimrforge.com)**
 
 </div>

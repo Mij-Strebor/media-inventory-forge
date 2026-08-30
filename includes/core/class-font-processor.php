@@ -2,7 +2,9 @@
 
 /**
  * Font file processor for Media Inventory Forge
- * 
+ *
+ * Shared file handling lives in MINVF_Abstract_File_Processor.
+ *
  * @package MediaInventoryForge
  * @subpackage Core
  * @since 2.0.0
@@ -10,14 +12,25 @@
 
 defined('ABSPATH') || exit;
 
-class MINVF_Font_Processor implements MINVF_File_Processor_Interface
+class MINVF_Font_Processor extends MINVF_Abstract_File_Processor
 {
-    private $upload_basedir;
-
-    public function __construct()
+    /**
+     * Delegates to MINVF_File_Utils::get_category() - the same check
+     * MINVF_Processor_Factory uses to decide this class gets instantiated
+     * at all - rather than keeping a second, independent list of font MIME
+     * patterns. Duplicating it once already caused a real bug: this
+     * previously only recognized 'font/' and 'application/font', missing
+     * 'application/x-font' (application/x-font-ttf, used by real uploaded
+     * .ttf font files). The factory routed those to this class correctly,
+     * but this method then rejected them, so validate_attachment_data()
+     * failed and the scanner silently dropped every .ttf font from the
+     * inventory - confirmed live: Space Grotesk and Inter (8 .ttf files)
+     * were invisible in the Fonts category while JetBrains Mono (.woff2,
+     * matched by 'font/') was not.
+     */
+    protected function matches_mime_type($mime_type)
     {
-        $upload_dir = wp_upload_dir();
-        $this->upload_basedir = $upload_dir['basedir'];
+        return 'Fonts' === MINVF_File_Utils::get_category($mime_type);
     }
 
     public function process_file($attachment_id, $file_path, $mime_type, $title)
@@ -37,49 +50,10 @@ class MINVF_Font_Processor implements MINVF_File_Processor_Interface
             'font_family' => MINVF_File_Utils::get_font_family($title, $file_path)
         ];
 
-        $this->process_main_file($item_data, $file_path);
+        // Fonts never take the image-dimensions branch in process_main_file()
+        // since $mime_type never starts with 'image/'.
+        $this->process_main_file($item_data, $file_path, $mime_type);
 
         return $item_data;
-    }
-
-    public function validate_attachment_data($attachment_id, $file_path, $mime_type)
-    {
-        if (!$attachment_id || !$file_path || !$mime_type) {
-            return false;
-        }
-
-        if (!is_numeric($attachment_id) || $attachment_id <= 0) {
-            return false;
-        }
-
-        if (!MINVF_File_Utils::is_valid_upload_path($file_path)) {
-            return false;
-        }
-
-        if (!MINVF_File_Utils::is_file_accessible($file_path)) {
-            return false;
-        }
-
-        return strpos($mime_type, 'font/') === 0 || strpos($mime_type, 'application/font') === 0;
-    }
-
-    private function process_main_file(&$item_data, $file_path)
-    {
-        if (!MINVF_File_Utils::is_file_accessible($file_path)) {
-            return;
-        }
-
-        $file_size = MINVF_File_Utils::get_safe_file_size($file_path);
-        $file_info = [
-            'path' => MINVF_File_Utils::sanitize_file_path($file_path, $this->upload_basedir),
-            'filename' => basename($file_path),
-            'size' => $file_size,
-            'type' => 'original',
-            'dimensions' => ''
-        ];
-
-        $item_data['files'][] = $file_info;
-        $item_data['file_count']++;
-        $item_data['total_size'] += $file_size;
     }
 }

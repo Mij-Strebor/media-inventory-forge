@@ -3,9 +3,9 @@ Contributors: mijstrebor
 Donate link: https://buymeacoffee.com/jimrweb
 Tags: media, inventory, scanner, analysis, optimization
 Requires at least: 5.0
-Tested up to: 6.9
+Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 5.1.0
+Stable tag: 5.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,10 +19,9 @@ Media Inventory Forge is a comprehensive media library scanning and analysis too
 
 * **Dual View Modes** – Switch between Card View for detailed browsing or Table View for sortable data analysis
 * **Visual Distribution Chart** – Interactive graphic showing media breakdown by file type at a glance
-* **Unused Media Detection** – Identify media files not used anywhere on your site for safe cleanup
-* **Usage Location Tracking** – See exactly where each media item is used (posts, pages, widgets, theme files)
-* **Advanced Filtering** – Filter results by file type, size, usage status, and upload date
-* **Sortable Table Columns** – Click column headers to sort by name, size, type, or upload date in Table View
+* **Unused Media Detection** – Automatically scans posts, pages, featured images, widgets, the theme customizer, theme CSS, and Elementor (classic and V4 atomic) after every scan to flag media used nowhere on your site
+* **Usage Location Tracking** – See exactly where each media item is used, with direct links to every page/location
+* **Sortable Table Columns** – Click column headers to sort by title, file count, total size, or usage count in Table View
 * **Comprehensive Media Scanning** – Analyzes all media types including images, videos, audio, fonts, documents, and SVGs
 * **Detailed File Information** – Extracts metadata, dimensions, file sizes, and WordPress-generated variations
 * **Storage Analysis** – Provides precise storage usage by category with optimization recommendations
@@ -58,7 +57,7 @@ Media Inventory Forge is a comprehensive media library scanning and analysis too
 4. Click "Start Scan" to begin analyzing your media library.
 5. View results in Card View or Table View using the toggle buttons.
 6. Review the visual distribution chart to see media breakdown by type.
-7. Use filters to narrow results by type, size, usage, or date.
+7. Check the automatic Usage/Unused indicators on images to find cleanup candidates.
 8. Sort table columns by clicking headers in Table View.
 9. Export to CSV for detailed external analysis.
 
@@ -94,11 +93,11 @@ Card View displays media in an expandable card format, perfect for browsing indi
 
 = How does unused media detection work? =
 
-The plugin scans your entire WordPress installation including posts, pages, widgets, theme files, and page builders to identify where each media file is used. Files with no detected usage are flagged as "unused" - though you should always verify before deleting as some uses (like hardcoded URLs in custom code) may not be detectable.
+Right after every scan, the plugin automatically checks post/page content, featured images, widgets, the theme customizer (logo, header image, background image, favicon), theme CSS, and Elementor (both classic and the newer V4 atomic editor, including registered fonts) to identify where each media file is used. Items with no detected usage are flagged in red as "unused" in both Card View and Table View - though you should always verify before deleting, since some uses (like hardcoded URLs in custom code, or CDN-rewritten URLs) may not be detectable.
 
 = Can I sort the results in Table View? =
 
-Yes! Click any column header in Table View to sort by that column. Click again to reverse the sort order. You can sort by filename, file size, file type, upload date, and usage status.
+Yes! Click any column header in Table View to sort by that column. Click again to reverse the sort order. Sortable columns are Title, Files, Total Size, and (for Images, after usage tracking completes) Uses.
 
 == Screenshots ==
 1. Full application view
@@ -107,6 +106,14 @@ Yes! Click any column header in Table View to sort by that column. Click again t
 4. Table View mode with sortable columns and advanced filtering options
 
 == Changelog ==
+
+= 5.2.0 =
+* Feature: Unused media detection and usage location tracking are now fully wired up in both Card View (Uses badge + Where Used list per item) and Table View (Uses column, red zero-use highlight, Where Used row expansion, collapsible Unused Images panel).
+* Feature: SVG thumbnails now render an actual image preview in both view modes.
+* Enhancement: Community & Tools panel redesigned with a Documentation section and Support Development buttons (Buy Me a Coffee / Support / Rate).
+* Enhancement: Responsive layout improvements for Scan Controls, File Distribution, and image cards; fixed Fonts/SVG table content clipping.
+* Fix: TTF font files (e.g. Inter, Space Grotesk) were being silently dropped from scans; now detected correctly.
+* Fix: Post revisions no longer inflate usage counts.
 
 = 5.1.0 =
 * WordPress standards pass — all 34 code review items resolved; full Plugin Check compliance.
@@ -166,6 +173,9 @@ Yes! Click any column header in Table View to sort by that column. Click again t
 * WordPress admin integration
 
 == Upgrade Notice ==
+
+= 5.2.0 =
+Adds automatic unused-media detection and usage-location tracking, a redesigned Community & Tools panel, responsive layout fixes, and two bug fixes (TTF font detection, font-family name parsing). Safe update from 5.x.
 
 = 5.1.0 =
 WordPress standards compliance release. All Plugin Check items resolved. Raised minimum PHP to 8.2. Safe update from 4.x.

@@ -2,6 +2,24 @@
 ![Media Inventory Forge Banner](assets/images/changelog-1544x500.png)
 # Media Inventory Forge
 
+## [5.2.0] — 2026-08-30
+
+### Added
+- **Usage Tracking / Unused Media Detection** — After each scan, MIF now automatically scans post/page content, featured images, widgets, theme customizer settings (logo, header image, background image, site icon/favicon), theme CSS, and Elementor (both classic v3 and the newer V4 atomic editor, including fonts registered via `elementor_fonts_manager_fonts`) to determine where every media item is actually used. Card View shows a `Uses: N`/`Unused` badge plus a "Where Used" location list on each Image and SVG card. Table View adds a sortable Uses column (red highlight at zero), a "Where Used" block inside each expanded row, and a collapsible "Unused Images" panel beneath the Images table.
+- **SVG thumbnails** — SVG items now render an actual image preview in both Card View and Table View, instead of a generic icon.
+- **Community & Tools panel** — Rewritten to match Fluid Space Forge's layout: reworded Project Hub, a new Documentation section (Quick Start / User Manual links), a corrected Related Tools & Plugins list, and a Support Development section (Buy Me a Coffee / Support / Rate), replacing the old GitHub-star link.
+
+### Changed
+- **Responsive layout** — Scan Controls and File Distribution now sit side-by-side on desktop via flexbox, stacking automatically on narrower screens. Image cards flow ~3-per-row on desktop, reducing responsively instead of a fixed grid.
+- **Table clipping** — Fixed Fonts and SVG table content being clipped on the right edge of their collapsible panels.
+- Admin page now scrolls to the top on load instead of restoring a prior scroll position, so the hero image is always visible first.
+
+### Fixed
+- **Font detection** — `.ttf` fonts (e.g. Inter, Space Grotesk) were silently dropped from scan results because `MINVF_Font_Processor`'s own MIME check didn't recognize `application/x-font`, even though the processor factory routed them there correctly. It now delegates to the shared `MINVF_File_Utils::get_category()` check (same fix applied defensively to `MINVF_Image_Processor`).
+- **Font family names** — `get_font_family()` no longer leaves a trailing unit suffix (e.g. "Interpt" from "Inter_18pt") when stripping the numeric optical-size portion of a Google Fonts static-export filename.
+- **Usage scan revisions** — Post revisions are now excluded from usage scanning, preventing old template revisions from inflating a media item's usage count.
+- **HTML entity display** — Titles containing WordPress-texturized characters (e.g. " - " → `&#8211;`) no longer double-encode when re-escaped for display.
+
 ## [5.1.0] — 2026-04-30
 
 ### Added

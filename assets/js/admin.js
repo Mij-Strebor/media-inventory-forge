@@ -43,6 +43,21 @@
  */
 jQuery(document).ready(function ($) {
   /**
+   * Always land on the hero image, not wherever the browser last left this
+   * URL scrolled to. Confirmed (via Jim) this only happens on a return
+   * visit after having scrolled down before - the browser's own scroll-
+   * position memory for this URL, not something the page's own code did -
+   * so the fix is to explicitly override it rather than track down a
+   * layout-shift bug that isn't there. history.scrollRestoration stops the
+   * browser from trying to restore a position at all on future loads;
+   * scrollTo forces the correct result for this load regardless.
+   */
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+  }
+  window.scrollTo(0, 0);
+
+  /**
    * Global inventory data storage
    * Exposed to window for table-view.js access
    * @type {Array<Object>}
@@ -574,19 +589,7 @@ jQuery(document).ready(function ($) {
             $("#scan-progress").hide();
             $("#export-csv").show();
 
-            displayResults();
-
-            // Save scan results for table view, then trigger event
-            $.post(minvfData.ajaxUrl, {
-              action: 'minvf_save_scan_results',
-              nonce: minvfData.nonce,
-              scan_data: JSON.stringify(inventoryData)
-            })
-            .always(function() {
-              // Trigger event after save completes (or fails)
-              // This ensures transient is ready when table view tries to load
-              $(document).trigger('minvf_scan_complete');
-            });
+            scanUsageThenDisplay();
           } else {
             // Continue scanning
             setTimeout(function () {
@@ -618,6 +621,91 @@ jQuery(document).ready(function ($) {
         $("#stop-scan").hide();
         $("#scan-progress").hide();
       });
+  }
+
+  /**
+   * Usage Scan Chain
+   *
+   * Runs after the media inventory scan completes. Scans where each media
+   * item is actually used (Elementor content, fonts, widgets, etc.), fetches
+   * the resulting per-attachment usage counts, and merges them into
+   * inventoryData as item.usage_count before rendering - a count of 0 means
+   * the item was found nowhere and is a candidate for removal.
+   *
+   * Degrades gracefully: if the usage scan or the counts fetch fails, media
+   * results still render (without usage_count) rather than blocking on it.
+   *
+   * @function scanUsageThenDisplay
+   * @returns {void}
+   */
+  function scanUsageThenDisplay() {
+    $.post({
+      url: minvfData.ajaxUrl,
+      data: {
+        action: "minvf_scan_usage",
+        nonce: minvfData.nonce,
+      },
+      timeout: 30000,
+    })
+      .done(function () {
+        fetchUsageCountsAndDisplay();
+      })
+      .fail(function () {
+        displayResults();
+        saveScanResultsAndNotify();
+      });
+  }
+
+  /**
+   * Fetches per-attachment usage counts and merges them into inventoryData
+   * before rendering. Called by scanUsageThenDisplay() once the usage scan
+   * itself has completed.
+   *
+   * @function fetchUsageCountsAndDisplay
+   * @returns {void}
+   */
+  function fetchUsageCountsAndDisplay() {
+    $.post({
+      url: minvfData.ajaxUrl,
+      data: {
+        action: "minvf_get_usage_counts",
+        nonce: minvfData.nonce,
+      },
+    })
+      .done(function (response) {
+        if (response.success) {
+          const counts = response.data.counts || {};
+          const locations = response.data.locations || {};
+          inventoryData.forEach(function (item) {
+            item.usage_count = counts[item.id] !== undefined ? counts[item.id] : 0;
+            item.usage_locations = locations[item.id] || [];
+          });
+          window.inventoryData = inventoryData;
+        }
+      })
+      .always(function () {
+        displayResults();
+        saveScanResultsAndNotify();
+      });
+  }
+
+  /**
+   * Saves the completed scan results (with usage_count, if the usage scan
+   * succeeded) for the table view, then notifies the rest of the page.
+   *
+   * @function saveScanResultsAndNotify
+   * @returns {void}
+   */
+  function saveScanResultsAndNotify() {
+    $.post(minvfData.ajaxUrl, {
+      action: "minvf_save_scan_results",
+      nonce: minvfData.nonce,
+      scan_data: JSON.stringify(inventoryData),
+    }).always(function () {
+      // Trigger event after save completes (or fails)
+      // This ensures transient is ready when table view tries to load
+      $(document).trigger("minvf_scan_complete");
+    });
   }
 
   /* ==========================================================================
@@ -913,7 +1001,14 @@ jQuery(document).ready(function ($) {
     html += `<span class="mif-toggle-icon" style="color: var(--clr-light-txt) !important;">▼</span>`;
     html += `</button>`;
     html += `<div class="mif-info-content ${expandedClass}" id="${sectionId}">`;
+    // .mif-info-content's overflow:hidden is required for the collapse/
+    // expand height animation, but it also silently clips anything wider
+    // than the container - this inner wrapper gives wide tables (Fonts,
+    // SVG, Default) their own horizontal scrollbar instead of having their
+    // right-hand columns chopped off with no way to reach them.
+    html += `<div class="mif-info-content-scroll">`;
     html += categoryContent;
+    html += `</div>`;
     html += `</div>`;
     html += `</div>`;
 
@@ -943,7 +1038,7 @@ jQuery(document).ready(function ($) {
     if (categoryName === "Fonts") {
       return displayFonts(category);
     } else if (categoryName === "SVG") {
-      return displaySVG(category);
+      return displaySVGCategory(category);
     } else if (categoryName === "Images") {
       // Check view mode - only Images respects the toggle
       const viewMode = $('input[name="mif-display-mode"]:checked').val() || 'card';
@@ -1023,7 +1118,7 @@ jQuery(document).ready(function ($) {
 
         // Build details without source badges (since they're in the family name now)
         const details = family.items
-          .map((item) => escapeHtml(item.title) + " (" + formatBytes(item.total_size) + ")")
+          .map((item) => escapeHtml(item.title) + " (" + formatBytes(item.total_size) + ") " + buildUsageBadge(item))
           .join("<br>");
 
         html += "<tr>";
@@ -1058,7 +1153,7 @@ jQuery(document).ready(function ($) {
   function displaySVG(category) {
     let html = '<table class="inventory-table">';
     html +=
-      "<thead><tr><th>Title</th><th>Extension</th><th>Dimensions</th><th>Files</th><th>Size</th><th>File Details</th></tr></thead>";
+      "<thead><tr><th>Preview</th><th>Title</th><th>Extension</th><th>Dimensions</th><th>Files</th><th>Size</th><th>File Details</th></tr></thead>";
     html += "<tbody>";
 
     category.items.forEach((item) => {
@@ -1078,8 +1173,22 @@ jQuery(document).ready(function ($) {
         const sourceClass = item.source === 'Media Library' ? 'source-media-library' : 'source-theme';
         titleHtml += '<br><span class="source-badge ' + sourceClass + '">' + escapeHtml(item.source) + '</span>';
       }
+      titleHtml += buildUsageBadge(item);
+
+      let previewHtml;
+      if (item.thumbnail_url) {
+        previewHtml =
+          '<img src="' +
+          escapeHtml(item.thumbnail_url) +
+          '" alt="' +
+          escapeHtml(item.title) +
+          '" loading="lazy" style="width: 48px; height: 48px; object-fit: contain; background: #f0f0f0; border-radius: 4px;" />';
+      } else {
+        previewHtml = '<div style="width: 48px; height: 48px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border-radius: 4px;">🖼️</div>';
+      }
 
       html += "<tr>";
+      html += "<td>" + previewHtml + "</td>";
       html += "<td>" + titleHtml + "</td>";
       html += "<td>" + item.extension.toUpperCase() + "</td>";
       html += "<td>" + (item.dimensions || "Unknown") + "</td>";
@@ -1090,6 +1199,36 @@ jQuery(document).ready(function ($) {
     });
 
     html += "</tbody></table>";
+    return html;
+  }
+
+  /**
+   * SVG Category Master Display Function
+   *
+   * Wraps the SVG inventory table and a "where used" panel in the same
+   * sub-panel structure Images uses, since SVGs get the same usage-location
+   * treatment (fonts don't - font usage is already shown per-variant in
+   * displayFonts()'s Details column, and a font's "location" is a page's
+   * typography settings, not a single embeddable reference).
+   *
+   * @function displaySVGCategory
+   * @param {Object} category - SVG category object
+   * @param {Array} category.items - Array of SVG items
+   * @returns {string} HTML with SVG table and usage locations sub-panels
+   */
+  function displaySVGCategory(category) {
+    let html = "";
+
+    const tableContent = displaySVG(category);
+    html += createSubPanel("SVG Files", tableContent, {
+      margin: "16px 16px 8px 16px",
+    });
+
+    const locationsContent = displayUsageLocationsPanel(category);
+    html += createSubPanel("Where Each SVG Is Used", locationsContent, {
+      margin: "0 16px 8px 16px",
+    });
+
     return html;
   }
 
@@ -1128,6 +1267,7 @@ jQuery(document).ready(function ($) {
         const sourceClass = item.source === 'Media Library' ? 'source-media-library' : 'source-theme';
         titleHtml += '<br><span class="source-badge ' + sourceClass + '">' + escapeHtml(item.source) + '</span>';
       }
+      titleHtml += buildUsageBadge(item);
 
       html += "<tr>";
       html += "<td>" + titleHtml + "</td>";
@@ -1240,11 +1380,68 @@ jQuery(document).ready(function ($) {
     });
 
     // Create Individual Image Cards sub-panel
+    // "Where used" is rendered directly on each card (see displayImageCards())
+    // rather than as its own sub-panel, so the location info sits with the
+    // image it describes instead of requiring a scroll to a separate section.
     const cardsContent = displayImageCards(category);
     html += createSubPanel("Individual Image Cards", cardsContent, {
       margin: "0 16px 8px 16px",
     });
 
+    // Unused Images sub-panel - a single full-width list at the bottom, so
+    // removal candidates are visible at a glance instead of needing to scan
+    // every card above for a red "Unused" badge. Skipped entirely if the
+    // usage scan hasn't completed yet (no item carries usage_count).
+    const unusedContent = displayUnusedImagesPanel(category);
+    if (unusedContent !== null) {
+      html += createSubPanel("Unused Images", unusedContent, {
+        margin: "0 16px 8px 16px",
+      });
+    }
+
+    return html;
+  }
+
+  /**
+   * Unused Images Panel Generator
+   *
+   * Full-width list of every image whose usage_count is 0 - the same
+   * removal-candidate signal as the red "Unused" badge on each card, but
+   * gathered in one place instead of requiring a scan through every card.
+   *
+   * @function displayUnusedImagesPanel
+   * @param {Object} category - Images category object
+   * @param {Array} category.items - Array of image items
+   * @returns {string|null} HTML list, or null if the usage scan hasn't
+   *   completed yet (no item carries a usage_count at all)
+   */
+  function displayUnusedImagesPanel(category) {
+    const scannedItems = category.items.filter(
+      (item) => typeof item.usage_count !== "undefined"
+    );
+    if (scannedItems.length === 0) {
+      return null;
+    }
+
+    const unusedItems = scannedItems.filter((item) => item.usage_count === 0);
+
+    if (unusedItems.length === 0) {
+      return '<p style="padding: 4px 16px; color: var(--clr-txt);">None - every image is used somewhere.</p>';
+    }
+
+    let html = '<ul style="margin: 0; padding: 4px 16px 4px 36px; list-style: disc;">';
+    unusedItems.forEach((item) => {
+      html += '<li style="padding: 4px 0; display: flex; align-items: center; gap: 8px;">';
+      if (item.thumbnail_url) {
+        html +=
+          '<img src="' +
+          escapeHtml(item.thumbnail_url) +
+          '" alt="" loading="lazy" style="width: 32px; height: 32px; object-fit: cover; border-radius: 3px; flex-shrink: 0;" />';
+      }
+      html += "<span>" + escapeHtml(item.title) + "</span>";
+      html += "</li>";
+    });
+    html += "</ul>";
     return html;
   }
 
@@ -1270,9 +1467,10 @@ jQuery(document).ready(function ($) {
     html += '<th style="width: 80px;">Thumbnail</th>';
     html += '<th class="mif-sortable" data-column="title"><span class="mif-sort-label">Title</span><span class="mif-sort-indicator"></span></th>';
     html += '<th>Source</th>';
-    html += '<th class="mif-sortable" data-column="files" style="width: 100px;"><span class="mif-sort-label">Files</span><span class="mif-sort-indicator"></span></th>';
-    html += '<th class="mif-sortable" data-column="size" style="width: 120px;"><span class="mif-sort-label">Total Size</span><span class="mif-sort-indicator"></span></th>';
-    html += '<th style="width: 140px;">Dimensions</th>';
+    html += '<th class="mif-sortable" data-column="files" style="width: 70px;"><span class="mif-sort-label">Files</span><span class="mif-sort-indicator"></span></th>';
+    html += '<th class="mif-sortable" data-column="size" style="width: 90px;"><span class="mif-sort-label">Total Size</span><span class="mif-sort-indicator"></span></th>';
+    html += '<th style="width: 100px;">Dimensions</th>';
+    html += '<th class="mif-sortable" data-column="usage_count" style="width: 70px;"><span class="mif-sort-label">Uses</span><span class="mif-sort-indicator"></span></th>';
     html += '</tr></thead>';
     html += '<tbody>';
 
@@ -1305,11 +1503,21 @@ jQuery(document).ready(function ($) {
       html += '<td data-sort-value="' + item.file_count + '">' + item.file_count + '</td>';
       html += '<td data-sort-value="' + item.total_size + '">' + formatBytes(item.total_size) + '</td>';
       html += '<td>' + escapeHtml(item.dimensions || 'N/A') + '</td>';
+      // Plain number, not a pill badge - the column is narrow, and a
+      // full-cell highlight on zero is easier to spot at a glance than a
+      // small inline badge would be at this width.
+      const usageDefined = typeof item.usage_count !== "undefined";
+      const usageIsZero = usageDefined && item.usage_count === 0;
+      html +=
+        '<td class="usage-count-cell' + (usageIsZero ? " unused" : "") + '" data-sort-value="' +
+        (item.usage_count || 0) + '">' +
+        (usageDefined ? item.usage_count : "") +
+        "</td>";
       html += '</tr>';
 
       // Expanded details row
       html += '<tr class="mif-expanded-details" id="' + rowId + '">';
-      html += '<td colspan="7">';
+      html += '<td colspan="8">';
       html += '<div class="mif-details-container">';
       html += '<table class="mif-details-table">';
       html += '<tr class="mif-details-header-row"><td>File</td><td>Type</td><td>Dimensions</td><td>Size</td></tr>';
@@ -1323,7 +1531,19 @@ jQuery(document).ready(function ($) {
         html += '</tr>';
       });
 
-      html += '</table></div></td></tr>';
+      html += '</table>';
+
+      // Where used - same information the card view's "Where Each Image
+      // Is Used" sub-panel shows, so expanding a row in list/table view
+      // gives the same answer, not just the file breakdown.
+      if (typeof item.usage_count !== 'undefined') {
+        html += '<div class="usage-location-item" style="margin-top: 12px;">';
+        html += '<strong>Where Used</strong>';
+        html += buildUsageLocationsListHtml(item);
+        html += '</div>';
+      }
+
+      html += '</div></td></tr>';
     });
 
     html += '</tbody></table>';
@@ -1340,62 +1560,55 @@ jQuery(document).ready(function ($) {
    * @function displaySizeSummary
    * @param {Object} wpSizeCategories - WordPress size category data
    * @param {Array<string>} sortedWpCategories - Ordered category names
-   * @returns {string} HTML with 3-column grid of size statistics
+   * @returns {string} HTML with one card per size category, in a
+   *   flex-wrap row
    *
-   * @note Distributes categories across columns using modulo operation (index % 3)
-   * @note Each column is styled card with white background and shadow
+   * @note Each category is its own flex item (flex-basis 220px) in a
+   *   wrapping flex container - naturally about 3 per row on desktop,
+   *   fewer as the admin column narrows, one per row on mobile. No
+   *   explicit column count or breakpoint needed.
    * @note Shows category name, suffixes list, file count, and total size
-   * @note Uses round-robin distribution for balanced visual presentation
    */
   function displaySizeSummary(wpSizeCategories, sortedWpCategories) {
-    const columns = [[], [], []];
-    sortedWpCategories.forEach((cat, index) => columns[index % 3].push(cat));
+    let html = '<div style="display: flex; flex-wrap: wrap; gap: 10px;">';
 
-    function renderSummaryColumn(categoryNames) {
-      let html =
-        '<div style="background: white; border-radius: var(--jimr-border-radius); padding: 12px; box-shadow: var(--clr-shadow); border: 1px solid var(--jimr-gray-200);">';
-      categoryNames.forEach((categoryName) => {
-        const wpCategory = wpSizeCategories[categoryName];
-        const suffixList = Array.from(wpCategory.sizeSuffixes).join(", ");
-        html += '<div style="padding: 8px 0; border-bottom: 1px solid var(--jimr-gray-200);">';
-        html += '<div><strong style="color: var(--clr-secondary);">' + escapeHtml(categoryName) + "</strong><br>";
-        html += '<small style="color: var(--clr-txt);">Suffixes: ' + suffixList + "</small><br>";
-        html += '<small style="color: var(--clr-txt);">' + wpCategory.totalFiles + " files, " + formatBytes(wpCategory.totalSize) + "</small></div>";
-        html += "</div>";
-      });
+    sortedWpCategories.forEach((categoryName) => {
+      const wpCategory = wpSizeCategories[categoryName];
+      const suffixList = Array.from(wpCategory.sizeSuffixes).join(", ");
+      html +=
+        '<div style="flex: 1 1 220px; min-width: 0; background: white; border-radius: var(--jimr-border-radius); padding: 12px; box-shadow: var(--clr-shadow); border: 1px solid var(--jimr-gray-200);">';
+      html += '<strong style="color: var(--clr-secondary);">' + escapeHtml(categoryName) + "</strong><br>";
+      html += '<small style="color: var(--clr-txt);">Suffixes: ' + suffixList + "</small><br>";
+      html += '<small style="color: var(--clr-txt);">' + wpCategory.totalFiles + " files, " + formatBytes(wpCategory.totalSize) + "</small>";
       html += "</div>";
-      return html;
-    }
+    });
 
-    return (
-      '<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">' +
-      renderSummaryColumn(columns[0]) +
-      renderSummaryColumn(columns[1]) +
-      renderSummaryColumn(columns[2]) +
-      "</div>"
-    );
+    html += "</div>";
+    return html;
   }
 
   /**
    * Image Cards Display Generator
    *
-   * Generates 3-column grid of individual image cards showing thumbnails,
-   * metadata, and detailed file information for each image item.
+   * Generates a single stacked column of individual image cards showing
+   * thumbnails, metadata, and detailed file information for each image item.
    *
    * @function displayImageCards
    * @param {Object} category - Image category object
    * @param {Array} category.items - Array of image items
-   * @returns {string} HTML grid with image cards
+   * @returns {string} HTML with cards in a flex-wrap row
    *
-   * @note Uses CSS grid with 3 equal columns and 16px gap
+   * @note Cards are flex items (.image-item: flex-basis 280px) in a
+   *   wrapping flex container - naturally about 3 per row on desktop,
+   *   fewer as the admin column narrows, one per row on mobile. No
+   *   explicit column count or breakpoint needed.
    * @note Each card shows thumbnail, title, file count, size, dimensions
    * @note Includes error handling for missing thumbnails
    * @note Images use lazy loading for performance
    * @note Lists all associated files with type, dimensions, and size
    */
   function displayImageCards(category) {
-    let cardsContent =
-      '<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">';
+    let cardsContent = '<div style="display: flex; flex-wrap: wrap; gap: 16px;">';
 
     category.items.forEach((item) => {
       cardsContent += '<div class="image-item">';
@@ -1441,6 +1654,7 @@ jQuery(document).ready(function ($) {
           item.dimensions +
           "</span>";
       }
+      cardsContent += "<br>" + buildUsageBadge(item);
       cardsContent += "</div>";
       cardsContent += "</div>";
 
@@ -1461,11 +1675,93 @@ jQuery(document).ready(function ($) {
         cardsContent += "</div>";
       });
       cardsContent += "</div>";
+
+      // Where used - combined onto the card itself rather than a separate
+      // sub-panel below the whole grid, so this sits right with the image
+      // it describes.
+      if (typeof item.usage_count !== "undefined") {
+        cardsContent += '<div class="usage-location-item" style="border-top: 1px solid var(--jimr-gray-200); margin: 0; padding: 12px 16px;">';
+        cardsContent += "<strong>Where Used</strong>";
+        cardsContent += buildUsageLocationsListHtml(item);
+        cardsContent += "</div>";
+      }
+
       cardsContent += "</div>";
     });
 
     cardsContent += "</div>";
     return cardsContent;
+  }
+
+  /**
+   * Usage Locations Panel Generator
+   *
+   * Lists, per item, exactly where it's used - the page/location title
+   * linked to its front-end URL - alongside the raw usage count already
+   * shown as a badge elsewhere. An item with no locations shows the same
+   * "candidate for removal" message as the unused badge, since it means
+   * the same thing: found nowhere.
+   *
+   * @function buildUsageLocationsListHtml
+   * @param {Object} item - Inventory item, optionally carrying
+   *   usage_locations: [{title, url}, ...]
+   * @returns {string} HTML <ul> of linked locations, or the
+   *   "candidate for removal" message if there are none
+   *
+   * @note Shared by displayImageCards() (Images card view, inline per
+   *   card), displayImagesTable()'s row-expansion (Images list/table
+   *   view), and displayUsageLocationsPanel() (SVG's own sub-panel - SVG
+   *   has no card view to attach this to inline), so every view shows the
+   *   same "where used" information.
+   */
+  function buildUsageLocationsListHtml(item) {
+    if (item.usage_locations && item.usage_locations.length > 0) {
+      let html = '<ul class="usage-location-list">';
+      item.usage_locations.forEach((loc) => {
+        if (loc.url) {
+          html +=
+            '<li><a href="' +
+            escapeHtml(loc.url) +
+            '" target="_blank" rel="noopener">' +
+            escapeHtml(loc.title || loc.url) +
+            "</a></li>";
+        } else {
+          html += "<li>" + escapeHtml(loc.title || "Unknown location") + "</li>";
+        }
+      });
+      html += "</ul>";
+      return html;
+    }
+
+    return '<p class="usage-location-empty">Not found anywhere &mdash; candidate for removal.</p>';
+  }
+
+  /**
+   * @function displayUsageLocationsPanel
+   * @param {Object} category - Category object (Images or SVG)
+   * @param {Array} category.items - Array of items, each optionally
+   *   carrying usage_locations: [{title, url}, ...]
+   * @returns {string} HTML list of items and their usage locations
+   *
+   * @note Items whose usage_count is still undefined (usage scan hasn't
+   *   completed) are skipped entirely rather than shown as unused.
+   */
+  function displayUsageLocationsPanel(category) {
+    let html = '<div class="usage-locations-panel">';
+
+    category.items.forEach((item) => {
+      if (typeof item.usage_count === "undefined") {
+        return;
+      }
+
+      html += '<div class="usage-location-item">';
+      html += "<strong>" + escapeHtml(item.title) + "</strong>";
+      html += buildUsageLocationsListHtml(item);
+      html += "</div>";
+    });
+
+    html += "</div>";
+    return html;
   }
 
   /* ==========================================================================
@@ -1532,6 +1828,31 @@ jQuery(document).ready(function ($) {
   }
 
   /**
+   * Usage Badge Builder
+   *
+   * Builds the "Uses: N" badge for a single item, styled to flag zero-usage
+   * items as removal candidates. Returns an empty string when usage_count
+   * is undefined (the usage scan hasn't run yet, or failed) so existing
+   * layouts don't show a stray badge before that data exists.
+   *
+   * @function buildUsageBadge
+   * @param {Object} item - Inventory item, expected to carry usage_count
+   * @returns {string} HTML for the badge, or "" if usage_count is unknown
+   */
+  function buildUsageBadge(item) {
+    if (typeof item.usage_count === "undefined") {
+      return "";
+    }
+
+    if (item.usage_count === 0) {
+      return '<span class="usage-badge unused" title="Not found anywhere - candidate for removal">Unused</span>';
+    }
+
+    const label = item.usage_count === 1 ? "1 use" : item.usage_count + " uses";
+    return '<span class="usage-badge">' + label + "</span>";
+  }
+
+  /**
    * HTML Escape Utility
    *
    * Escapes HTML special characters to prevent XSS attacks and ensure
@@ -1541,13 +1862,22 @@ jQuery(document).ready(function ($) {
    * @param {string} text - Text string to escape
    * @returns {string} Escaped HTML-safe string
    *
-   * @note Leverages browser's textContent and innerHTML properties
-   * @note Creates temporary DOM element for conversion
+   * @note Decodes any HTML entities already present in the input before
+   *   re-escaping it. Titles built server-side via get_the_title() are run
+   *   through WordPress's wptexturize filter, which silently turns a plain
+   *   " - " into the &#8211; (en dash) entity - without this decode step,
+   *   that entity's own "&" gets escaped a second time (to "&amp;"), so the
+   *   page displays the raw entity text ("&#8211;") instead of a dash.
+   * @note Creates temporary DOM elements for conversion
    * @note Handles all HTML special characters
    */
   function escapeHtml(text) {
+    const decodeEl = document.createElement("textarea");
+    decodeEl.innerHTML = text;
+    const decoded = decodeEl.value;
+
     const div = document.createElement("div");
-    div.textContent = text;
+    div.textContent = decoded;
     return div.innerHTML;
   }
 

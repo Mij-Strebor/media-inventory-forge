@@ -282,6 +282,7 @@ class MINVF_Table_Builder
         $html .= '<th class="mif-sortable mif-col-files" data-column="files"><span class="mif-sort-label">Files</span><span class="mif-sort-indicator"></span></th>';
         $html .= '<th class="mif-sortable mif-col-size" data-column="size"><span class="mif-sort-label">Total Size</span><span class="mif-sort-indicator"></span></th>';
         $html .= '<th class="mif-col-dims">Dimensions</th>';
+        $html .= '<th class="mif-sortable mif-col-usage" data-column="usage_count"><span class="mif-sort-label">Uses</span><span class="mif-sort-indicator"></span></th>';
         $html .= '</tr></thead>';
         $html .= '<tbody>';
 
@@ -314,11 +315,12 @@ class MINVF_Table_Builder
             $html .= '<td data-sort-value="' . intval($item['file_count']) . '">' . intval($item['file_count']) . '</td>';
             $html .= '<td data-sort-value="' . intval($item['total_size']) . '">' . MINVF_File_Utils::format_bytes($item['total_size']) . '</td>';
             $html .= '<td>' . esc_html($item['dimensions'] ?? 'N/A') . '</td>';
+            $html .= $this->build_usage_count_cell($item);
             $html .= '</tr>';
 
             // Expanded details row
             $html .= '<tr class="mif-expanded-details" id="' . $row_id . '">';
-            $html .= '<td colspan="7">';
+            $html .= '<td colspan="8">';
             $html .= '<div class="mif-details-container">';
             $html .= '<table class="mif-details-table">';
             $html .= '<tr class="mif-details-header-row"><td>File</td><td>Type</td><td>Dimensions</td><td>Size</td></tr>';
@@ -332,10 +334,143 @@ class MINVF_Table_Builder
                 $html .= '</tr>';
             }
 
-            $html .= '</table></div></td></tr>';
+            $html .= '</table>';
+            $html .= $this->build_where_used_html($item);
+            $html .= '</div></td></tr>';
         }
 
         $html .= '</tbody></table>';
+        $html .= $this->build_unused_images_section($items);
+
+        return $html;
+    }
+
+    /**
+     * Build the Uses column cell for a single item.
+     *
+     * A plain number, not a pill badge - the column is narrow, and a
+     * full-cell highlight on zero (via the "unused" class, already styled
+     * in admin.css alongside the identical card-view badge) is easier to
+     * spot at this width than a small inline badge would be. Renders an
+     * empty cell if the item carries no usage_count at all - the usage
+     * scan hasn't completed/run yet, so showing "0" would be misleading.
+     *
+     * @since 5.2.0
+     * @param array $item Media item, optionally carrying usage_count
+     * @return string HTML <td>
+     */
+    private function build_usage_count_cell($item)
+    {
+        if (!array_key_exists('usage_count', $item)) {
+            return '<td class="usage-count-cell"></td>';
+        }
+
+        $count = intval($item['usage_count']);
+        $class = 'usage-count-cell' . (0 === $count ? ' unused' : '');
+
+        return '<td class="' . esc_attr($class) . '" data-sort-value="' . $count . '">' . $count . '</td>';
+    }
+
+    /**
+     * Build the "Where Used" block for an item's expanded-details row.
+     *
+     * Mirrors admin.js's buildUsageLocationsListHtml()/card-view markup
+     * (.usage-location-item, <strong>Where Used</strong>, a <ul> of linked
+     * locations or the same "candidate for removal" message) so the list/
+     * table view's expansion shows the same information the card view
+     * shows directly on each card. Returns an empty string if the item
+     * carries no usage_count - the usage scan hasn't run yet.
+     *
+     * @since 5.2.0
+     * @param array $item Media item, optionally carrying usage_count and
+     *   usage_locations: [{title, url}, ...]
+     * @return string HTML, or '' if there's no usage data to show yet
+     */
+    private function build_where_used_html($item)
+    {
+        if (!array_key_exists('usage_count', $item)) {
+            return '';
+        }
+
+        $html = '<div class="usage-location-item" style="margin-top: 12px;">';
+        $html .= '<strong>Where Used</strong>';
+
+        $locations = (isset($item['usage_locations']) && is_array($item['usage_locations'])) ? $item['usage_locations'] : [];
+
+        if (!empty($locations)) {
+            $html .= '<ul class="usage-location-list">';
+            foreach ($locations as $loc) {
+                $title = !empty($loc['title']) ? $loc['title'] : '';
+                $url = !empty($loc['url']) ? $loc['url'] : '';
+                if ($url) {
+                    $html .= '<li><a href="' . esc_url($url) . '" target="_blank" rel="noopener">' . esc_html($title ?: $url) . '</a></li>';
+                } else {
+                    $html .= '<li>' . esc_html($title ?: 'Unknown location') . '</li>';
+                }
+            }
+            $html .= '</ul>';
+        } else {
+            $html .= '<p class="usage-location-empty">Not found anywhere &mdash; candidate for removal.</p>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
+    }
+
+    /**
+     * Build the collapsible "Unused Images" section - a full-width list of
+     * every image whose usage_count is 0, gathered in one place at the
+     * bottom of the Images table instead of requiring a scan through every
+     * row's Uses column. Uses the same .mif-category-header/-content
+     * collapse markup as the category sections above it, so the existing
+     * delegated click handlers in table-view.js pick it up for free.
+     * Returns '' entirely if the usage scan hasn't completed (no item
+     * carries usage_count).
+     *
+     * @since 5.2.0
+     * @param array $items Image items
+     * @return string HTML, or '' if there's no usage data yet
+     */
+    private function build_unused_images_section($items)
+    {
+        $scanned = array_filter($items, function ($item) {
+            return array_key_exists('usage_count', $item);
+        });
+
+        if (empty($scanned)) {
+            return '';
+        }
+
+        $unused = array_filter($scanned, function ($item) {
+            return 0 === intval($item['usage_count']);
+        });
+
+        $section_id = 'mif-unused-images';
+
+        $html = '<div class="mif-category-table-section">';
+        $html .= '<h3 class="mif-category-header" data-target="' . $section_id . '">';
+        $html .= '<span>Unused Images (' . count($unused) . ')</span>';
+        $html .= '<span class="dashicons dashicons-arrow-down-alt2 mif-category-toggle-icon"></span>';
+        $html .= '</h3>';
+        $html .= '<div id="' . $section_id . '" class="mif-category-content">';
+
+        if (empty($unused)) {
+            $html .= '<p style="padding: 4px 0; color: var(--clr-txt);">None - every image is used somewhere.</p>';
+        } else {
+            $html .= '<ul style="margin: 0; padding: 4px 0 4px 20px; list-style: disc;">';
+            foreach ($unused as $item) {
+                $html .= '<li style="padding: 4px 0; display: flex; align-items: center; gap: 8px;">';
+                if (!empty($item['thumbnail_url'])) {
+                    $html .= '<img src="' . esc_url($item['thumbnail_url']) . '" alt="" loading="lazy" style="width: 32px; height: 32px; object-fit: cover; border-radius: 3px; flex-shrink: 0;" />';
+                }
+                $html .= '<span>' . esc_html($item['title']) . '</span>';
+                $html .= '</li>';
+            }
+            $html .= '</ul>';
+        }
+
+        $html .= '</div></div>';
 
         return $html;
     }

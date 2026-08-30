@@ -1,6 +1,6 @@
 # Media Inventory Forge — Quick Start Guide
 
-**Version 5.1.0**
+**Version 5.2.0**
 
 Get your first media inventory scan running in under five minutes.
 
@@ -54,6 +54,17 @@ Switch to **Table View** at any point for a compact, sortable alternative — cl
 
 ---
 
+## Finding Unused Media
+
+Right after your scan finishes, MIF automatically runs a second pass that checks where each media item is actually used across your site — post/page content, featured images, widgets, the theme customizer (logo, header image, background image, favicon), theme CSS, and Elementor (both classic and the newer "V4 atomic" editor, including fonts registered through Elementor's font manager).
+
+- **Card View** — every image card shows a **Uses: N** badge (or a red **Unused** badge for zero uses), plus a "Where Used" list of the exact pages/locations it appears on. SVG items get the same treatment.
+- **Table View** — the Images table gets a **Uses** column (highlighted red at zero), a "Where Used" list inside each row's expanded details, and a collapsible **Unused Images** panel at the bottom listing every zero-use image at a glance.
+
+Use this to find real cleanup candidates — but always double-check before deleting anything MIF flags as unused, since a few usage patterns (hardcoded URLs in custom code, external references) aren't detectable by any automated scan.
+
+---
+
 ## Exporting to CSV
 
 Once a scan completes, click **export csv**. Your browser downloads a file named `media-inventory-YYYY-MM-DD-HH-MM-SS.csv` containing every scanned item: ID, title, category, extension, MIME type, dimensions, thumbnail URL, font family, file count, and total size — ready to open in Excel or Google Sheets.
@@ -62,15 +73,14 @@ Once a scan completes, click **export csv**. Your browser downloads a file named
 
 ## What MIF Does Not Do
 
-- It does not filter results by size, usage, or date — you're looking at everything the scan found.
-- It does not detect "unused" media — that data isn't currently exposed in the interface.
+- It does not filter or sort results by size, usage status, or upload date in the results list — you're looking at everything the scan found (Table View sorting is limited to Title, Files, Total Size, and Uses).
 - It does not compress, convert, resize, or delete files. Pair MIF's reports with a dedicated optimization plugin if you plan to act on what you find.
 
 ---
 
 ## Next Steps
 
-For a full walkthrough of every panel and setting, see **USER-MANUAL.md**.
+For a full walkthrough of every panel and setting, see the **[User Manual](user-manual.md)**.
 
 ---
 

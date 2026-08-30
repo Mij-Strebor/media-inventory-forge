@@ -24,13 +24,31 @@ if (!defined('ABSPATH')) {
             Media Inventory Forge is part of the Jim R Forge ecosystem - a growing collection of professional WordPress tools for designers and developers.
         </p>
 
+        <h3 class="mif-community-heading">Project Hub</h3>
+        <p class="mif-community-text">
+            Visit <a href="https://jimrforge.com/" target="_blank" rel="noopener" style="color: var(--clr-link); text-decoration: underline; font-weight: 600;">Jim R Forge</a> for documentation, updates, and the complete plugin ecosystem.
+        </p>
+
+        <h3 class="mif-community-heading">Documentation</h3>
+        <ul class="mif-community-list">
+            <li>
+                <strong><a href="https://jimrforge.com/wp-content/uploads/mif-quick-start-guide.pdf" target="_blank" rel="noopener" style="color: var(--clr-link); text-decoration: underline;">Quick Start</a></strong> - Get started with Media Inventory Forge in 5 minutes and run your first media library scan.
+            </li>
+            <li>
+                <strong><a href="https://jimrforge.com/wp-content/uploads/mif-user-manual.pdf" target="_blank" rel="noopener" style="color: var(--clr-link); text-decoration: underline;">User Manual</a></strong> - Professional Media Library Analysis for WordPress
+            </li>
+        </ul>
+
         <h3 class="mif-community-heading">Related Tools & Plugins</h3>
         <ul class="mif-community-list">
             <li>
-                <strong><a href="https://wordpress.org/plugins/fluid-font-forge/" target="_blank" rel="noopener" style="color: var(--clr-link); text-decoration: underline;">Fluid Font Forge</a></strong> - Craft responsive fonts for WordPress (a WordPress plugin)
+                <strong><a href="https://wordpress.org/plugins/fluid-font-forge/" target="_blank" rel="noopener" style="color: var(--clr-link); text-decoration: underline;">Fluid Font Forge</a></strong> - Responsive typography with CSS clamp() functions (Available on WordPress.org)
             </li>
             <li>
-                <strong><a href="https://wordpress.org/plugins/fluid-space-forge/" target="_blank" rel="noopener" style="color: var(--clr-link); text-decoration: underline;">Fluid Space Forge</a></strong> - Responsive spacing with CSS clamp() functions (In review at WordPress.org)
+                <strong><a href="https://wordpress.org/plugins/fluid-space-forge/" target="_blank" rel="noopener" style="color: var(--clr-link); text-decoration: underline;">Fluid Space Forge</a></strong> - Responsive spacing with CSS clamp() functions (Available on WordPress.org)
+            </li>
+            <li>
+                <strong><a href="https://wordpress.org/plugins/atomic-framework-forge-for-elementor/" target="_blank" rel="noopener" style="color: var(--clr-link); text-decoration: underline;">Atomic Framework Forge for Elementor</a></strong> - Build and manage your Elementor Version 4 design system (Available on WordPress.org)
             </li>
             <li>
                 <strong>Fluid Button Forge</strong> - Advanced button customization with fluid sizing (In Development)
@@ -40,11 +58,6 @@ if (!defined('ABSPATH')) {
             </li>
         </ul>
 
-        <h3 class="mif-community-heading">Project Hub</h3>
-        <p class="mif-community-text">
-            Soon you can visit <a href="https://jimrforge.com" target="_blank" rel="noopener" style="color: var(--clr-link); text-decoration: underline; font-weight: 600;">jimrforge.com</a> for complete documentation and information. Coming soon.
-        </p>
-
         <h3 class="mif-community-heading">Support Development</h3>
         <p class="mif-community-text">
             All Jim R Forge tools are free and open source. If you find them useful, please consider supporting development:
@@ -53,8 +66,11 @@ if (!defined('ABSPATH')) {
             <a href="https://www.buymeacoffee.com/jimrweb" target="_blank" rel="noopener" class="button button-secondary mif-community-link">
                 ☕ Buy Me a Coffee
             </a>
-            <a href="https://github.com/Mij-Strebor/media-inventory-forge/stargazers" target="_blank" rel="noopener" class="button button-secondary mif-community-link">
-                ⭐ Star on GitHub
+            <a href="https://wordpress.org/support/plugin/media-inventory-forge/" target="_blank" rel="noopener" class="button button-secondary mif-community-link">
+                💬 Support
+            </a>
+            <a href="https://wordpress.org/support/plugin/media-inventory-forge/reviews/#new-post" target="_blank" rel="noopener" class="button button-secondary mif-community-link">
+                ⭐ Rate
             </a>
         </div>
     </div>

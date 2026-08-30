@@ -1,6 +1,6 @@
 # Media Inventory Forge — User Manual
 
-**Version 5.1.0**
+**Version 5.2.0**
 
 ---
 
@@ -14,13 +14,15 @@
 6. [Running a Scan](#running-a-scan)
 7. [Card View](#card-view)
 8. [Table View](#table-view)
-9. [File Distribution Chart](#file-distribution-chart)
-10. [Exporting to CSV](#exporting-to-csv)
-11. [File Categories & Supported Types](#file-categories--supported-types)
-12. [Security](#security)
-13. [Troubleshooting](#troubleshooting)
-14. [Current Limitations](#current-limitations)
-15. [Support](#support)
+9. [Usage Tracking & Unused Media Detection](#usage-tracking--unused-media-detection)
+10. [File Distribution Chart](#file-distribution-chart)
+11. [Exporting to CSV](#exporting-to-csv)
+12. [File Categories & Supported Types](#file-categories--supported-types)
+13. [Community & Tools](#community--tools)
+14. [Security](#security)
+15. [Troubleshooting](#troubleshooting)
+16. [Current Limitations](#current-limitations)
+17. [Support](#support)
 
 ---
 
@@ -39,7 +41,7 @@ It does not scan plugins, uploads outside the Media Library, or other themes.
 ## Requirements & Installation
 
 **Requirements**
-- WordPress 5.0 or higher (tested up to 6.9)
+- WordPress 5.0 or higher (tested up to 7.1)
 - PHP 8.2 or higher
 - Administrator access (`manage_options` capability)
 
@@ -49,7 +51,7 @@ It does not scan plugins, uploads outside the Media Library, or other themes.
 2. In WordPress admin: **Plugins → Add New Plugin → Upload Plugin**.
 3. Select the ZIP and click **Install Now**, then **Activate Plugin**.
 
-On activation, MIF creates one internal database table used for future usage-tracking work; it has no effect on your site's existing data or performance.
+On activation, MIF creates one internal database table used to store usage-tracking results (see [Usage Tracking & Unused Media Detection](#usage-tracking--unused-media-detection)); it has no effect on your site's existing data or performance.
 
 MIF supports WordPress Multisite network activation.
 
@@ -70,7 +72,7 @@ From top to bottom, the admin page shows:
 3. **Scan Controls** panel — view mode toggle, scan source checkboxes, and the start/stop/export buttons
 4. **File Distribution** panel — pie chart, populated after a scan
 5. **Inventory Results** — Card View or Table View, depending on the toggle
-6. **Community & Tools** panel (collapsible) — links to other Jim R Forge plugins and support options
+6. **Community & Tools** panel (collapsible) — Project Hub, Documentation links, Related Tools & Plugins, and Support Development options (see [Community & Tools](#community--tools))
 
 ---
 
@@ -108,7 +110,15 @@ The default results display. Each file category (Images, Fonts, SVG, Videos, Aud
 
 **Fonts** are grouped by font family (extracted from the filename/title), listing all variants — WOFF, WOFF2, TTF, OTF, EOT — together under one row, with total files and size per family.
 
+**SVG** items show a thumbnail preview of the actual image, alongside the same Uses badge described below.
+
 Every item's source (Media Library vs. the active theme) is shown as a small badge next to its title.
+
+If usage tracking has completed for the current scan (see [Usage Tracking & Unused Media Detection](#usage-tracking--unused-media-detection)), each Image and SVG card additionally shows:
+- A **Uses: N** badge, or a red **Unused** badge when the item was found nowhere.
+- A **Where Used** list directly on the card, linking to every page/location where that item appears (or a "candidate for removal" note if it has none).
+
+At the bottom of the Images category, a full-width **Unused Images** panel lists every zero-use image with its thumbnail, so you don't have to scroll the whole card grid looking for red badges.
 
 Collapse/expand state for each section is remembered across page reloads (stored in your browser's local storage).
 
@@ -120,10 +130,36 @@ Toggle "Table View" under Image Display Mode to switch the entire results area t
 
 - Each category still has its own collapsible section.
 - Rows are expandable — click a row to reveal every file variant (thumbnail sizes, font variants, etc.) associated with that item, in a nested detail table.
-- Columns marked with a sort indicator (Title, Files, Total Size) are clickable to sort ascending/descending.
+- Columns marked with a sort indicator (Title, Files, Total Size, and — for Images, once usage tracking has completed — Uses) are clickable to sort ascending/descending.
 - Your view mode preference (Card vs. Table) is saved to your WordPress user profile and restored the next time you open the page.
 
-Table View requires a completed scan in the current session — it reads from the results MIF just gathered, not from a separate database query.
+For the Images category, once usage tracking has completed:
+- A **Uses** column shows each item's usage count, with a red background on rows where the count is 0.
+- Expanding a row reveals a **Where Used** list underneath the file-details table, matching what Card View shows on each card.
+- A collapsible **Unused Images** panel appears below the Images table, listing every zero-use image with its thumbnail.
+
+Table View requires a completed scan in the current session — it reads from the results MIF just gathered (persisted server-side for your user account), not from a separate database query. Reloading the page after closing the tab clears this and requires a fresh scan.
+
+---
+
+## Usage Tracking & Unused Media Detection
+
+Immediately after each media scan finishes, MIF automatically runs a second, server-side pass to determine where every media item is actually used. You do not need to click anything separate to trigger it — it's part of the same **start scan** action.
+
+**What gets scanned for usage:**
+
+- Post/page content — `<img>` tags, Gutenberg image/gallery/cover/media-text/video/audio blocks, `[gallery]` and audio/video shortcodes, and direct links to media files (PDFs, videos, documents, etc.)
+- Featured images (post thumbnails)
+- Widgets — both dedicated image/attachment fields and free-text/HTML widget content
+- Theme customizer settings — custom logo, header image, background image, and the site icon (favicon)
+- Theme stylesheets (`.css` files in your active theme) and any custom CSS entered in the customizer, for `url()` background-image references
+- Elementor page/kit data, for both classic Elementor (v3) and the newer "V4 atomic" editor — including images used inside any widget or section, and fonts registered through Elementor's Font Manager (`elementor_fonts_manager_fonts`), counted per page that actually applies the font family
+
+Revision posts are excluded from every scan, so old post revisions never inflate a usage count.
+
+**Where results show up:** the Uses badge and Where Used list on Card View, and the Uses column, red zero-use highlighting, Where Used expansion, and Unused Images panel on Table View — all described above under [Card View](#card-view) and [Table View](#table-view).
+
+**What it does not cover:** other page builders (WPBakery, Divi, Bricks) are detected but not yet scanned for media references; media referenced only through hardcoded URLs in custom PHP/JS, or through a CDN that rewrites URLs outside your uploads path, will not be found and may be incorrectly flagged as unused. Always double-check before deleting anything flagged as unused. Usage counts and locations are not included in the CSV export.
 
 ---
 
@@ -177,6 +213,17 @@ Plain text files are intentionally excluded from scanning — they aren't treate
 
 ---
 
+## Community & Tools
+
+A collapsible panel at the bottom of the admin page, matching the layout used across the Jim R Forge plugin family:
+
+- **Project Hub** — a link to [jimrforge.com](https://jimrforge.com) for documentation, updates, and the full plugin ecosystem.
+- **Documentation** — direct links to this User Manual and the Quick Start Guide (PDF).
+- **Related Tools & Plugins** — Fluid Font Forge, Fluid Space Forge, and Atomic Framework Forge for Elementor (all available on WordPress.org), plus in-development tools.
+- **Support Development** — Buy Me a Coffee, WordPress.org Support forum, and Rate buttons.
+
+---
+
 ## Security
 
 - All admin actions require the `manage_options` capability (Administrator).
@@ -209,9 +256,10 @@ Plain text files are intentionally excluded from scanning — they aren't treate
 
 Be aware of what MIF does **not** currently offer, so you don't go looking for it:
 
-- No filtering by file size, upload date, or usage status.
+- No filtering by file size or upload date; Table View sorting is limited to Title, Files, Total Size, and (for Images) Uses.
 - No pagination controls in Table View — all results for a category load at once.
-- No "unused media" detection exposed in the interface. (Internal scaffolding for usage tracking exists in the codebase for a future release, but it is not wired up to any button or report yet — don't rely on it.)
+- Usage detection covers WordPress core content areas, widgets, the theme customizer, and Elementor (classic and V4 atomic) — it does not yet scan other page builders (WPBakery, Divi, Bricks) for media references.
+- Usage counts and locations are not included in the CSV export.
 - No keyboard shortcuts.
 - No batch-size configuration in the UI — MIF sizes its own batches automatically.
 

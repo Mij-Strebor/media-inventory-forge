@@ -31,6 +31,30 @@ class MINVF_Admin
     }
 
     /**
+     * Asset version string for cache-busting.
+     *
+     * Uses the file's own modification time when WP_DEBUG is on, so every
+     * edit during development invalidates the browser cache immediately
+     * instead of waiting for a manual MINVF_VERSION bump - this is dev-only
+     * convenience, not a change to production caching behavior, which still
+     * uses the real plugin version for correct long-lived cache headers.
+     *
+     * @param string $relative_path Asset path relative to the plugin root
+     * @return string
+     */
+    private function asset_version($relative_path)
+    {
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            $file = MINVF_PLUGIN_DIR . $relative_path;
+            if (file_exists($file)) {
+                return (string) filemtime($file);
+            }
+        }
+
+        return MINVF_VERSION;
+    }
+
+    /**
      * Enqueue admin assets (CSS and JavaScript)
      */
     public function enqueue_admin_assets($hook)
@@ -45,7 +69,7 @@ class MINVF_Admin
             'minvf-admin-css',
             MINVF_PLUGIN_URL . 'assets/css/admin.css',
             [],
-            MINVF_VERSION
+            $this->asset_version('assets/css/admin.css')
         );
 
         // Enqueue integrated forge header CSS
@@ -53,7 +77,7 @@ class MINVF_Admin
             'minvf-forge-header-css',
             MINVF_PLUGIN_URL . 'assets/css/forge-header.css',
             ['minvf-admin-css'],
-            MINVF_VERSION
+            $this->asset_version('assets/css/forge-header.css')
         );
 
         // Enqueue table view CSS
@@ -61,7 +85,7 @@ class MINVF_Admin
             'minvf-table-view-css',
             MINVF_PLUGIN_URL . 'assets/css/table-view.css',
             ['minvf-admin-css'],
-            MINVF_VERSION
+            $this->asset_version('assets/css/table-view.css')
         );
 
         // Enqueue admin JavaScript
@@ -69,7 +93,7 @@ class MINVF_Admin
             'minvf-admin-js',
             MINVF_PLUGIN_URL . 'assets/js/admin.js',
             ['jquery'], // Dependencies
-            MINVF_VERSION,
+            $this->asset_version('assets/js/admin.js'),
             true // Load in footer
         );
 
@@ -78,7 +102,7 @@ class MINVF_Admin
             'minvf-table-view-js',
             MINVF_PLUGIN_URL . 'assets/js/table-view.js',
             ['jquery', 'minvf-admin-js'], // Dependencies
-            MINVF_VERSION,
+            $this->asset_version('assets/js/table-view.js'),
             true // Load in footer
         );
 
