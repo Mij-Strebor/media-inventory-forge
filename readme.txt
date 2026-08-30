@@ -3,7 +3,7 @@ Contributors: mijstrebor
 Donate link: https://buymeacoffee.com/jimrweb
 Tags: media, inventory, scanner, analysis, optimization
 Requires at least: 5.0
-Tested up to: 6.9
+Tested up to: 7.1
 Requires PHP: 8.2
 Stable tag: 5.2.0
 License: GPLv2 or later

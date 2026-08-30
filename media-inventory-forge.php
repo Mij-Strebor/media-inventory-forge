@@ -11,7 +11,7 @@
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: media-inventory-forge
  * Requires at least: 5.0
- * Tested up to: 6.9
+ * Tested up to: 7.1
  * Requires PHP: 8.2
  * Network: true
  */

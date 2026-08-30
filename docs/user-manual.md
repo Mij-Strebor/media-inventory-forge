@@ -41,7 +41,7 @@ It does not scan plugins, uploads outside the Media Library, or other themes.
 ## Requirements & Installation
 
 **Requirements**
-- WordPress 5.0 or higher (tested up to 6.9)
+- WordPress 5.0 or higher (tested up to 7.1)
 - PHP 8.2 or higher
 - Administrator access (`manage_options` capability)
 
