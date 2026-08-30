@@ -2,6 +2,8 @@
 
 Based on your current v4.1.0 achievements and reviewing the existing roadmap, here are my strategic enhancement ideas:
 
+> **Status update:** "Unused media detection" and "Usage tracking" (listed under FREE Core below) shipped in v5.2.0 (built on the `feature/community-panel-fsf-parity` branch) — see `CHANGELOG.md`. Everything else on this page is still speculative/unbuilt.
+
 ### **TIER 1: Core Analysis Enhancements (w5.1.0)**
 
 **1. Smart Media Insights Dashboard** 🎯

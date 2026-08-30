@@ -1,8 +1,10 @@
 # Media Detection Guide - How MIF Finds Your Media
 
-**Version:** 4.0.0
+**Version:** 5.2.0
 **Audience:** Technically aware WordPress users, beta testers
 **Purpose:** Understand how Media Inventory Forge detects media files and tracks their usage
+
+> **2026-08-30 correction pass:** This guide previously described a separate "scan for usage" / "view usage data" button and a file-system orphan scanner. Neither exists in the shipped plugin — usage detection is **automatic**, running immediately after **start scan** completes, with results shown inline in Card View and Table View (see `docs/user-manual.md`). The "Orphaned Media" / file-system-scanning content below (Method 4) describes a feature that was never built; it's kept here, clearly marked, only as a record of the original idea.
 
 ---
 
@@ -30,7 +32,7 @@ MIF performs **two separate but related tasks:**
 ### **2. Usage Detection Scanner** ("Where Used Scanner")
 **What it does:** Finds where media files are being used in your content
 **What it tells you:** "This file appears on these pages"
-**Button:** 🔎 **scan for usage**
+**Trigger:** Runs automatically right after **start scan** completes - there is no separate button.
 
 ### **The Relationship:**
 
@@ -67,14 +69,10 @@ These are files WordPress knows about (have database records in `wp_posts` where
 | **Video** | mp4, mov, avi, wmv, mkv | Videos, tutorials |
 | **Fonts** | ttf, otf, woff, woff2 | Custom fonts |
 
-### **Orphaned Media**
-Files that exist in the uploads folder but have NO database record:
-- Leftover from deleted attachments
-- Manually uploaded via FTP
-- Generated thumbnails for deleted images
-- Old backups
+### **Orphaned Media (NOT IMPLEMENTED)**
+Files that exist in the uploads folder but have NO database record - leftover from deleted attachments, manually uploaded via FTP, generated thumbnails for deleted images, old backups.
 
-**MIF finds both registered AND orphaned media.**
+**MIF does not currently scan for these.** It only reports on files WordPress already knows about (`post_type = 'attachment'`); a true filesystem-vs-database orphan scanner is an unbuilt idea, not a shipped feature.
 
 ---
 
@@ -130,8 +128,8 @@ The regular scanner does this:
    SELECT * FROM wp_posts WHERE post_type = 'attachment'
    → Returns: All registered media files
 
-2. Scan uploads/ Directory
-   → Find: Files WordPress doesn't know about (orphans)
+2. (Not implemented) Scan uploads/ Directory for orphans
+   → See "Orphaned Media (NOT IMPLEMENTED)" above
 
 3. For Each File:
    - Read metadata (dimensions, size, type)
@@ -166,13 +164,10 @@ The usage scanner searches:
    └─ Check postmeta:
       • _thumbnail_id for each post
 
-4. Page Builders (NEW in v4.0!)
-   └─ Elementor:
-      • Parse _elementor_data JSON
-      • Find image widgets
-      • Find gallery widgets
-      • Find background images
-      • Find video posters
+4. Page Builders
+   └─ Elementor (classic v3 AND the newer "V4 atomic" editor):
+      • Walk the decoded _elementor_data / _elementor_page_settings structure generically for any attachment ID or uploads URL, regardless of widget type
+      • Also checks Elementor's font registry (elementor_fonts_manager_fonts) - a font counts as "used" on every page that actually applies its font-family name
    └─ Future: Bricks, WPBakery, Divi
 
 5. Widgets
@@ -186,6 +181,7 @@ The usage scanner searches:
       • custom_logo
       • header_image
       • background_image
+      • site_icon (favicon - stored as its own option, checked independently of theme mods)
 
 7. CSS Files
    └─ Scan stylesheets for:
@@ -230,40 +226,26 @@ WHERE meta_key = '_thumbnail_id'
 **Finds:** Images in any HTML format
 **Limitation:** Slower, requires parsing every post
 
-### **Method 3: JSON Parsing**
-**New for page builders**
+### **Method 3: JSON Parsing (Elementor)**
 
-**Elementor stores data as JSON in postmeta:**
-```json
-{
-  "elType": "widget",
-  "widgetType": "image",
-  "settings": {
-    "image": {"id": 123}
-  }
-}
-```
+Elementor stores page/kit data as postmeta - classic v3 as flat JSON (`{"id": 123}` per field), the newer V4 atomic editor wrapping every value in a `{"$$type":...,"value":...}` envelope with `e-`-prefixed widget types. Rather than hand-enumerate every widget type's field shape, MIF walks the decoded structure generically, looking for any numeric value under a "media-like" key (image, gallery, thumbnail, logo, etc.) or a string containing an uploads-relative path.
 
-**Finds:** All Elementor images, galleries, backgrounds
-**Limitation:** Requires understanding each builder's format
+**Finds:** All Elementor images, galleries, backgrounds, across both classic and V4 atomic
+**Limitation:** Requires re-verifying against each new Elementor schema version if this generic approach ever stops matching
 
-### **Method 4: File System Scanning**
-**Finds orphaned files**
+### **Method 4: File System Scanning (NOT IMPLEMENTED)**
+
+The idea below (recursively walking `uploads/` to find files with no database record) was never built. MIF's inventory scanner only reports on WordPress-registered attachments.
 
 ```php
-// Recursively scan uploads/
+// NOT IMPLEMENTED - illustrative only
 $files = scandir('/wp-content/uploads/', recursive)
-
-// Check each file
 foreach ($files as $file) {
     if (!in_database($file)) {
         mark_as_orphan($file)
     }
 }
 ```
-
-**Finds:** Files with no database record
-**Limitation:** Can be slow on large sites
 
 ---
 
@@ -311,13 +293,13 @@ INVENTORY SCANNER          USAGE SCANNER           RESULT
 ```
 **Action:** Fix the broken reference
 
-**Scenario 4: Orphaned File**
+**Scenario 4: Orphaned File (hypothetical - not implemented)**
 ```
 ✓ File: random-upload.zip
   Status: ORPHAN (not in Media Library)
   Locations: None (can't be used if WordPress doesn't know about it)
 ```
-**Action:** Probably safe to delete
+This scenario describes the unimplemented file-system scan above - MIF cannot currently detect files that exist on disk but have no Media Library record.
 
 ---
 
@@ -351,29 +333,26 @@ INVENTORY SCANNER          USAGE SCANNER           RESULT
 3. Check results panel
 4. **Expected:** Should find ~17-18+ files (including thumbnails and variations)
 
-#### **Test 2: Full Usage Scan**
-1. Click: 🔎 **scan for usage**
-2. Wait for completion
-3. Click: 📋 **view usage data**
-4. **Expected:** Should find all media currently in use
+#### **Test 2: Usage Detection**
+Usage detection runs automatically right after Test 1 completes - there's nothing separate to click. Wait for it to finish, then check the Uses badge (Card View) or Uses column (Table View) on each image.
+1. **Expected:** Should show a Uses count (or "Unused") for every image and SVG item.
 
 #### **Test 3: Cross-Reference**
-1. Run both scans
-2. Compare inventory vs. usage
-3. **Question to answer:** Are there files in inventory with NO usage entries?
+1. Compare the inventory list against the Uses badges.
+2. **Question to answer:** Are there files flagged "Unused" that you know are actually in use somewhere MIF doesn't scan (see "Common Questions" below)?
 
 #### **Test 4: Elementor Detection**
 1. Edit Sample Page in Elementor
 2. Add more images
 3. Save
-4. Run usage scan again
-5. **Expected:** Should find the new images
+4. Run a fresh scan (**start scan**)
+5. **Expected:** Should find the new images in the Uses count/Where Used list
 
 #### **Test 5: Different Media Types**
 1. Add a PDF to a post
 2. Embed an audio file
-3. Run usage scan
-4. **Expected:** Should find PDFs and audio files being used
+3. Run a fresh scan
+4. **Expected:** Should find PDFs and audio files being used (note: PDFs/audio don't currently show a Uses badge in the UI the way Images/SVG do - check via CSV or the database table if you need to confirm)
 
 ---
 
@@ -432,6 +411,6 @@ After reading this guide:
 
 ---
 
-**Document Status:** Draft for Testing
-**Last Updated:** 2025-11-06
+**Document Status:** Draft for Testing (corrected against shipped code)
+**Last Updated:** 2026-08-30
 **Next Review:** After beta testing feedback
