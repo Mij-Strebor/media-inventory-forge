@@ -1416,15 +1416,31 @@ button.mif-btn-danger:hover,
     letter-spacing: 0.3px;
     margin-top: 4px;
     margin-left: 4px;
-    background: rgba(76, 175, 80, 0.15);
-    color: #2E7D32;
-    border: 1px solid rgba(76, 175, 80, 0.3);
+    background: rgb(from var(--clr-success) r g b / 15%);
+    color: var(--clr-success-dark);
+    border: 1px solid rgb(from var(--clr-success) r g b / 30%);
 }
 
 .usage-badge.unused {
-    background: rgba(211, 47, 47, 0.12);
-    color: #C62828;
-    border: 1px solid rgba(211, 47, 47, 0.3);
+    background: rgb(from var(--clr-danger) r g b / 12%);
+    color: var(--clr-danger-dark);
+    border: 1px solid rgb(from var(--clr-danger) r g b / 30%);
+}
+
+/**
+ * Table-view Uses column - a plain number rather than a pill badge, with
+ * the zero-count cell's whole background highlighted (not just a small
+ * inline badge) since the column is narrow and the number alone is easy
+ * to miss otherwise. Same --clr-danger token as .usage-badge.unused.
+ */
+.usage-count-cell {
+    text-align: center;
+    font-weight: 600;
+}
+
+.usage-count-cell.unused {
+    background: rgb(from var(--clr-danger) r g b / 15%) !important;
+    color: var(--clr-danger-dark);
 }
 
 .usage-locations-panel {

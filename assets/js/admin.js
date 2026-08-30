@@ -1388,6 +1388,60 @@ jQuery(document).ready(function ($) {
       margin: "0 16px 8px 16px",
     });
 
+    // Unused Images sub-panel - a single full-width list at the bottom, so
+    // removal candidates are visible at a glance instead of needing to scan
+    // every card above for a red "Unused" badge. Skipped entirely if the
+    // usage scan hasn't completed yet (no item carries usage_count).
+    const unusedContent = displayUnusedImagesPanel(category);
+    if (unusedContent !== null) {
+      html += createSubPanel("Unused Images", unusedContent, {
+        margin: "0 16px 8px 16px",
+      });
+    }
+
+    return html;
+  }
+
+  /**
+   * Unused Images Panel Generator
+   *
+   * Full-width list of every image whose usage_count is 0 - the same
+   * removal-candidate signal as the red "Unused" badge on each card, but
+   * gathered in one place instead of requiring a scan through every card.
+   *
+   * @function displayUnusedImagesPanel
+   * @param {Object} category - Images category object
+   * @param {Array} category.items - Array of image items
+   * @returns {string|null} HTML list, or null if the usage scan hasn't
+   *   completed yet (no item carries a usage_count at all)
+   */
+  function displayUnusedImagesPanel(category) {
+    const scannedItems = category.items.filter(
+      (item) => typeof item.usage_count !== "undefined"
+    );
+    if (scannedItems.length === 0) {
+      return null;
+    }
+
+    const unusedItems = scannedItems.filter((item) => item.usage_count === 0);
+
+    if (unusedItems.length === 0) {
+      return '<p style="padding: 4px 16px; color: var(--clr-txt);">None - every image is used somewhere.</p>';
+    }
+
+    let html = '<ul style="margin: 0; padding: 4px 16px 4px 36px; list-style: disc;">';
+    unusedItems.forEach((item) => {
+      html += '<li style="padding: 4px 0; display: flex; align-items: center; gap: 8px;">';
+      if (item.thumbnail_url) {
+        html +=
+          '<img src="' +
+          escapeHtml(item.thumbnail_url) +
+          '" alt="" loading="lazy" style="width: 32px; height: 32px; object-fit: cover; border-radius: 3px; flex-shrink: 0;" />';
+      }
+      html += "<span>" + escapeHtml(item.title) + "</span>";
+      html += "</li>";
+    });
+    html += "</ul>";
     return html;
   }
 
@@ -1413,10 +1467,10 @@ jQuery(document).ready(function ($) {
     html += '<th style="width: 80px;">Thumbnail</th>';
     html += '<th class="mif-sortable" data-column="title"><span class="mif-sort-label">Title</span><span class="mif-sort-indicator"></span></th>';
     html += '<th>Source</th>';
-    html += '<th class="mif-sortable" data-column="files" style="width: 100px;"><span class="mif-sort-label">Files</span><span class="mif-sort-indicator"></span></th>';
-    html += '<th class="mif-sortable" data-column="size" style="width: 120px;"><span class="mif-sort-label">Total Size</span><span class="mif-sort-indicator"></span></th>';
-    html += '<th style="width: 140px;">Dimensions</th>';
-    html += '<th class="mif-sortable" data-column="usage_count" style="width: 100px;"><span class="mif-sort-label">Uses</span><span class="mif-sort-indicator"></span></th>';
+    html += '<th class="mif-sortable" data-column="files" style="width: 70px;"><span class="mif-sort-label">Files</span><span class="mif-sort-indicator"></span></th>';
+    html += '<th class="mif-sortable" data-column="size" style="width: 90px;"><span class="mif-sort-label">Total Size</span><span class="mif-sort-indicator"></span></th>';
+    html += '<th style="width: 100px;">Dimensions</th>';
+    html += '<th class="mif-sortable" data-column="usage_count" style="width: 70px;"><span class="mif-sort-label">Uses</span><span class="mif-sort-indicator"></span></th>';
     html += '</tr></thead>';
     html += '<tbody>';
 
@@ -1449,7 +1503,16 @@ jQuery(document).ready(function ($) {
       html += '<td data-sort-value="' + item.file_count + '">' + item.file_count + '</td>';
       html += '<td data-sort-value="' + item.total_size + '">' + formatBytes(item.total_size) + '</td>';
       html += '<td>' + escapeHtml(item.dimensions || 'N/A') + '</td>';
-      html += '<td data-sort-value="' + (item.usage_count || 0) + '">' + buildUsageBadge(item) + '</td>';
+      // Plain number, not a pill badge - the column is narrow, and a
+      // full-cell highlight on zero is easier to spot at a glance than a
+      // small inline badge would be at this width.
+      const usageDefined = typeof item.usage_count !== "undefined";
+      const usageIsZero = usageDefined && item.usage_count === 0;
+      html +=
+        '<td class="usage-count-cell' + (usageIsZero ? " unused" : "") + '" data-sort-value="' +
+        (item.usage_count || 0) + '">' +
+        (usageDefined ? item.usage_count : "") +
+        "</td>";
       html += '</tr>';
 
       // Expanded details row
