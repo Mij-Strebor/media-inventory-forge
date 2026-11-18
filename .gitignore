@@ -96,4 +96,5 @@ scratch.md
 
 # Temporary generated files
 *.pdf
+!docs/*.pdf
 *_tmp.html
